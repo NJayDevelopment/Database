@@ -1,0 +1,8 @@
+mongo:
+    server-id: nil
+    hostname: localhost
+    port: 27017
+    database: cn_database
+languages:
+    supported-languages:
+      - 'en_CA'

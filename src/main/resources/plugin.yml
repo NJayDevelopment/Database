@@ -1,0 +1,6 @@
+name: ${name}
+version: ${project.version}-${git.commit.id.abbrev}
+description: ${description}
+authors: [skipperguy12, NathanTheBook]
+main: ${plugin.mainClass}
+prefix: ${plugin.prefix}
