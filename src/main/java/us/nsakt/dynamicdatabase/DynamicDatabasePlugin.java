@@ -1,7 +1,7 @@
 package us.nsakt.dynamicdatabase;
 
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.google.common.collect.Lists;
+import com.mongodb.*;
 import com.sk89q.bukkit.util.CommandsManagerRegistration;
 import com.sk89q.minecraft.util.commands.*;
 import org.bukkit.Bukkit;
@@ -18,6 +18,7 @@ import us.nsakt.dynamicdatabase.util.LanguageFile;
 
 import java.io.File;
 import java.net.UnknownHostException;
+import java.util.List;
 
 /**
  * Main Bukkit class
@@ -27,10 +28,10 @@ public class DynamicDatabasePlugin extends JavaPlugin {
     private static DynamicDatabasePlugin instance;
     // Datastore for Morphia
     private Datastore datastore;
-    /**
-     * sk89q's command framework CommandsManager
-     */
+    //sk89q's command framework CommandsManager
     private CommandsManager<CommandSender> commands;
+    // The mainThread thread
+    private Thread mainThread;
 
     /**
      * Gets the Singleton instance of DynamicDatabasePlugin
@@ -42,8 +43,19 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         return instance;
     }
 
+    /**
+     * Gets the mainThread thread
+     *
+     * @return the mainThread thread
+     */
+    public Thread getMainThread() {
+        return mainThread;
+    }
+
     public void onEnable() {
         instance = this;
+        mainThread = Thread.currentThread();
+        QueryExecutor.createExecutorService();
 
         this.getConfig().options().copyDefaults(true);
         this.saveConfig();
@@ -57,14 +69,27 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         for (String channel : Config.Debug.allowedChannels)
             Debug.allow(channel);
 
-        // Mongo/Morphia
-        Mongo mongo = null;
+        // Mongo
+        MongoClient mongo = null;
+        MongoClientOptions clientOptions = MongoClientOptions.builder().connectionsPerHost(10).build();
         try {
-            mongo = new Mongo(Config.Mongo.Authentication.hostname, Config.Mongo.Authentication.port);
+            List<ServerAddress> addresses = Lists.newArrayList();
+            for (String address : Config.Mongo.hostnames)
+                addresses.add(new ServerAddress(address, Config.Mongo.port));
+            if (addresses.size() == 1) mongo = new MongoClient(addresses.get(0), clientOptions);
+            else if (addresses.size() > 1) mongo = new MongoClient(addresses, clientOptions);
+            else throw new MongoException("Unable to connect to any Mongo instance!");
         } catch (UnknownHostException e) {
             Debug.EXCEPTION.debug(e);
         }
 
+        DB database = mongo.getDB(Config.Mongo.database);
+
+        if (Config.Mongo.Authentication.useAthentication && !database.authenticate(Config.Mongo.Authentication.username, Config.Mongo.Authentication.password.toCharArray())) {
+            throw new MongoException("Could not authenticate to database " + database.getName());
+        }
+
+        // Morphia
         Morphia morphia = new Morphia();
         morphia.map(); // Mapping of all morphia documents
         // Hacky ClassLoader fix.
@@ -74,11 +99,13 @@ public class DynamicDatabasePlugin extends JavaPlugin {
                 return DynamicDatabasePlugin.getInstance().getClassLoader();
             }
         };
-        datastore = morphia.createDatastore(mongo, Config.Mongo.Authentication.database);
+        datastore = morphia.createDatastore(mongo, Config.Mongo.database);
+
     }
 
     public void onDisable() {
         instance = null;
+        QueryExecutor.destroyExecutorService(false);
     }
 
     // Sets up the Config for language

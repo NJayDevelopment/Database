@@ -1,8 +1,13 @@
 mongo:
+    using-async-morphia: false
     server-id: nil
     hostname: localhost
     port: 27017
     database: cn_database
+    authentication:
+        use-authentication: false
+        username: username
+        password: password
 languages:
     supported-languages:
       - 'en_CA'

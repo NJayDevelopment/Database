@@ -1,6 +1,7 @@
 package us.nsakt.dynamicdatabase.documents;
 
 import org.mongodb.morphia.annotations.Embedded;
+import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
 
 /**
  * Base class for all Embedded Mongo Documents
