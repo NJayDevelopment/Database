@@ -91,48 +91,48 @@ public class Config {
     @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Information for Mongo")
     public static class Mongo {
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Describes if all Morphia methods are executed asyncly using a fork of Morphia such as @skipperguy12's AsyncMorphia", def = "false")
-        public static boolean usingAsyncMorphia = get("mongo.using-async-morphia", false);
+        public static final boolean usingAsyncMorphia = get("mongo.using-async-morphia", false);
 
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The current Server's ObjectId, must be in database.")
-        public static String serverId = get("mongo.server-id", "nil");
+        public static final String serverId = get("mongo.server-id", "nil");
 
         // Actual connection stuff
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The hostname to attempt to connect to", def = "localhost")
-        public static List<String> hostnames = get("mongo.hostname", Arrays.asList("localhost"));
+        public static final List<String> hostnames = get("mongo.hostname", Arrays.asList("localhost"));
 
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The port to connect to", def = "27017")
-        public static int port = get("mongo.port", 27017);
+        public static final int port = get("mongo.port", 27017);
 
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The Mongo database to connect to", def = "nsakt_database")
-        public static String database = get("mongo.database", "nsakt_database");
+        public static final String database = get("mongo.database", "nsakt_database");
 
 
         @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Information for Mongo authentication")
         public static class Authentication {
 
             @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if Mongo requires authentication to the DB", def = "false")
-            public static boolean useAthentication = get("mongo.authentication.use-authentication", false);
+            public static final boolean useAthentication = get("mongo.authentication.use-authentication", false);
 
             @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The username to the database", def = "username")
-            public static String username = get("mongo.authentication.username", "username");
+            public static final String username = get("mongo.authentication.username", "username");
 
             @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The password to the database", def = "password")
-            public static String password = get("mongo.authentication.password", "password");
+            public static final String password = get("mongo.authentication.password", "password");
         }
     }
 
     @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable settings on Languages handled by DynamicDatabase")
     public static class Languages {
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "List of supported languages")
-        public static List<String> supportedLanguages = get("languages.supported-languages", Arrays.asList("en_CA"));
+        public static final List<String> supportedLanguages = get("languages.supported-languages", Arrays.asList("en_CA"));
     }
 
     @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable debugging options")
     public static class Debug {
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean to decide whether to use voodoo magic to take over the normal console to filter out specific channels")
-        public static boolean hijackPrintStream = get("debug.hijack-printstream", true);
+        public static final boolean hijackPrintStream = get("debug.hijack-printstream", true);
 
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Determines which channels are allowed to debug", def = "[\"Generic\", \"Morphia\", \"Exception\"]")
-        public static List<String> allowedChannels = get("debug.allowedChannels", Arrays.asList("Generic", "Morphia", "Exception"));
+        public static final List<String> allowedChannels = get("debug.allowedChannels", Arrays.asList("Generic", "Morphia", "Exception"));
     }
 }
