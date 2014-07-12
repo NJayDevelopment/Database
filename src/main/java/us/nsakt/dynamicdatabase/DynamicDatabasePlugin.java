@@ -1,6 +1,7 @@
 package us.nsakt.dynamicdatabase;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.mongodb.*;
 import com.sk89q.bukkit.util.CommandsManagerRegistration;
 import com.sk89q.minecraft.util.commands.*;
@@ -19,6 +20,7 @@ import us.nsakt.dynamicdatabase.util.LanguageFile;
 import java.io.File;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Main Bukkit class
@@ -26,10 +28,10 @@ import java.util.List;
 public class DynamicDatabasePlugin extends JavaPlugin {
     // Singleton instance
     private static DynamicDatabasePlugin instance;
-    // Datastore for Morphia
-    private Datastore datastore;
     //sk89q's command framework CommandsManager
     private CommandsManager<CommandSender> commands;
+    // Datastores for Morphia
+    private Map<String, Datastore> datastores = Maps.newHashMap();
     // The mainThread thread
     private Thread mainThread;
 
@@ -99,7 +101,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
                 return DynamicDatabasePlugin.getInstance().getClassLoader();
             }
         };
-        datastore = morphia.createDatastore(mongo, Config.Mongo.database);
+        datastores.put("auth", morphia.createDatastore(mongo, Config.Mongo.database));
 
     }
 
@@ -153,8 +155,17 @@ public class DynamicDatabasePlugin extends JavaPlugin {
      *
      * @return the Datastore in use
      */
-    public Datastore getDatastore() {
-        return datastore;
+    public Datastore getAuthDatastore() {
+        return datastores.get("auth");
+    }
+
+    /**
+     * Gets the datastores map
+     *
+     * @return mapping of datastores
+     */
+    public Map<String, Datastore> getDatastores() {
+        return datastores;
     }
 
     // Passes commands from Bukkit to sk89q
