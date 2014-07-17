@@ -12,9 +12,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.jdom</groupId>
-            <artifactId>jdom</artifactId>
-            <version>2.0.0</version>
+            <groupId>org.mongodb.morphia</groupId>
+            <artifactId>morphia</artifactId>
+            <version>0.108</version>
         </dependency>
         <dependency>
             <groupId>com.sk89q</groupId>
@@ -57,30 +57,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>tc.oc</groupId>
-            <artifactId>commons-core</artifactId>
-            <version>0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>tc.oc</groupId>
-            <artifactId>commons-bukkit</artifactId>
-            <version>0.1.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.comphenix.protocol</groupId>
-            <artifactId>ProtocolLib</artifactId>
-            <version>3.1.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mongodb.morphia</groupId>
-            <artifactId>morphia</artifactId>
-            <!-- See https://github.com/mongodb/morphia/releases for the latest version -->
-            <version>0.107</version>
-        </dependency>
-        <dependency>
             <groupId>me.anxuiz</groupId>
             <artifactId>settings</artifactId>
             <version>0.5.0-SNAPSHOT</version>
@@ -100,21 +76,16 @@
     </dependencies>
     <repositories>
         <repository>
+            <id>njay-repo</id>
+            <url>http://repo.njay.net/content/groups/public</url>
+        </repository>
+        <repository>
             <id>repo.oc.tc</id>
             <url>http://repo.oc.tc/content/repositories/snapshots/</url>
         </repository>
         <repository>
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public</url>
-        </repository>
-        <repository>
-            <id>comphenix-rep</id>
-            <name>Comphenix Repository</name>
-            <url>http://repo.comphenix.net/content/groups/public</url>
-        </repository>
-        <repository>
-            <id>morphia</id>
-            <url>http://morphia.googlecode.com/svn/mavenrepo/</url>
         </repository>
     </repositories>
     <build>

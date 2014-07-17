@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 import org.mongodb.morphia.mapping.DefaultCreator;
+import us.nsakt.dynamicdatabase.documents.Document;
 import us.nsakt.dynamicdatabase.util.LanguageFile;
 
 import java.io.File;
@@ -30,8 +31,10 @@ public class DynamicDatabasePlugin extends JavaPlugin {
     private static DynamicDatabasePlugin instance;
     //sk89q's command framework CommandsManager
     private CommandsManager<CommandSender> commands;
+    // The main DataStore
+    private Datastore mainStore;
     // Datastores for Morphia
-    private Map<String, Datastore> datastores = Maps.newHashMap();
+    private Map<Class<? extends Document>, Datastore> datastores = Maps.newHashMap();
     // The mainThread thread
     private Thread mainThread;
 
@@ -97,11 +100,11 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         // Hacky ClassLoader fix.
         morphia.getMapper().getOptions().objectFactory = new DefaultCreator() {
             @Override
-            protected ClassLoader getClassLoaderForClass(String clazz, DBObject object) {
+            protected ClassLoader getClassLoaderForClass() {
                 return DynamicDatabasePlugin.getInstance().getClassLoader();
             }
         };
-        datastores.put("auth", morphia.createDatastore(mongo, Config.Mongo.database));
+        mainStore = morphia.createDatastore(mongo, Config.Mongo.database);
 
     }
 
@@ -156,7 +159,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
      * @return the Datastore in use
      */
     public Datastore getAuthDatastore() {
-        return datastores.get("auth");
+        return mainStore;
     }
 
     /**
@@ -164,7 +167,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
      *
      * @return mapping of datastores
      */
-    public Map<String, Datastore> getDatastores() {
+    public Map<Class<? extends Document>, Datastore> getDatastores() {
         return datastores;
     }
 
