@@ -50,4 +50,9 @@ public class Cluster extends Document {
                 ", visibility=" + visibility +
                 '}';
     }
+
+    @Override
+    public Cluster getCluster() {
+        return this;
+    }
 }
