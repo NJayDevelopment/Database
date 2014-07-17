@@ -42,4 +42,15 @@ public abstract class Document {
     protected void setObjectId(ObjectId newObjectId) {
         this._id = newObjectId;
     }
+
+    /**
+     * Returns the object's cluster.
+     * NOTE: Classes that use clusters need to override and return appropriate values.
+     * NOTE: Callers need to handle null responses as an "all" result.
+     *
+     * @return the object's cluster
+     */
+    public Cluster getCluster() {
+        return null;
+    }
 }

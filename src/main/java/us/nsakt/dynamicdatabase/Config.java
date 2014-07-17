@@ -96,6 +96,9 @@ public class Config {
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The current Server's ObjectId, must be in database.")
         public static final String serverId = get("mongo.server-id", "nil");
 
+        @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The current Server's cluster.")
+        public static final String serverCluster = get("mongo.server-cluster", "all");
+
         // Actual connection stuff
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The hostname to attempt to connect to", def = "localhost")
         public static final List<String> hostnames = get("mongo.hostname", Arrays.asList("localhost"));
