@@ -13,6 +13,7 @@ public class Cluster extends Document {
 
     /**
      * Get the cluster's name
+     *
      * @return
      */
     public String getName() {
@@ -21,6 +22,7 @@ public class Cluster extends Document {
 
     /**
      * Set the cluster's name
+     *
      * @param name
      */
     public void setName(String name) {
@@ -29,6 +31,7 @@ public class Cluster extends Document {
 
     /**
      * Get the cluster's visibility
+     *
      * @return
      */
     public Visibility getVisibility() {
@@ -37,6 +40,7 @@ public class Cluster extends Document {
 
     /**
      * Set the cluster's visibility
+     *
      * @param visibility
      */
     public void setVisibility(Visibility visibility) {

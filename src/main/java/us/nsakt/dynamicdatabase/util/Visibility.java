@@ -13,6 +13,7 @@ public enum Visibility {
 
     /**
      * Default constructor
+     *
      * @param dbName name for database reference
      */
     Visibility(String dbName) {

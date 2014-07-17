@@ -15,6 +15,7 @@ public class Group extends Document {
 
     /**
      * Get the group's name
+     *
      * @return
      */
     public String getName() {
@@ -23,6 +24,7 @@ public class Group extends Document {
 
     /**
      * Set the group's name
+     *
      * @param name
      */
     public void setName(String name) {
@@ -31,6 +33,7 @@ public class Group extends Document {
 
     /**
      * Get the group's flair
+     *
      * @return
      */
     public String getFlair() {
@@ -39,6 +42,7 @@ public class Group extends Document {
 
     /**
      * Set the group's flair
+     *
      * @param flair
      */
     public void setFlair(String flair) {
@@ -47,6 +51,7 @@ public class Group extends Document {
 
     /**
      * Get the group's flair color
+     *
      * @return
      */
     public String getFlairColor() {
@@ -55,6 +60,7 @@ public class Group extends Document {
 
     /**
      * Set the group's flair color
+     *
      * @param flairColor
      */
     public void setFlairColor(String flairColor) {
@@ -63,6 +69,7 @@ public class Group extends Document {
 
     /**
      * Get the group's priority
+     *
      * @return
      */
     public int getPriority() {
@@ -71,6 +78,7 @@ public class Group extends Document {
 
     /**
      * Set the group's priority
+     *
      * @param priority
      */
     public void setPriority(int priority) {
@@ -79,6 +87,7 @@ public class Group extends Document {
 
     /**
      * Get a list of the group's members (UUID)
+     *
      * @return
      */
     public List<UUID> getMembers() {
@@ -87,6 +96,7 @@ public class Group extends Document {
 
     /**
      * Set a list of the group's members (UUID)
+     *
      * @param members
      */
     public void setMembers(List<UUID> members) {
@@ -95,6 +105,7 @@ public class Group extends Document {
 
     /**
      * Get the group's minecraft permissions
+     *
      * @return
      */
     public List<String> getMc_permissions() {
@@ -103,6 +114,7 @@ public class Group extends Document {
 
     /**
      * Set the group's minecraft permissions
+     *
      * @param mc_permissions
      */
     public void setMc_permissions(List<String> mc_permissions) {
@@ -111,6 +123,7 @@ public class Group extends Document {
 
     /**
      * Get the group's cluster
+     *
      * @return
      */
     @Override
@@ -120,6 +133,7 @@ public class Group extends Document {
 
     /**
      * Set the group's cluster
+     *
      * @param cluster
      */
     public void setCluster(Cluster cluster) {
