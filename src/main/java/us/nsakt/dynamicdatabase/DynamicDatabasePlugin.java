@@ -63,27 +63,43 @@ public class DynamicDatabasePlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
         mainThread = Thread.currentThread();
-
-        QueryExecutor.createExecutorService();
         setupConfig();
+        setupLogging();
+        setupMongo();
+        QueryExecutor.createExecutorService();
         registerListeners();
-
-        // Debugging
-        if (Config.Debug.hijackPrintStream) Debug.replaceMainOutChannel();
-        for (String channel : Config.Debug.allowedChannels)
-            Debug.allow(channel);
-
-        connectToMongo();
         setupCommands();
     }
+
 
     public void onDisable() {
         instance = null;
         QueryExecutor.destroyExecutorService(false);
     }
 
+    // Sets up the Config for language
+    private void setupConfig() {
+        this.getConfig().options().copyDefaults(true);
+        this.saveConfig();
+
+        for (String string : Config.Languages.supportedLanguages) {
+            File file = new File(string + ".lang");
+            if (!file.exists()) continue;
+
+            LanguageFile.LanguageEnum languageInfo = LanguageFile.getByAbbreviation(string);
+            LanguageFile language = new LanguageFile(languageInfo);
+            Config.getLanguageMap().put(languageInfo, language);
+        }
+    }
+
+    private void setupLogging() {
+        if (Config.Debug.hijackPrintStream) Debug.replaceMainOutChannel();
+        for (String channel : Config.Debug.allowedChannels)
+            Debug.allow(channel);
+    }
+
     //Establish connection to mongo
-    private void connectToMongo() {
+    private void setupMongo() {
         MongoClient mongo = null;
         MongoClientOptions clientOptions = MongoClientOptions.builder().connectionsPerHost(10).build();
         try {
@@ -106,16 +122,6 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         setupMorphia(mongo);
     }
 
-    //Fix the morphia classloader
-    private void fixClassLoader(Morphia morphia) {
-        morphia.getMapper().getOptions().objectFactory = new DefaultCreator() {
-            @Override
-            protected ClassLoader getClassLoaderForClass() {
-                return DynamicDatabasePlugin.getInstance().getClassLoader();
-            }
-        };
-    }
-
     //Initialize the morphia instance and handle any setup
     private void setupMorphia(MongoClient mongo) {
         Morphia morphia = new Morphia();
@@ -126,27 +132,22 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         setupDataStores(mongo, morphia);
     }
 
+    //Fix the morphia classloader
+    private void fixClassLoader(Morphia morphia) {
+        morphia.getMapper().getOptions().objectFactory = new DefaultCreator() {
+            @Override
+            protected ClassLoader getClassLoaderForClass() {
+                return DynamicDatabasePlugin.getInstance().getClassLoader();
+            }
+        };
+    }
+
     //Set up multiple databases
     private void setupDataStores(MongoClient mongo, Morphia morphia) {
         List<Class<? extends Document>> documentsToLoad = Lists.newArrayList(Cluster.class, Group.class, Server.class);
         for (Class<? extends Document> doc : documentsToLoad) {
             Datastore store = morphia.createDatastore(mongo, doc.getName() + "s");
             datastores.put(doc, store);
-        }
-    }
-
-    // Sets up the Config for language
-    private void setupConfig() {
-        this.getConfig().options().copyDefaults(true);
-        this.saveConfig();
-
-        for (String string : Config.Languages.supportedLanguages) {
-            File file = new File(string + ".lang");
-            if (!file.exists()) continue;
-
-            LanguageFile.LanguageEnum languageInfo = LanguageFile.getByAbbreviation(string);
-            LanguageFile language = new LanguageFile(languageInfo);
-            Config.getLanguageMap().put(languageInfo, language);
         }
     }
 
