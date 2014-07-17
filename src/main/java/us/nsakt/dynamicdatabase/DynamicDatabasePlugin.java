@@ -15,7 +15,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 import org.mongodb.morphia.mapping.DefaultCreator;
+import us.nsakt.dynamicdatabase.documents.Cluster;
 import us.nsakt.dynamicdatabase.documents.Document;
+import us.nsakt.dynamicdatabase.documents.Group;
+import us.nsakt.dynamicdatabase.documents.Server;
 import us.nsakt.dynamicdatabase.util.LanguageFile;
 
 import java.io.File;
@@ -60,13 +63,9 @@ public class DynamicDatabasePlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
         mainThread = Thread.currentThread();
+
         QueryExecutor.createExecutorService();
-
-        this.getConfig().options().copyDefaults(true);
-        this.saveConfig();
-
         setupConfig();
-
         registerListeners();
 
         // Debugging
@@ -74,7 +73,17 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         for (String channel : Config.Debug.allowedChannels)
             Debug.allow(channel);
 
-        // Mongo
+        connectToMongo();
+        setupCommands();
+    }
+
+    public void onDisable() {
+        instance = null;
+        QueryExecutor.destroyExecutorService(false);
+    }
+
+    //Establish connection to mongo
+    private void connectToMongo() {
         MongoClient mongo = null;
         MongoClientOptions clientOptions = MongoClientOptions.builder().connectionsPerHost(10).build();
         try {
@@ -94,27 +103,43 @@ public class DynamicDatabasePlugin extends JavaPlugin {
             throw new MongoException("Could not authenticate to database " + database.getName());
         }
 
-        // Morphia
-        Morphia morphia = new Morphia();
-        morphia.map(); // Mapping of all morphia documents
-        // Hacky ClassLoader fix.
+        setupMorphia(mongo);
+    }
+
+    //Fix the morphia classloader
+    private void fixClassLoader(Morphia morphia) {
         morphia.getMapper().getOptions().objectFactory = new DefaultCreator() {
             @Override
             protected ClassLoader getClassLoaderForClass() {
                 return DynamicDatabasePlugin.getInstance().getClassLoader();
             }
         };
-        mainStore = morphia.createDatastore(mongo, Config.Mongo.database);
-
     }
 
-    public void onDisable() {
-        instance = null;
-        QueryExecutor.destroyExecutorService(false);
+    //Initialize the morphia instance and handle any setup
+    private void setupMorphia(MongoClient mongo) {
+        Morphia morphia = new Morphia();
+        morphia.map(Cluster.class, Server.class, Group.class);
+        mainStore = morphia.createDatastore(mongo, Config.Mongo.database);
+
+        fixClassLoader(morphia);
+        setupDataStores(mongo, morphia);
+    }
+
+    //Set up multiple databases
+    private void setupDataStores(MongoClient mongo, Morphia morphia) {
+        List<Class<? extends Document>> documentsToLoad = Lists.newArrayList(Cluster.class, Group.class, Server.class);
+        for (Class<? extends Document> doc : documentsToLoad) {
+            Datastore store = morphia.createDatastore(mongo, doc.getName() + "s");
+            datastores.put(doc, store);
+        }
     }
 
     // Sets up the Config for language
     private void setupConfig() {
+        this.getConfig().options().copyDefaults(true);
+        this.saveConfig();
+
         for (String string : Config.Languages.supportedLanguages) {
             File file = new File(string + ".lang");
             if (!file.exists()) continue;
