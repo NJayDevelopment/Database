@@ -8,6 +8,14 @@ mongo:
         use-authentication: false
         username: username
         password: password
+
 languages:
     supported-languages:
       - 'en_CA'
+
+debug:
+    hijack-printstream: true
+    allowedChannels:
+      - 'Generic'
+      - 'Morphia'
+      - 'Exception'

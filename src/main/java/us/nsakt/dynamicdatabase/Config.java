@@ -103,7 +103,7 @@ public class Config {
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The port to connect to", def = "27017")
         public static final int port = get("mongo.port", 27017);
 
-        @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The Mongo database to connect to", def = "nsakt_database")
+        @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The main Mongo database to connect to", def = "nsakt_database")
         public static final String database = get("mongo.database", "nsakt_database");
 
 
