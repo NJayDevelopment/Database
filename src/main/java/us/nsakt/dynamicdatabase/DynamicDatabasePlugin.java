@@ -40,6 +40,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
     private Map<Class<? extends Document>, Datastore> datastores = Maps.newHashMap();
     // The mainThread thread
     private Thread mainThread;
+    private Server currentServer;
 
     /**
      * Gets the Singleton instance of DynamicDatabasePlugin
@@ -67,10 +68,16 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         setupLogging();
         setupMongo();
         QueryExecutor.createExecutorService();
+        setupServer();
         registerListeners();
         setupCommands();
     }
 
+    public void setupServer() {
+        Server server = getDatastores().get(Server.class).createQuery(Server.class).filter("_id", Config.Mongo.serverId).get();
+        if (server == null) Debug.MORPHIA.debug("Server not found in database!");
+        this.currentServer = server;
+    }
 
     public void onDisable() {
         instance = null;
@@ -223,4 +230,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         return true;
     }
 
+    public Server getCurrentServer() {
+        return this.currentServer;
+    }
 }
