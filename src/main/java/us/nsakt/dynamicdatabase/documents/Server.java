@@ -2,6 +2,8 @@ package us.nsakt.dynamicdatabase.documents;
 
 import org.joda.time.Duration;
 import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Transient;
+import us.nsakt.dynamicdatabase.util.Visibility;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,7 +15,8 @@ public class Server extends Document {
     private int port, internalPort, maxPlayers;
     private Duration upTime;
     private List<UUID> onlinePlayers;
-
+    private boolean online;
+    @Transient private Visibility visibilityEnum;
     //Internal things (for backend)
 
     /**
@@ -124,6 +127,7 @@ public class Server extends Document {
      */
     public void setVisibility(String visibility) {
         this.visibility = visibility;
+        this.visibilityEnum = Visibility.valueOf(visibility);
     }
 
     /**
@@ -215,6 +219,23 @@ public class Server extends Document {
      */
     public void setOnlinePlayers(List<UUID> onlinePlayers) {
         this.onlinePlayers = onlinePlayers;
+    }
+
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
+    }
+
+    public Visibility getVisibilityEnum() {
+        return visibilityEnum;
+    }
+
+    public void setVisibilityEnum(Visibility visibilityEnum) {
+        this.visibilityEnum = visibilityEnum;
+        this.visibility = visibilityEnum.dbName;
     }
 
     @Override
