@@ -2,9 +2,19 @@ package us.nsakt.dynamicdatabase;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mongodb.*;
+import com.mongodb.DB;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoException;
+import com.mongodb.ServerAddress;
 import com.sk89q.bukkit.util.CommandsManagerRegistration;
-import com.sk89q.minecraft.util.commands.*;
+import com.sk89q.minecraft.util.commands.ChatColor;
+import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.minecraft.util.commands.CommandPermissionsException;
+import com.sk89q.minecraft.util.commands.CommandUsageException;
+import com.sk89q.minecraft.util.commands.CommandsManager;
+import com.sk89q.minecraft.util.commands.MissingNestedCommandException;
+import com.sk89q.minecraft.util.commands.WrappedCommandException;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -19,6 +29,7 @@ import us.nsakt.dynamicdatabase.documents.Cluster;
 import us.nsakt.dynamicdatabase.documents.Document;
 import us.nsakt.dynamicdatabase.documents.Group;
 import us.nsakt.dynamicdatabase.documents.Server;
+import us.nsakt.dynamicdatabase.documents.User;
 import us.nsakt.dynamicdatabase.util.LanguageFile;
 
 import java.io.File;
@@ -151,7 +162,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
 
     //Set up multiple databases
     private void setupDataStores(MongoClient mongo, Morphia morphia) {
-        List<Class<? extends Document>> documentsToLoad = Lists.newArrayList(Cluster.class, Group.class, Server.class);
+        List<Class<? extends Document>> documentsToLoad = Lists.newArrayList(Cluster.class, Group.class, Server.class, User.class);
         for (Class<? extends Document> doc : documentsToLoad) {
             Datastore store = morphia.createDatastore(mongo, doc.getName() + "s");
             datastores.put(doc, store);
