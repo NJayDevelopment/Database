@@ -1,4 +1,4 @@
-package us.nsakt.dynamicdatabase.cluster;
+package us.nsakt.dynamicdatabase.util.clusters;
 
 import com.sk89q.minecraft.util.commands.ChatColor;
 import org.bukkit.entity.Player;

@@ -1,4 +1,4 @@
-package us.nsakt.dynamicdatabase.cluster;
+package us.nsakt.dynamicdatabase.util.clusters;
 
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
 import us.nsakt.dynamicdatabase.documents.Document;
