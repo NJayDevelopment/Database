@@ -3,12 +3,16 @@ package us.nsakt.dynamicdatabase.util.clusters;
 import com.sk89q.minecraft.util.commands.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.mongodb.morphia.Datastore;
+import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
 import us.nsakt.dynamicdatabase.documents.Server;
 import us.nsakt.dynamicdatabase.util.Visibility;
 
 import java.util.UUID;
 
 public class ServerUtils {
+
+    private static Datastore serversDataStore = DynamicDatabasePlugin.getInstance().getDatastores().get(Server.class);
 
     /**
      * Adds a player to the online players list.
