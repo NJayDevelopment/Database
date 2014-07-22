@@ -52,7 +52,8 @@ public class GroupUtils {
         List<String> stringPerms = group.getMc_permissions();
         for (String permission : stringPerms) {
             if (permission.startsWith("#")) continue; // We can have comments in the permissions field. Yay!
-            formattedPermissions.put(new Permission(permission), !permission.startsWith("-"));
+            boolean add = !permission.startsWith("-");
+            formattedPermissions.put(new Permission(add ? permission : permission.substring(1)), add);
         }
         return formattedPermissions;
     }
