@@ -7,7 +7,7 @@ import us.nsakt.dynamicdatabase.util.Visibility;
  * Class to represent a "cluster" of documents.
  */
 @Entity("clusters")
-public class Cluster extends Document {
+public class ClusterDocument extends Document {
     private String name;
     private Visibility visibility;
 
@@ -56,7 +56,7 @@ public class Cluster extends Document {
     }
 
     @Override
-    public Cluster getCluster() {
+    public ClusterDocument getCluster() {
         return this;
     }
 }

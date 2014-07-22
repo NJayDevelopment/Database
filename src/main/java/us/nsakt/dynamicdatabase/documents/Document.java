@@ -50,7 +50,7 @@ public abstract class Document {
      *
      * @return the object's cluster
      */
-    public Cluster getCluster() {
+    public ClusterDocument getCluster() {
         return null;
     }
 }

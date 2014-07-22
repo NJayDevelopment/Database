@@ -6,12 +6,12 @@ import java.util.UUID;
 /**
  * Class to represent a group of players with a set of permissions and other attributes.
  */
-public class Group extends Document {
+public class GroupDocument extends Document {
     private String name, flair, flairColor;
     private int priority;
     private List<UUID> members;
     private List<String> mc_permissions;
-    private Cluster cluster;
+    private ClusterDocument cluster;
 
     /**
      * Get the group's name
@@ -127,7 +127,7 @@ public class Group extends Document {
      * @return
      */
     @Override
-    public Cluster getCluster() {
+    public ClusterDocument getCluster() {
         return cluster;
     }
 
@@ -136,7 +136,7 @@ public class Group extends Document {
      *
      * @param cluster
      */
-    public void setCluster(Cluster cluster) {
+    public void setCluster(ClusterDocument cluster) {
         this.cluster = cluster;
     }
 

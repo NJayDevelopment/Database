@@ -16,6 +16,77 @@ import java.util.Map;
  * Class to manage mulitple languages/encapsulate all configurable messages
  */
 public class LanguageFile {
+    // cache of all the language's messages
+    private final Map<String, String> messages = Maps.newHashMap();
+    // the enum of languages
+    private final LanguageEnum language;
+    public LanguageFile(LanguageEnum language) {
+        this.language = language;
+
+        try {
+            messages.clear();
+            List<String> lines = FileUtils.readLines(new File(DynamicDatabasePlugin.getInstance().getDataFolder(), language.getAbbreviation() + ".lang"));
+            for (String line : lines) {
+                String[] split = line.split("=");
+                messages.put(split[0], split[1]);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Gets the locale of a player
+     *
+     * @param p the player to get locale of
+     * @return the LanguageEnum option
+     */
+    public static LanguageEnum getLocale(Player p) {
+        try {
+            Object ep = getMethod("getHandle", p.getClass()).invoke(p, (Object[]) null);
+            Field f = ep.getClass().getDeclaredField("locale");
+            f.setAccessible(true);
+
+            String language = (String) f.get(ep);
+
+            LanguageEnum code = getByAbbreviation(language);
+            return code;
+        } catch (Exception exc) {
+            exc.printStackTrace();
+            return getByAbbreviation("en_CA");
+        }
+    }
+
+    // gets NMS method
+    private static Method getMethod(String name, Class<?> clazz) {
+        for (Method m : clazz.getDeclaredMethods()) {
+            if (m.getName().equals(name)) return m;
+        }
+        return null;
+    }
+
+    // gets a LanguageFile from LanguageEnum by it's abbreviation
+    public static LanguageEnum getByAbbreviation(String code) {
+        for (LanguageEnum l : LanguageEnum.values()) {
+            if (l.getAbbreviation().equalsIgnoreCase(code)) return l;
+        }
+        return LanguageEnum.ENGLISH;
+    }
+
+    /**
+     * Gets a message from a key, replacing {#} with an appropriate Object name
+     *
+     * @param key  name of the message
+     * @param args args to replace {#}'s with
+     * @return
+     */
+    public String get(String key, Object... args) {
+        String message = messages.containsKey(key) ? messages.get(key) : "No message found for '" + key + "'!";
+        for (int i = 0; i < args.length; i++)
+            message = message.replace("{" + i + "}", args[i].toString());
+        return message;
+    }
+
     /**
      * Enum holding a list of supported languages and their abbreviations
      */
@@ -56,78 +127,6 @@ public class LanguageFile {
         public String getAbbreviation() {
             return abbreviation;
         }
-    }
-
-    // cache of all the language's messages
-    private final Map<String, String> messages = Maps.newHashMap();
-    // the enum of languages
-    private final LanguageEnum language;
-
-    public LanguageFile(LanguageEnum language) {
-        this.language = language;
-
-        try {
-            messages.clear();
-            List<String> lines = FileUtils.readLines(new File(DynamicDatabasePlugin.getInstance().getDataFolder(), language.getAbbreviation() + ".lang"));
-            for (String line : lines) {
-                String[] split = line.split("=");
-                messages.put(split[0], split[1]);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Gets a message from a key, replacing {#} with an appropriate Object name
-     *
-     * @param key  name of the message
-     * @param args args to replace {#}'s with
-     * @return
-     */
-    public String get(String key, Object... args) {
-        String message = messages.containsKey(key) ? messages.get(key) : "No message found for '" + key + "'!";
-        for (int i = 0; i < args.length; i++)
-            message = message.replace("{" + i + "}", args[i].toString());
-        return message;
-    }
-
-    /**
-     * Gets the locale of a player
-     *
-     * @param p the player to get locale of
-     * @return the LanguageEnum option
-     */
-    public static LanguageEnum getLocale(Player p) {
-        try {
-            Object ep = getMethod("getHandle", p.getClass()).invoke(p, (Object[]) null);
-            Field f = ep.getClass().getDeclaredField("locale");
-            f.setAccessible(true);
-
-            String language = (String) f.get(ep);
-
-            LanguageEnum code = getByAbbreviation(language);
-            return code;
-        } catch (Exception exc) {
-            exc.printStackTrace();
-            return getByAbbreviation("en_CA");
-        }
-    }
-
-    // gets NMS method
-    private static Method getMethod(String name, Class<?> clazz) {
-        for (Method m : clazz.getDeclaredMethods()) {
-            if (m.getName().equals(name)) return m;
-        }
-        return null;
-    }
-
-    // gets a LanguageFile from LanguageEnum by it's abbreviation
-    public static LanguageEnum getByAbbreviation(String code) {
-        for (LanguageEnum l : LanguageEnum.values()) {
-            if (l.getAbbreviation().equalsIgnoreCase(code)) return l;
-        }
-        return LanguageEnum.ENGLISH;
     }
 
 }

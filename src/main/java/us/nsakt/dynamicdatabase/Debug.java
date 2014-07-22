@@ -15,26 +15,13 @@ import java.util.List;
  */
 public enum Debug {
     EXCEPTION("Exception"), GENERIC("Generic"), MORPHIA("Morphia"), UNSPECIFIED_OUT_DEBUGGING("System.out debug");
-
-    private static class Interceptor extends PrintStream {
-        public Interceptor(OutputStream out) {
-            super(out, true);
-        }
-
-        @Override
-        public void print(String s) {
-            if (s.startsWith("[DB] [Debug]")) super.print(s);
-            else {
-                Bukkit.getLogger().severe("The following debug does not have a DebugType, and is therefore UNSPECIFIED. Please investigate.");
-                Debug.UNSPECIFIED_OUT_DEBUGGING.debug(s);
-            }
-        }
-    }
-
-    public String channel = "none";
-    private static List<String> allowed = Lists.newArrayList();
-
     public static boolean PRINT_STACKTRACE = true;
+    private static List<String> allowed = Lists.newArrayList();
+    public String channel = "none";
+
+    Debug(String chn) {
+        this.channel = chn;
+    }
 
     public static void allow(Debug deb) {
         allow(deb.channel);
@@ -48,10 +35,6 @@ public enum Debug {
         PrintStream origOut = System.out;
         PrintStream interceptor = new Interceptor(origOut);
         System.setOut(interceptor);
-    }
-
-    Debug(String chn) {
-        this.channel = chn;
     }
 
     public void debug(Object obj) {
@@ -75,6 +58,21 @@ public enum Debug {
             }
         } catch (Exception e) {
             this.debug(e);
+        }
+    }
+
+    private static class Interceptor extends PrintStream {
+        public Interceptor(OutputStream out) {
+            super(out, true);
+        }
+
+        @Override
+        public void print(String s) {
+            if (s.startsWith("[DB] [Debug]")) super.print(s);
+            else {
+                Bukkit.getLogger().severe("The following debug does not have a DebugType, and is therefore UNSPECIFIED. Please investigate.");
+                Debug.UNSPECIFIED_OUT_DEBUGGING.debug(s);
+            }
         }
     }
 }

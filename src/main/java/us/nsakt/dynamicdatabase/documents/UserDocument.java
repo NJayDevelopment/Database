@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity("users")
-public class User extends Document {
+public class UserDocument extends Document {
 
     UUID uuid;
     Set<String> usernames;

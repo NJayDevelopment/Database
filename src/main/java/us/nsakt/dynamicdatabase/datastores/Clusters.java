@@ -1,14 +1,14 @@
-package us.nsakt.dynamicdatabase.util.clusters;
+package us.nsakt.dynamicdatabase.datastores;
 
 import org.mongodb.morphia.Datastore;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
-import us.nsakt.dynamicdatabase.documents.Cluster;
+import us.nsakt.dynamicdatabase.documents.ClusterDocument;
 import us.nsakt.dynamicdatabase.documents.Document;
 import us.nsakt.dynamicdatabase.util.Visibility;
 
-public class ClusterUtils {
+public class Clusters {
 
-    private static Datastore clustersDataStore = DynamicDatabasePlugin.getInstance().getDatastores().get(Cluster.class);
+    private static Datastore datastore = DynamicDatabasePlugin.getInstance().getDatastores().get(ClusterDocument.class);
 
     /**
      * Check if the documents are in the same cluster
@@ -28,7 +28,7 @@ public class ClusterUtils {
      * @return If the document is in the same cluster as the current server
      */
     public static boolean isSameAsServer(Document document) {
-        return isSameCluster(document, DynamicDatabasePlugin.getInstance().getCurrentServer().getCluster());
+        return isSameCluster(document, DynamicDatabasePlugin.getInstance().getCurrentServerDocument().getCluster());
     }
 
     /**
@@ -36,11 +36,15 @@ public class ClusterUtils {
      *
      * @return the default cluster
      */
-    public static Cluster createDefaultAllCkuster() {
-        Cluster cluster = new Cluster();
-        cluster.setName("all");
-        cluster.setVisibility(Visibility.PUBLIC);
-        clustersDataStore.save(cluster);
-        return cluster;
+    public static ClusterDocument createDefaultAllCkuster() {
+        ClusterDocument clusterDocument = new ClusterDocument();
+        clusterDocument.setName("all");
+        clusterDocument.setVisibility(Visibility.PUBLIC);
+        datastore.save(clusterDocument);
+        return clusterDocument;
+    }
+
+    public static Datastore getDatastore() {
+        return datastore;
     }
 }

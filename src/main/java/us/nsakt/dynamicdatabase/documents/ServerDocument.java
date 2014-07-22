@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity("servers")
-public class Server extends Document {
+public class ServerDocument extends Document {
     private String name, address, visibility, internalName, internalAddress;
-    private Cluster cluster;
+    private ClusterDocument cluster;
     private int port, internalPort, maxPlayers;
     private Duration upTime;
     private List<UUID> onlinePlayers;
@@ -136,7 +136,7 @@ public class Server extends Document {
      * @return
      */
     @Override
-    public Cluster getCluster() {
+    public ClusterDocument getCluster() {
         return cluster;
     }
 
@@ -145,7 +145,7 @@ public class Server extends Document {
      *
      * @param cluster
      */
-    public void setCluster(Cluster cluster) {
+    public void setCluster(ClusterDocument cluster) {
         this.cluster = cluster;
     }
 

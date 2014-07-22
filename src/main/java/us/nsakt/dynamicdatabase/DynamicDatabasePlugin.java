@@ -25,11 +25,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 import org.mongodb.morphia.mapping.DefaultCreator;
-import us.nsakt.dynamicdatabase.documents.Cluster;
+import us.nsakt.dynamicdatabase.documents.ClusterDocument;
 import us.nsakt.dynamicdatabase.documents.Document;
-import us.nsakt.dynamicdatabase.documents.Group;
-import us.nsakt.dynamicdatabase.documents.Server;
-import us.nsakt.dynamicdatabase.documents.User;
+import us.nsakt.dynamicdatabase.documents.GroupDocument;
+import us.nsakt.dynamicdatabase.documents.ServerDocument;
+import us.nsakt.dynamicdatabase.documents.UserDocument;
 import us.nsakt.dynamicdatabase.util.LanguageFile;
 
 import java.io.File;
@@ -51,7 +51,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
     private Map<Class<? extends Document>, Datastore> datastores = Maps.newHashMap();
     // The mainThread thread
     private Thread mainThread;
-    private Server currentServer;
+    private ServerDocument currentServerDocument;
 
     /**
      * Gets the Singleton instance of DynamicDatabasePlugin
@@ -85,9 +85,9 @@ public class DynamicDatabasePlugin extends JavaPlugin {
     }
 
     public void setupServer() {
-        Server server = getDatastores().get(Server.class).createQuery(Server.class).filter("_id", Config.Mongo.serverId).get();
-        if (server == null) Debug.MORPHIA.debug("Server not found in database!");
-        this.currentServer = server;
+        ServerDocument serverDocument = getDatastores().get(ServerDocument.class).createQuery(ServerDocument.class).filter("_id", Config.Mongo.serverId).get();
+        if (serverDocument == null) Debug.MORPHIA.debug("Server not found in database!");
+        this.currentServerDocument = serverDocument;
     }
 
     public void onDisable() {
@@ -143,7 +143,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
     //Initialize the morphia instance and handle any setup
     private void setupMorphia(MongoClient mongo) {
         Morphia morphia = new Morphia();
-        morphia.map(Cluster.class, Server.class, Group.class);
+        morphia.map(ClusterDocument.class, ServerDocument.class, GroupDocument.class);
         mainStore = morphia.createDatastore(mongo, Config.Mongo.database);
 
         fixClassLoader(morphia);
@@ -162,7 +162,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
 
     //Set up multiple databases
     private void setupDataStores(MongoClient mongo, Morphia morphia) {
-        List<Class<? extends Document>> documentsToLoad = Lists.newArrayList(Cluster.class, Group.class, Server.class, User.class);
+        List<Class<? extends Document>> documentsToLoad = Lists.newArrayList(ClusterDocument.class, GroupDocument.class, ServerDocument.class, UserDocument.class);
         for (Class<? extends Document> doc : documentsToLoad) {
             Datastore store = morphia.createDatastore(mongo, doc.getName() + "s");
             datastores.put(doc, store);
@@ -241,7 +241,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         return true;
     }
 
-    public Server getCurrentServer() {
-        return this.currentServer;
+    public ServerDocument getCurrentServerDocument() {
+        return this.currentServerDocument;
     }
 }

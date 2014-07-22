@@ -1,84 +1,88 @@
-package us.nsakt.dynamicdatabase.util.clusters;
+package us.nsakt.dynamicdatabase.datastores;
 
 import com.sk89q.minecraft.util.commands.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.mongodb.morphia.Datastore;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
-import us.nsakt.dynamicdatabase.documents.Server;
+import us.nsakt.dynamicdatabase.documents.ServerDocument;
 import us.nsakt.dynamicdatabase.util.Visibility;
 
 import java.util.UUID;
 
-public class ServerUtils {
+public class Servers {
 
-    private static Datastore serversDataStore = DynamicDatabasePlugin.getInstance().getDatastores().get(Server.class);
+    private static Datastore datastore = DynamicDatabasePlugin.getInstance().getDatastores().get(ServerDocument.class);
+
+    public static Datastore getDatastore() {
+        return datastore;
+    }
 
     /**
      * Adds a player to the online players list.
      *
-     * @param server Server to add the player to
+     * @param serverDocument Server to add the player to
      * @param player Player to be added
      */
-    public void addPlayerToOnline(Server server, UUID player) {
-        server.getOnlinePlayers().add(player);
+    public void addPlayerToOnline(ServerDocument serverDocument, UUID player) {
+        serverDocument.getOnlinePlayers().add(player);
     }
 
     /**
      * Remove a player from the online players list
      *
-     * @param server Server the player is leaving
+     * @param serverDocument Server the player is leaving
      * @param player Player to be removed
      */
-    public void removePlayerFromOnline(Server server, UUID player) {
-        server.getOnlinePlayers().remove(player);
+    public void removePlayerFromOnline(ServerDocument serverDocument, UUID player) {
+        serverDocument.getOnlinePlayers().remove(player);
     }
 
     /**
      * Check if a server is full
      *
-     * @param server Server to check
+     * @param serverDocument Server to check
      * @return If the server's max player limit is equal to or below the number of players online
      */
-    public boolean isFull(Server server) {
-        return server.getMaxPlayers() <= server.getOnlinePlayers().size();
+    public boolean isFull(ServerDocument serverDocument) {
+        return serverDocument.getMaxPlayers() <= serverDocument.getOnlinePlayers().size();
     }
 
     /**
      * Check if a server is online
      *
-     * @param server Server to check
+     * @param serverDocument Server to check
      * @return If the server is marked as online
      */
-    public boolean isOnline(Server server) {
-        return server.isOnline();
+    public boolean isOnline(ServerDocument serverDocument) {
+        return serverDocument.isOnline();
     }
 
     /**
      * Check if a server is public
      *
-     * @param server Server to check
+     * @param serverDocument Server to check
      * @return If the server is public
      */
-    public boolean isPublic(Server server) {
-        return server.getCluster().getVisibility().equals(Visibility.PUBLIC) && server.getVisibilityEnum().equals(Visibility.PUBLIC);
+    public boolean isPublic(ServerDocument serverDocument) {
+        return serverDocument.getCluster().getVisibility().equals(Visibility.PUBLIC) && serverDocument.getVisibilityEnum().equals(Visibility.PUBLIC);
     }
 
     /**
      * Check if a player has permission to see a server
      *
      * @param player          Player to check
-     * @param server          Server to check against
+     * @param serverDocument          Server to check against
      * @param providingPlugin Plugin that provides the servers (for permissions)
      * @return If the player can see the server
      */
-    public boolean canSee(Player player, Server server, Plugin providingPlugin) {
+    public boolean canSee(Player player, ServerDocument serverDocument, Plugin providingPlugin) {
         return (
                 player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.see.all") ||
                         player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.types.see.all") ||
-                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.types.see." + server.getVisibility().toLowerCase()) ||
-                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.see." + server.getName().toLowerCase()) ||
-                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.clusters.see." + server.getCluster().getName().toLowerCase()) ||
+                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.types.see." + serverDocument.getVisibility().toLowerCase()) ||
+                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.see." + serverDocument.getName().toLowerCase()) ||
+                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.clusters.see." + serverDocument.getCluster().getName().toLowerCase()) ||
                         player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.clusters.see.all")
         );
     }
@@ -87,17 +91,17 @@ public class ServerUtils {
      * Check if a player has permission to join a server
      *
      * @param player          Player to check
-     * @param server          Server to check against
+     * @param serverDocument          Server to check against
      * @param providingPlugin Plugin that provides the servers (for permissions)
      * @return If the player can join the server
      */
-    public boolean canJoin(Player player, Server server, Plugin providingPlugin) {
+    public boolean canJoin(Player player, ServerDocument serverDocument, Plugin providingPlugin) {
         return (
                 player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.join.all") ||
                         player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.types.join.all") ||
-                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.types.join." + server.getVisibility().toLowerCase()) ||
-                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.join." + server.getName().toLowerCase()) ||
-                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.clusters.join." + server.getCluster().getName().toLowerCase()) ||
+                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.types.join." + serverDocument.getVisibility().toLowerCase()) ||
+                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.join." + serverDocument.getName().toLowerCase()) ||
+                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.clusters.join." + serverDocument.getCluster().getName().toLowerCase()) ||
                         player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.clusters.join.all")
         );
     }
