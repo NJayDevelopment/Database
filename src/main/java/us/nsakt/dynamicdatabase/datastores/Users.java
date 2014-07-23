@@ -19,6 +19,7 @@ public class Users {
 
     /**
      * Get the datastore that links to the users database.
+     *
      * @return the datastore that links to the users database.
      */
     public static Datastore getDatastore() {
@@ -27,8 +28,9 @@ public class Users {
 
     /**
      * Get all users who have logged in with that username
+     *
      * @param username Username to look for
-     * @param limit Limit of how many should be returned
+     * @param limit    Limit of how many should be returned
      * @return all users who have logged in with that username
      */
     public static List<UserDocument> getAllMatchingUsers(String username, @Nullable Integer limit) {
@@ -37,6 +39,7 @@ public class Users {
 
     /**
      * See if a user is in the database
+     *
      * @param uuid UUID to look for
      * @return If the user exists
      */
@@ -48,7 +51,8 @@ public class Users {
 
     /**
      * Create a new user in the database
-     * @param player Player to pull information from
+     *
+     * @param player     Player to pull information from
      * @param fistSignIn Optional first sign in date
      */
     public static void createUser(Player player, @Nullable Date fistSignIn) {
@@ -64,11 +68,12 @@ public class Users {
 
     /**
      * Update a user's stats on a PlayerLoginEvent
+     *
      * @param event the PlayerLoginEvent
      */
     public void updateUserFromEvent(PlayerLoginEvent event) {
         UUID query = event.getPlayer().getUniqueId();
-        UserDocument result =  datastore.find(UserDocument.class).field("UUID").equal(query).get();
+        UserDocument result = datastore.find(UserDocument.class).field("UUID").equal(query).get();
         if (result == null) return;
         UpdateOperations<UserDocument> updates = datastore.createUpdateOperations(UserDocument.class);
         updates.inc("McSignIns");

@@ -22,7 +22,7 @@ public class Groups {
      * Check if a group's members contains a UUID
      *
      * @param groupDocument Group to look in
-     * @param uuid  UUID to search for
+     * @param uuid          UUID to search for
      * @return If the UUID was in the group
      */
     public static boolean isInGroup(GroupDocument groupDocument, UUID uuid) {
@@ -112,8 +112,8 @@ public class Groups {
     /**
      * Add a player to a group, then recalculate the player's permissions
      *
-     * @param player Player to be added
-     * @param groupDocument  Group to add the player to
+     * @param player        Player to be added
+     * @param groupDocument Group to add the player to
      */
     public static void addPlayerToGroupAndRecalculate(Player player, GroupDocument groupDocument) {
         groupDocument.getMembers().add(player.getUniqueId());
@@ -124,8 +124,8 @@ public class Groups {
     /**
      * Remove a player from a group, then recalculate the player's permissions
      *
-     * @param player Player to be removed
-     * @param groupDocument  Group to remove the player from
+     * @param player        Player to be removed
+     * @param groupDocument Group to remove the player from
      */
     public static void removePlayerFromGroupAndRecalculate(Player player, GroupDocument groupDocument) {
         groupDocument.getMembers().remove(player.getUniqueId());
