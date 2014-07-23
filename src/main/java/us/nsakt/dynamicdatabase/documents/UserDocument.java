@@ -3,14 +3,14 @@ package us.nsakt.dynamicdatabase.documents;
 import org.mongodb.morphia.annotations.Entity;
 
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 @Entity("users")
 public class UserDocument extends Document {
 
     UUID uuid;
-    Set<String> usernames;
+    List<String> usernames;
     String lastUsername, email, lastSignInIp;
     int mcSignIns;
     Date lastSignIn, firstSignIn;
@@ -23,11 +23,11 @@ public class UserDocument extends Document {
         this.uuid = uuid;
     }
 
-    public Set<String> getUsernames() {
+    public List<String> getUsernames() {
         return usernames;
     }
 
-    public void setUsernames(Set<String> usernames) {
+    public void setUsernames(List<String> usernames) {
         this.usernames = usernames;
     }
 
