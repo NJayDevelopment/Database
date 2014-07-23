@@ -1,7 +1,6 @@
 package us.nsakt.dynamicdatabase.documents;
 
 import org.mongodb.morphia.annotations.Entity;
-import us.nsakt.dynamicdatabase.util.Visibility;
 
 /**
  * Class to represent a "cluster" of documents.
@@ -9,7 +8,7 @@ import us.nsakt.dynamicdatabase.util.Visibility;
 @Entity("clusters")
 public class ClusterDocument extends Document {
     private String name;
-    private Visibility visibility;
+    private String visibility;
 
     /**
      * Get the cluster's name
@@ -34,7 +33,7 @@ public class ClusterDocument extends Document {
      *
      * @return
      */
-    public Visibility getVisibility() {
+    public String getVisibility() {
         return visibility;
     }
 
@@ -43,7 +42,7 @@ public class ClusterDocument extends Document {
      *
      * @param visibility
      */
-    public void setVisibility(Visibility visibility) {
+    public void setVisibility(String visibility) {
         this.visibility = visibility;
     }
 
@@ -58,5 +57,17 @@ public class ClusterDocument extends Document {
     @Override
     public ClusterDocument getCluster() {
         return this;
+    }
+
+    protected enum MongoFields {
+        id("_id"),
+        NAME("name"),
+        VISIBILITY("visibility");
+
+        public String fieldName;
+
+        MongoFields(String fieldName) {
+            this.fieldName = fieldName;
+        }
     }
 }

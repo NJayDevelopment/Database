@@ -20,6 +20,7 @@ public class LanguageFile {
     private final Map<String, String> messages = Maps.newHashMap();
     // the enum of languages
     private final LanguageEnum language;
+
     public LanguageFile(LanguageEnum language) {
         this.language = language;
 

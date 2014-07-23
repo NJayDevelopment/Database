@@ -2,6 +2,7 @@ package us.nsakt.dynamicdatabase.documents;
 
 import org.joda.time.Duration;
 import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Property;
 import org.mongodb.morphia.annotations.Transient;
 import us.nsakt.dynamicdatabase.util.Visibility;
 
@@ -10,14 +11,34 @@ import java.util.UUID;
 
 @Entity("servers")
 public class ServerDocument extends Document {
-    private String name, address, visibility, internalName, internalAddress;
+
+    private String name;
+    private String address;
+    private String visibility;
+
+    @Property("internal_name")
+    private String internalName;
+
+    @Property("internal_address")
+    private String internalAddress;
+
     private ClusterDocument cluster;
-    private int port, internalPort, maxPlayers;
-    private Duration upTime;
+    private int port;
+
+    @Property("internal_port")
+    private int internalPort;
+
+    @Property("max_players")
+    private int maxPlayers;
+
+    private Duration uptime;
+
+    @Property("online_players")
     private List<UUID> onlinePlayers;
+
     private boolean online;
+
     @Transient private Visibility visibilityEnum;
-    //Internal things (for backend)
 
     /**
      * Get the server's private name for internal operations
@@ -73,8 +94,6 @@ public class ServerDocument extends Document {
         this.internalPort = internalPort;
     }
 
-    //Public things
-
     /**
      * Get the server's display name
      *
@@ -83,6 +102,8 @@ public class ServerDocument extends Document {
     public String getName() {
         return name;
     }
+
+    //Public things
 
     /**
      * Set the server's display name
@@ -190,17 +211,17 @@ public class ServerDocument extends Document {
      *
      * @return
      */
-    public Duration getUpTime() {
-        return upTime;
+    public Duration getUptime() {
+        return uptime;
     }
 
     /**
      * Set the server's up time since last boot
      *
-     * @param upTime
+     * @param uptime
      */
-    public void setUpTime(Duration upTime) {
-        this.upTime = upTime;
+    public void setUptime(Duration uptime) {
+        this.uptime = uptime;
     }
 
     /**
@@ -247,8 +268,29 @@ public class ServerDocument extends Document {
                 ", cluster=" + cluster +
                 ", port=" + port +
                 ", maxPlayers=" + maxPlayers +
-                ", upTime=" + upTime +
+                ", uptime=" + uptime +
                 ", onlinePlayers=" + onlinePlayers +
                 '}';
+    }
+
+    public enum MongoFields {
+        id("_id"),
+        NAME("name"),
+        ADDRESS("address"),
+        VISIBILITY("visibility"),
+        INTERNAL_NAME("internal_name"),
+        INTERNAL_ADDRESS("internal_address"),
+        CLUSTER("cluster"),
+        PORT("port"),
+        INTERNAL_PORT("internal_port"),
+        UPTIME("uptime"),
+        ONLINE_PLAYERS("online_players"),
+        ONLINE("online");
+
+        public String fieldName;
+
+        MongoFields(String fieldName) {
+            this.fieldName = fieldName;
+        }
     }
 }

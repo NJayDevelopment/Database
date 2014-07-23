@@ -37,7 +37,7 @@ public class Groups {
      */
     public static List<GroupDocument> getAllGroups(UUID uuid) {
         List<GroupDocument> groupDocuments = Lists.newArrayList();
-        groupDocuments = datastore.find(GroupDocument.class).field("members").contains(uuid.toString()).order("priority").asList();
+        groupDocuments = datastore.find(GroupDocument.class).field(GroupDocument.MongoFields.MEMBERS.fieldName).contains(uuid.toString()).order(GroupDocument.MongoFields.PRIORITY.fieldName).asList();
         return groupDocuments;
     }
 
@@ -49,7 +49,7 @@ public class Groups {
      */
     public static HashMap<Permission, Boolean> getGroupPermissions(GroupDocument groupDocument) {
         HashMap<Permission, Boolean> formattedPermissions = Maps.newHashMap();
-        List<String> stringPerms = groupDocument.getMc_permissions();
+        List<String> stringPerms = groupDocument.getMcPermissions();
         for (String permission : stringPerms) {
             if (permission.startsWith("#")) continue; // We can have comments in the permissions field. Yay!
             boolean add = !permission.startsWith("-");
@@ -79,7 +79,7 @@ public class Groups {
      * @return a UUID's highest priority group
      */
     public static GroupDocument getHighestPriorityGroup(UUID uuid) {
-        return datastore.find(GroupDocument.class).field("members").contains(uuid.toString()).order("priority").limit(1).get();
+        return datastore.find(GroupDocument.class).field(GroupDocument.MongoFields.MEMBERS.fieldName).contains(uuid.toString()).order(GroupDocument.MongoFields.PRIORITY.fieldName).limit(1).get();
     }
 
     /**
@@ -89,7 +89,7 @@ public class Groups {
      * @return all groups lower in priority than the group
      */
     public static List<GroupDocument> getLowerGroups(GroupDocument groupDocument) {
-        return datastore.find(GroupDocument.class).field("priority").lessThanOrEq(groupDocument.getPriority()).asList();
+        return datastore.find(GroupDocument.class).field(GroupDocument.MongoFields.PRIORITY.fieldName).lessThanOrEq(groupDocument.getPriority()).asList();
     }
 
     // ----------- Tasks -----------
@@ -141,7 +141,7 @@ public class Groups {
         groupDocument.setCluster(Clusters.createDefaultAllCkuster());
         groupDocument.setName("default");
         groupDocument.setPriority(0);
-        groupDocument.setMc_permissions(Lists.newArrayList(
+        groupDocument.setMcPermissions(Lists.newArrayList(
                 "#Hi, this is the default group created by DynamicDatabase",
                 "#All players will be in this group",
                 "#If this group is deleted, it will be re-created",

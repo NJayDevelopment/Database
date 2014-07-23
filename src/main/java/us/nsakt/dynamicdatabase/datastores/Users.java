@@ -32,7 +32,7 @@ public class Users {
      * @return all users who have logged in with that username
      */
     public static List<UserDocument> getAllMatchingUsers(String username, @Nullable Integer limit) {
-        return datastore.find(UserDocument.class).field("usernames").contains(username).limit((limit != null)? limit : 10000000).asList();
+        return datastore.find(UserDocument.class).field(UserDocument.MongoFields.USERNAMES.fieldName).contains(username).limit((limit != null) ? limit : 10000000).asList();
     }
 
     /**
@@ -41,7 +41,7 @@ public class Users {
      * @return If the user exists
      */
     public static boolean exists(UUID uuid) {
-        return datastore.find(UserDocument.class).field("UUID").equal(uuid).get() != null;
+        return datastore.find(UserDocument.class).field(UserDocument.MongoFields.UUID.fieldName).equal(uuid).get() != null;
     }
 
     // ----------- Tasks -----------

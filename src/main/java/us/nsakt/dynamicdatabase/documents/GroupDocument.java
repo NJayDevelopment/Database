@@ -1,5 +1,7 @@
 package us.nsakt.dynamicdatabase.documents;
 
+import org.mongodb.morphia.annotations.Property;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -7,10 +9,19 @@ import java.util.UUID;
  * Class to represent a group of players with a set of permissions and other attributes.
  */
 public class GroupDocument extends Document {
-    private String name, flair, flairColor;
+
+    private String name;
+    private String flair;
+
+    @Property("flair_color")
+    private String flairColor;
+
     private int priority;
     private List<UUID> members;
-    private List<String> mc_permissions;
+
+    @Property("mc_permissions")
+    private List<String> mcPermissions;
+
     private ClusterDocument cluster;
 
     /**
@@ -108,17 +119,17 @@ public class GroupDocument extends Document {
      *
      * @return
      */
-    public List<String> getMc_permissions() {
-        return mc_permissions;
+    public List<String> getMcPermissions() {
+        return mcPermissions;
     }
 
     /**
      * Set the group's minecraft permissions
      *
-     * @param mc_permissions
+     * @param mcPermissions
      */
-    public void setMc_permissions(List<String> mc_permissions) {
-        this.mc_permissions = mc_permissions;
+    public void setMcPermissions(List<String> mcPermissions) {
+        this.mcPermissions = mcPermissions;
     }
 
     /**
@@ -148,8 +159,25 @@ public class GroupDocument extends Document {
                 ", flairColor='" + flairColor + '\'' +
                 ", priority=" + priority +
                 ", members=" + members +
-                ", mc_permissions=" + mc_permissions +
+                ", mcPermissions=" + mcPermissions +
                 ", cluster=" + cluster +
                 '}';
+    }
+
+    public enum MongoFields {
+        id("_id"),
+        NAME("name"),
+        FLAIR("flair"),
+        FLAIR_COLOR("flair_color"),
+        PRIORITY("priority"),
+        MEMBERS("members"),
+        MC_PERMISSIONS("mc_permissions"),
+        CLUSTER("cluster");
+
+        public String fieldName;
+
+        MongoFields(String fieldName) {
+            this.fieldName = fieldName;
+        }
     }
 }

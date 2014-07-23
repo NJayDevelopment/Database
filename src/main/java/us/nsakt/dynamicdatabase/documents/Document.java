@@ -53,4 +53,14 @@ public abstract class Document {
     public ClusterDocument getCluster() {
         return null;
     }
+
+    public enum MongoFields {
+        id("_id");
+
+        public String fieldName;
+
+        MongoFields(String fieldName) {
+            this.fieldName = fieldName;
+        }
+    }
 }

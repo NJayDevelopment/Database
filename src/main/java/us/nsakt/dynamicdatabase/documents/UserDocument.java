@@ -1,6 +1,7 @@
 package us.nsakt.dynamicdatabase.documents;
 
 import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Property;
 
 import java.util.Date;
 import java.util.List;
@@ -10,10 +11,25 @@ import java.util.UUID;
 public class UserDocument extends Document {
 
     UUID uuid;
+
     List<String> usernames;
-    String lastUsername, email, lastSignInIp;
+
+    @Property("last_username")
+    String lastUsername;
+
+    String email;
+
+    @Property("last_sign_in_ip")
+    String lastSignInIp;
+
+    @Property("mc_sign_ins")
     int mcSignIns;
-    Date lastSignIn, firstSignIn;
+
+    @Property("last_sign_in")
+    Date lastSignIn;
+
+    @Property("first_sign_in")
+    Date firstSignIn;
 
     public UUID getUuid() {
         return uuid;
@@ -77,5 +93,23 @@ public class UserDocument extends Document {
 
     public void setFirstSignIn(Date firstSignIn) {
         this.firstSignIn = firstSignIn;
+    }
+
+    public enum MongoFields {
+        id("_id"),
+        UUID("uuid"),
+        USERNAMES("usernames"),
+        LAST_USERNAME("last_username"),
+        EMAIL("email"),
+        LAST_SIGN_IN_IP("last_sign_in_ip"),
+        MC_SIGN_INS("mc_sign_ins"),
+        LAST_SIGN_IN("last_sign_in"),
+        FIRST_SIGN_IN("first_sign_in");
+
+        public String fieldName;
+
+        MongoFields(String fieldName) {
+            this.fieldName = fieldName;
+        }
     }
 }

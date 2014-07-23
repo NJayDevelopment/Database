@@ -22,7 +22,7 @@ public class Servers {
      * Adds a player to the online players list.
      *
      * @param serverDocument Server to add the player to
-     * @param player Player to be added
+     * @param player         Player to be added
      */
     public void addPlayerToOnline(ServerDocument serverDocument, UUID player) {
         serverDocument.getOnlinePlayers().add(player);
@@ -32,7 +32,7 @@ public class Servers {
      * Remove a player from the online players list
      *
      * @param serverDocument Server the player is leaving
-     * @param player Player to be removed
+     * @param player         Player to be removed
      */
     public void removePlayerFromOnline(ServerDocument serverDocument, UUID player) {
         serverDocument.getOnlinePlayers().remove(player);
@@ -72,7 +72,7 @@ public class Servers {
      * Check if a player has permission to see a server
      *
      * @param player          Player to check
-     * @param serverDocument          Server to check against
+     * @param serverDocument  Server to check against
      * @param providingPlugin Plugin that provides the servers (for permissions)
      * @return If the player can see the server
      */
@@ -91,7 +91,7 @@ public class Servers {
      * Check if a player has permission to join a server
      *
      * @param player          Player to check
-     * @param serverDocument          Server to check against
+     * @param serverDocument  Server to check against
      * @param providingPlugin Plugin that provides the servers (for permissions)
      * @return If the player can join the server
      */
