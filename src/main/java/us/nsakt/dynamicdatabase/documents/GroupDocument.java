@@ -154,13 +154,13 @@ public class GroupDocument extends Document {
     @Override
     public String toString() {
         return "Group{" +
-                "name='" + name + '\'' +
-                ", flair='" + flair + '\'' +
-                ", flairColor='" + flairColor + '\'' +
-                ", priority=" + priority +
-                ", members=" + members +
-                ", mcPermissions=" + mcPermissions +
-                ", cluster=" + cluster +
+                "name='" + getName() + '\'' +
+                ", flair='" + getFlair() + '\'' +
+                ", flairColor='" + getFlairColor() + '\'' +
+                ", priority=" + getPriority() +
+                ", members=" + getMembers() +
+                ", mcPermissions=" + getMcPermissions() +
+                ", cluster=" + getCluster() +
                 '}';
     }
 

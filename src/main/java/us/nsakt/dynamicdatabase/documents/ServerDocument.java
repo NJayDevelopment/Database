@@ -148,7 +148,7 @@ public class ServerDocument extends Document {
      */
     public void setVisibility(String visibility) {
         this.visibility = visibility;
-        this.visibilityEnum = Visibility.valueOf(visibility);
+        this.setVisibilityEnum(Visibility.valueOf(visibility));
     }
 
     /**
@@ -256,20 +256,20 @@ public class ServerDocument extends Document {
 
     public void setVisibilityEnum(Visibility visibilityEnum) {
         this.visibilityEnum = visibilityEnum;
-        this.visibility = visibilityEnum.dbName;
+        this.setVisibility(visibilityEnum.dbName);
     }
 
     @Override
     public String toString() {
         return "Server{" +
-                "name='" + name + '\'' +
-                ", address='" + address + '\'' +
-                ", visibility='" + visibility + '\'' +
-                ", cluster=" + cluster +
-                ", port=" + port +
-                ", maxPlayers=" + maxPlayers +
-                ", uptime=" + uptime +
-                ", onlinePlayers=" + onlinePlayers +
+                "name='" + getName() + '\'' +
+                ", address='" + getAddress() + '\'' +
+                ", visibility='" + getVisibility() + '\'' +
+                ", cluster=" + getCluster() +
+                ", port=" + getPort() +
+                ", maxPlayers=" + getMaxPlayers() +
+                ", uptime=" + getUptime() +
+                ", onlinePlayers=" + getOnlinePlayers() +
                 '}';
     }
 

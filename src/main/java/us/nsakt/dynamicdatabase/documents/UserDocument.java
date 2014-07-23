@@ -10,25 +10,25 @@ import java.util.UUID;
 @Entity("users")
 public class UserDocument extends Document {
 
-    UUID uuid;
+    private UUID uuid;
 
-    List<String> usernames;
+    private List<String> usernames;
 
-    @Property("last_username")
+    @Property("last_username") private
     String lastUsername;
 
-    String email;
+    private String email;
 
-    @Property("last_sign_in_ip")
+    @Property("last_sign_in_ip") private
     String lastSignInIp;
 
-    @Property("mc_sign_ins")
+    @Property("mc_sign_ins") private
     int mcSignIns;
 
-    @Property("last_sign_in")
+    @Property("last_sign_in") private
     Date lastSignIn;
 
-    @Property("first_sign_in")
+    @Property("first_sign_in") private
     Date firstSignIn;
 
     public UUID getUuid() {
