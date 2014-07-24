@@ -2,6 +2,7 @@ package us.nsakt.dynamicdatabase.documents;
 
 import org.joda.time.Duration;
 import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Reference;
 
 import java.util.Date;
 import java.util.UUID;
@@ -12,8 +13,12 @@ public class PunishmentDocument extends Document {
     private UUID punisher;
     private UUID punished;
     private String reason;
+    @Reference
     private ServerDocument server;
+
     private PunishmentType type;
+
+    @Reference
     private ClusterDocument cluster;
     private boolean active;
     private boolean appealable;

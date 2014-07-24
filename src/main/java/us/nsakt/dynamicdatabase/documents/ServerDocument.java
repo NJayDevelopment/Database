@@ -3,6 +3,7 @@ package us.nsakt.dynamicdatabase.documents;
 import org.joda.time.Duration;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
+import org.mongodb.morphia.annotations.Reference;
 import org.mongodb.morphia.annotations.Transient;
 import us.nsakt.dynamicdatabase.util.Visibility;
 
@@ -22,7 +23,9 @@ public class ServerDocument extends Document {
     @Property("internal_address")
     private String internalAddress;
 
+    @Reference
     private ClusterDocument cluster;
+
     private int port;
 
     @Property("internal_port")

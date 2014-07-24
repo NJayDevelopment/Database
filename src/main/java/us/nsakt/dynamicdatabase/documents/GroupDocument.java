@@ -1,6 +1,7 @@
 package us.nsakt.dynamicdatabase.documents;
 
 import org.mongodb.morphia.annotations.Property;
+import org.mongodb.morphia.annotations.Reference;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +23,7 @@ public class GroupDocument extends Document {
     @Property("mc_permissions")
     private List<String> mcPermissions;
 
+    @Reference
     private ClusterDocument cluster;
 
     /**
