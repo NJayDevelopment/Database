@@ -8,8 +8,17 @@ import us.nsakt.dynamicdatabase.documents.PunishmentDocument;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Data access object to represent the punishments datastore.
+ */
 public class Punishments extends BasicDAO<PunishmentDocument, ObjectId> {
 
+    /**
+     * Constructor
+     *
+     * @param document  Document class to represent
+     * @param datastore Datastore that contains the objects
+     */
     public Punishments(Class<PunishmentDocument> document, Datastore datastore) {
         super(document, datastore);
     }

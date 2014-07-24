@@ -13,10 +13,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Different tasks for working with groups.
+ */
 public class GroupTasks {
 
     Groups groups = new Groups(GroupDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(GroupDocument.class));
 
+    /**
+     * Get the document's relative data access object.
+     *
+     * @return the document's relative data access object.
+     */
     private Groups getDao() {
         return groups;
     }

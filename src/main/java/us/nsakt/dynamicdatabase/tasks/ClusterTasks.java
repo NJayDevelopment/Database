@@ -7,10 +7,18 @@ import us.nsakt.dynamicdatabase.documents.ClusterDocument;
 import us.nsakt.dynamicdatabase.tasks.runners.ClusterTask;
 import us.nsakt.dynamicdatabase.util.Visibility;
 
+/**
+ * Different tasks for working with clusters.
+ */
 public class ClusterTasks {
 
     Clusters clusters = new Clusters(ClusterDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(ClusterDocument.class));
 
+    /**
+     * Get the document's relative data access object.
+     *
+     * @return the document's relative data access object.
+     */
     private Clusters getDao() {
         return clusters;
     }

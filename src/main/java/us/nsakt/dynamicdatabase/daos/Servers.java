@@ -11,8 +11,17 @@ import us.nsakt.dynamicdatabase.documents.ServerDocument;
 
 import java.util.List;
 
+/**
+ * Data access object to represent the servers datastore.
+ */
 public class Servers extends BasicDAO<ServerDocument, ObjectId> {
 
+    /**
+     * Constructor
+     *
+     * @param document  Document class to represent
+     * @param datastore Datastore that contains the objects
+     */
     public Servers(Class<ServerDocument> document, Datastore datastore) {
         super(document, datastore);
     }

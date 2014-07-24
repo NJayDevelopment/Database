@@ -12,8 +12,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Data access object to represent the groups datastore
+ */
 public class Groups extends BasicDAO<GroupDocument, ObjectId> {
 
+    /**
+     * Constructor
+     *
+     * @param document  Document class to represent
+     * @param datastore Datastore that contains the objects
+     */
     public Groups(Class<GroupDocument> document, Datastore datastore) {
         super(document, datastore);
     }

@@ -3,6 +3,7 @@ package us.nsakt.dynamicdatabase.documents;
 import com.google.common.collect.Maps;
 import org.bukkit.permissions.Permission;
 import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
 import org.mongodb.morphia.annotations.Reference;
 
@@ -13,6 +14,7 @@ import java.util.UUID;
 /**
  * Class to represent a group of players with a set of permissions and other attributes.
  */
+@Entity("groups")
 public class GroupDocument extends Document {
 
     private String name;

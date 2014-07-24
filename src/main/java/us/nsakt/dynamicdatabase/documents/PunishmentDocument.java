@@ -7,6 +7,9 @@ import org.mongodb.morphia.annotations.Reference;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * Class to represent a punishment to a user.
+ */
 @Entity("punishments")
 public class PunishmentDocument extends Document {
 

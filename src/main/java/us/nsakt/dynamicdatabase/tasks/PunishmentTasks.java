@@ -10,10 +10,18 @@ import us.nsakt.dynamicdatabase.tasks.runners.PunishmentTask;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Different tasks for working with punishments.
+ */
 public class PunishmentTasks {
 
     Punishments punishments = new Punishments(PunishmentDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(PunishmentDocument.class));
 
+    /**
+     * Get the document's relative data access object.
+     *
+     * @return the document's relative data access object.
+     */
     private Punishments getDao() {
         return punishments;
     }

@@ -7,6 +7,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Class to represent a user.
+ */
 @Entity("users")
 public class UserDocument extends Document {
 

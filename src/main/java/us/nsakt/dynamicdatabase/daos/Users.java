@@ -9,8 +9,17 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Data access object to represent the users datastore.
+ */
 public class Users extends BasicDAO<UserDocument, ObjectId> {
 
+    /**
+     * Constructor
+     *
+     * @param document  Document class to represent
+     * @param datastore Datastore that contains the objects
+     */
     public Users(Class<UserDocument> document, Datastore datastore) {
         super(document, datastore);
     }

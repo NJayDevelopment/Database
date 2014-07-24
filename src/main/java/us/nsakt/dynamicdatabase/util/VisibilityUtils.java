@@ -3,8 +3,10 @@ package us.nsakt.dynamicdatabase.util;
 import com.sk89q.minecraft.util.commands.ChatColor;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
 
+/**
+ * Utilities to handle working with Visibilities
+ */
 public class VisibilityUtils {
-
 
     /**
      * Returns a ChatColor corresponding to a visibility

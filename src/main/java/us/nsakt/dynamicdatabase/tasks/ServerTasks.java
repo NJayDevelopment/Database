@@ -8,10 +8,18 @@ import us.nsakt.dynamicdatabase.tasks.runners.ServerTask;
 
 import java.util.UUID;
 
+/**
+ * Different tasks for working with servers.
+ */
 public class ServerTasks {
 
     Servers servers = new Servers(ServerDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(ServerDocument.class));
 
+    /**
+     * Get the document's relative data access object.
+     *
+     * @return the document's relative data access object.
+     */
     private Servers getDao() {
         return servers;
     }
