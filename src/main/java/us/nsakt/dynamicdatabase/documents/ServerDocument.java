@@ -1,5 +1,7 @@
 package us.nsakt.dynamicdatabase.documents;
 
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.joda.time.Duration;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
@@ -245,14 +247,6 @@ public class ServerDocument extends Document {
         this.onlinePlayers = onlinePlayers;
     }
 
-    public boolean isOnline() {
-        return online;
-    }
-
-    public void setOnline(boolean online) {
-        this.online = online;
-    }
-
     public Visibility getVisibilityEnum() {
         return visibilityEnum;
     }
@@ -274,6 +268,73 @@ public class ServerDocument extends Document {
                 ", uptime=" + getUptime() +
                 ", onlinePlayers=" + getOnlinePlayers() +
                 '}';
+    }
+
+    /**
+     * Check if a server is full
+     *
+     * @return If the server's max player limit is equal to or below the number of players online
+     */
+    public boolean isFull() {
+        return this.getMaxPlayers() <= this.getOnlinePlayers().size();
+    }
+
+    /**
+     * Check if a server is online
+     *
+     * @return If the server is marked as online
+     */
+    public boolean isOnline() {
+        return this.online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
+    }
+
+    /**
+     * Check if a server is public
+     *
+     * @return If the server is public
+     */
+    public boolean isPublic() {
+        return this.getCluster().getVisibility().equals(Visibility.PUBLIC) && this.getVisibilityEnum().equals(Visibility.PUBLIC);
+    }
+
+    /**
+     * Check if a player has permission to see a server
+     *
+     * @param player          Player to check
+     * @param providingPlugin Plugin that provides the servers (for permissions)
+     * @return If the player can see the server
+     */
+    public boolean canSee(Player player, Plugin providingPlugin) {
+        return (
+                player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.see.all") ||
+                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.types.see.all") ||
+                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.types.see." + this.getVisibility().toLowerCase()) ||
+                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.see." + this.getName().toLowerCase()) ||
+                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.clusters.see." + this.getCluster().getName().toLowerCase()) ||
+                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.clusters.see.all")
+        );
+    }
+
+    /**
+     * Check if a player has permission to join a server
+     *
+     * @param player          Player to check
+     * @param providingPlugin Plugin that provides the servers (for permissions)
+     * @return If the player can join the server
+     */
+    public boolean canJoin(Player player, Plugin providingPlugin) {
+        return (
+                player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.join.all") ||
+                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.types.join.all") ||
+                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.types.join." + this.getVisibility().toLowerCase()) ||
+                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.join." + this.getName().toLowerCase()) ||
+                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.clusters.join." + this.getCluster().getName().toLowerCase()) ||
+                        player.hasPermission(providingPlugin.getName().toLowerCase() + ".servers.clusters.join.all")
+        );
     }
 
     public enum MongoFields {
