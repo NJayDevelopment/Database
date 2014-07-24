@@ -76,11 +76,11 @@ public class Users {
         UserDocument result = datastore.find(UserDocument.class).field("UUID").equal(query).get();
         if (result == null) return;
         UpdateOperations<UserDocument> updates = datastore.createUpdateOperations(UserDocument.class);
-        updates.inc("McSignIns");
-        updates.set("lastUsername", event.getPlayer().getName());
-        updates.add("usernames", event.getPlayer().getName());
-        updates.set("lastSignInIp", event.getAddress().getAddress());
-        updates.set("lastSignInAt", new Date());
+        updates.inc(UserDocument.MongoFields.MC_SIGN_INS.fieldName);
+        updates.set(UserDocument.MongoFields.LAST_USERNAME.fieldName, event.getPlayer().getName());
+        updates.add(UserDocument.MongoFields.USERNAMES.fieldName, event.getPlayer().getName());
+        updates.set(UserDocument.MongoFields.LAST_SIGN_IN_IP.fieldName, event.getAddress().getAddress());
+        updates.set(UserDocument.MongoFields.LAST_SIGN_IN.fieldName, new Date());
         datastore.update(result, updates);
     }
 }
