@@ -143,7 +143,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
     //Initialize the morphia instance and handle any setup
     private void setupMorphia(MongoClient mongo) {
         Morphia morphia = new Morphia();
-        morphia.map(ClusterDocument.class, ServerDocument.class, GroupDocument.class);
+        morphia.mapPackage("us.nsakt.dynamicdatabase.documents", true);
         mainStore = morphia.createDatastore(mongo, Config.Mongo.database);
 
         fixClassLoader(morphia);
