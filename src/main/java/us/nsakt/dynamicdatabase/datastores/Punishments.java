@@ -42,7 +42,7 @@ public class Punishments {
      * This will take into account a user's other punishments and issue an appropriate punishment based on history.
      * This will either produce a kick, ban, or permanent ban.
      * The default ban time is 10 days.
-     * This will also save the document
+     * This will also save the document.
      *
      * @param uuid               UUID to punish
      * @param punishmentDocument Already generated document to set the type and expiration date for.
