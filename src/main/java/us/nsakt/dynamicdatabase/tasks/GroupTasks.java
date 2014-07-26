@@ -28,7 +28,7 @@ public class GroupTasks {
      *
      * @return the document's relative data access object.
      */
-    private Groups getDao() {
+    private static Groups getDao() {
         return new DAOGetter().getGroups();
     }
 
@@ -37,7 +37,7 @@ public class GroupTasks {
      *
      * @param player Player to assign permissions to
      */
-    public void assignPermissions(final Player player) {
+    public static void assignPermissions(final Player player) {
         final UUID playerUUID = player.getUniqueId();
         QueryActionTask task = new QueryActionTask(getDao().getDatastore(), null) {
             @Override
@@ -59,7 +59,7 @@ public class GroupTasks {
      * @param player        Player to be added
      * @param groupDocument Groups to add the player to
      */
-    public void addPlayerToGroupAndRecalculate(final Player player, final GroupDocument groupDocument) {
+    public static void addPlayerToGroupAndRecalculate(final Player player, final GroupDocument groupDocument) {
         SaveTask task = new SaveTask(getDao().getDatastore(), groupDocument) {
             @Override
             public void run() {
@@ -79,7 +79,7 @@ public class GroupTasks {
      * @param player        Player to be removed
      * @param groupDocument Groups to remove the player from
      */
-    public void removePlayerFromGroupAndRecalculate(final Player player, final GroupDocument groupDocument) {
+    public static void removePlayerFromGroupAndRecalculate(final Player player, final GroupDocument groupDocument) {
         SaveTask task = new SaveTask(getDao().getDatastore(), groupDocument) {
             @Override
             public void run() {

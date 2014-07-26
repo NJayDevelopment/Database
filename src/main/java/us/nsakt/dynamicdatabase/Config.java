@@ -101,7 +101,7 @@ public class Config {
 
         // Actual connection stuff
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The hostname to attempt to connect to", def = "localhost")
-        public static final List<String> hostnames = get("mongo.hostname", Arrays.asList("localhost"));
+        public static final List<String> hostnames = get("mongo.hostnames", Arrays.asList("localhost"));
 
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The port to connect to", def = "27017")
         public static final int port = get("mongo.port", 27017);

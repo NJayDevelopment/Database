@@ -19,7 +19,7 @@ public class ServerTasks {
      *
      * @return the document's relative data access object.
      */
-    private Servers getDao() {
+    private static Servers getDao() {
         return new DAOGetter().getServers();
     }
 
@@ -29,7 +29,7 @@ public class ServerTasks {
      * @param serverDocument Server to add the player to
      * @param player         Player to be added
      */
-    public void addPlayerToOnline(final ServerDocument serverDocument, final UUID player) {
+    public static void addPlayerToOnline(final ServerDocument serverDocument, final UUID player) {
         SaveTask task = new SaveTask(getDao().getDatastore(), serverDocument) {
             @Override
             public void run() {
@@ -45,7 +45,7 @@ public class ServerTasks {
      * @param serverDocument Server the player is leaving
      * @param player         Player to be removed
      */
-    public void removePlayerFromOnline(final ServerDocument serverDocument, final UUID player) {
+    public static void removePlayerFromOnline(final ServerDocument serverDocument, final UUID player) {
         SaveTask task = new SaveTask(getDao().getDatastore(), serverDocument) {
             @Override
             public void run() {

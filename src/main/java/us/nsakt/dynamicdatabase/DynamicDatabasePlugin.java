@@ -15,6 +15,7 @@ import com.sk89q.minecraft.util.commands.CommandUsageException;
 import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.minecraft.util.commands.MissingNestedCommandException;
 import com.sk89q.minecraft.util.commands.WrappedCommandException;
+import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -24,18 +25,21 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
+import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.mapping.DefaultCreator;
-import us.nsakt.dynamicdatabase.documents.ClusterDocument;
+import org.reflections.Reflections;
+import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.documents.Document;
-import us.nsakt.dynamicdatabase.documents.GroupDocument;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
-import us.nsakt.dynamicdatabase.documents.UserDocument;
+import us.nsakt.dynamicdatabase.tasks.ClusterTasks;
 import us.nsakt.dynamicdatabase.util.LanguageFile;
 
 import java.io.File;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Main Bukkit class
@@ -79,13 +83,31 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         setupLogging();
         setupMongo();
         QueryExecutor.createExecutorService();
+        testThings();
         setupServer();
         registerListeners();
         setupCommands();
     }
 
+    public void testThings() {
+        try {
+            ServerDocument document = new ServerDocument();
+            document.setCluster(ClusterTasks.createDefaultAllCluster().get());
+            document.setAddress("oc.tc");
+            document.setPort(1337);
+            document.setName("HOLA");
+            new DAOGetter().getServers().save(document);
+            System.out.print("Saved");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public void setupServer() {
-        ServerDocument serverDocument = getDatastores().get(ServerDocument.class).createQuery(ServerDocument.class).filter("_id", Config.Mongo.serverId).get();
+        ServerDocument serverDocument = getDatastores().get(ServerDocument.class).createQuery(ServerDocument.class).filter("_id", ObjectId.massageToObjectId(Config.Mongo.serverId)).get();
         if (serverDocument == null) Debug.MORPHIA.debug("Server not found in database!");
         this.currentServerDocument = serverDocument;
     }
@@ -162,10 +184,12 @@ public class DynamicDatabasePlugin extends JavaPlugin {
 
     //Set up multiple databases
     private void setupDataStores(MongoClient mongo, Morphia morphia) {
-        List<Class<? extends Document>> documentsToLoad = Lists.newArrayList(ClusterDocument.class, GroupDocument.class, ServerDocument.class, UserDocument.class);
-        for (Class<? extends Document> doc : documentsToLoad) {
-            Datastore store = morphia.createDatastore(mongo, doc.getName() + "s");
+        Reflections reflections = new Reflections("us.nsakt.dynamicdatabase");
+        Set<Class<? extends Document>> classes = reflections.getSubTypesOf(Document.class);
+        for (Class<? extends Document> doc : classes) {
+            Datastore store = morphia.createDatastore(mongo, doc.getAnnotation(Entity.class).value());
             datastores.put(doc, store);
+            System.out.print(store.getDB());
         }
     }
 

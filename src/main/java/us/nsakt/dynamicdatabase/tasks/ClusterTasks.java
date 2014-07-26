@@ -20,11 +20,11 @@ public class ClusterTasks {
      *
      * @return the document's relative data access object.
      */
-    private Clusters getDao() {
+    private static Clusters getDao() {
         return new DAOGetter().getClusters();
     }
 
-    public Future<ClusterDocument> createDefaultAllCluster() throws InterruptedException, ExecutionException {
+    public static Future<ClusterDocument> createDefaultAllCluster() throws InterruptedException, ExecutionException {
         ResultedSaveTask task = new ResultedSaveTask(getDao().getDatastore(), new ClusterDocument()) {
             @Override
             public ClusterDocument call() {

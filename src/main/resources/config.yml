@@ -2,7 +2,8 @@ mongo:
     using-async-morphia: false
     server-id: nil
     server-cluster: "all"
-    hostname: localhost
+    hostnames:
+      - 'localhost'
     port: 27017
     database: cn_database
     authentication:

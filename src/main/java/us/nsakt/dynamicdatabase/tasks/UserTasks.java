@@ -25,7 +25,7 @@ public class UserTasks {
      *
      * @return the document's relative data access object.
      */
-    private Users getDao() {
+    private static Users getDao() {
         return new DAOGetter().getUsers();
     }
 
@@ -35,7 +35,7 @@ public class UserTasks {
      * @param player     Player to pull information from
      * @param fistSignIn Optional first sign in date
      */
-    public void createUser(final Player player, final @Nullable Date fistSignIn) {
+    public static void createUser(final Player player, final @Nullable Date fistSignIn) {
         SaveTask task = new SaveTask(getDao().getDatastore(), new UserDocument()) {
             @Override
             public void run() {
@@ -58,7 +58,7 @@ public class UserTasks {
      *
      * @param event the PlayerLoginEvent
      */
-    public void updateUserFromEvent(final PlayerLoginEvent event) {
+    public static void updateUserFromEvent(final PlayerLoginEvent event) {
         QueryActionTask task = new QueryActionTask(getDao().getDatastore(), getDao().createQuery().field("UUID").equal(event.getPlayer().getUniqueId())) {
             @Override
             public void run() {

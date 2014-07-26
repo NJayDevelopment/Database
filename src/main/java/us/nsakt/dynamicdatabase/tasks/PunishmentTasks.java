@@ -20,7 +20,7 @@ public class PunishmentTasks {
      *
      * @return the document's relative data access object.
      */
-    private Punishments getDao() {
+    private static Punishments getDao() {
         return new DAOGetter().getPunishments();
     }
 
@@ -34,7 +34,7 @@ public class PunishmentTasks {
      * @param uuid               UUID to punish
      * @param punishmentDocument Already generated document to set the type and expiration date for.
      */
-    public void punish(final UUID uuid, final PunishmentDocument punishmentDocument) {
+    public static void punish(final UUID uuid, final PunishmentDocument punishmentDocument) {
         SaveTask task = new SaveTask(getDao().getDatastore(), punishmentDocument) {
             @Override
             public void run() {

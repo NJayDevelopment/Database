@@ -26,7 +26,7 @@ public class SessionTasks {
      *
      * @return the document's relative data access object.
      */
-    private Sessions getDao() {
+    private static Sessions getDao() {
         return new DAOGetter().getSessions();
     }
 
@@ -35,7 +35,7 @@ public class SessionTasks {
      *
      * @param event Event to start the session from
      */
-    public void startSession(final PlayerLoginEvent event) {
+    public static void startSession(final PlayerLoginEvent event) {
         final SessionDocument document = new SessionDocument();
         final UserDocument userDocument = new Users(UserDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class)).getUserFromPlayer(event.getPlayer());
         SaveTask task = new SaveTask(getDao().getDatastore(), document) {
@@ -58,7 +58,7 @@ public class SessionTasks {
      * @param endedCorrectly  If the session was ended correctly (Actually was intentional)
      * @param endedWithPunish if the session was ended by a punishment
      */
-    public void endSession(final Player player, final boolean endedCorrectly, final boolean endedWithPunish) {
+    public static void endSession(final Player player, final boolean endedCorrectly, final boolean endedWithPunish) {
         final UserDocument userDocument = new Users(UserDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class)).getUserFromPlayer(player);
         final SessionDocument sessionDocument = userDocument.getLastSession();
         SaveTask task = new SaveTask(getDao().getDatastore(), sessionDocument) {

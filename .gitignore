@@ -9,3 +9,5 @@
 /forge-download
 *-private.sh
 javadoc.xml
+
+src/main/java/META-INF/MANIFEST.MF

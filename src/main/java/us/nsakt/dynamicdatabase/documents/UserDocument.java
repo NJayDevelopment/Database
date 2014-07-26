@@ -32,8 +32,7 @@ public class UserDocument extends Document {
     @Property("first_sign_in")
     private Date firstSignIn;
 
-    @Reference
-    @Property("last_session")
+    @Reference("last_session")
     private SessionDocument lastSession;
 
     public UUID getUuid() {

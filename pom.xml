@@ -73,6 +73,11 @@
             <artifactId>gson</artifactId>
             <version>2.2.4</version>
         </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.9-RC1</version>
+        </dependency>
     </dependencies>
     <repositories>
         <repository>
@@ -158,7 +163,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Plugin properties -->
         <plugin.prefix>CNDB</plugin.prefix>
-        <plugin.mainClass>me.skipperguy12.CNDB.plugin.CarrotNetworkPlugin</plugin.mainClass>
+        <plugin.mainClass>us.nsakt.dynamicdatabase.DynamicDatabasePlugin</plugin.mainClass>
         <skipTests>true</skipTests>
     </properties>
 </project>
