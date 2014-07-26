@@ -1,16 +1,17 @@
 package us.nsakt.dynamicdatabase.tasks;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
+import us.nsakt.dynamicdatabase.QueryExecutor;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Groups;
 import us.nsakt.dynamicdatabase.daos.Users;
 import us.nsakt.dynamicdatabase.documents.GroupDocument;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
-import us.nsakt.dynamicdatabase.tasks.runners.GroupTask;
+import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
+import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +39,7 @@ public class GroupTasks {
      */
     public void assignPermissions(final Player player) {
         final UUID playerUUID = player.getUniqueId();
-        GroupTask task = new GroupTask(getDao().getDatastore(), null) {
+        QueryActionTask task = new QueryActionTask(getDao().getDatastore(), null) {
             @Override
             public void run() {
                 HashMap<Permission, Boolean> permissions = getDao().getAllPermissions(playerUUID);
@@ -49,7 +50,7 @@ public class GroupTasks {
                 player.recalculatePermissions();
             }
         };
-        Bukkit.getScheduler().runTaskAsynchronously(DynamicDatabasePlugin.getInstance(), task);
+        QueryExecutor.getExecutorService().submit(task);
     }
 
     /**
@@ -59,16 +60,17 @@ public class GroupTasks {
      * @param groupDocument Groups to add the player to
      */
     public void addPlayerToGroupAndRecalculate(final Player player, final GroupDocument groupDocument) {
-        GroupTask task = new GroupTask(getDao().getDatastore(), null) {
+        SaveTask task = new SaveTask(getDao().getDatastore(), groupDocument) {
             @Override
             public void run() {
                 Users users = new Users(UserDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
-                groupDocument.getMembers().add(users.getUserFromPlayer(player));
-                getDao().save(groupDocument);
+                GroupDocument document = (GroupDocument) getDocument();
+                document.getMembers().add(users.getUserFromPlayer(player));
+                getDao().save(document);
                 assignPermissions(player);
             }
         };
-        Bukkit.getScheduler().runTaskAsynchronously(DynamicDatabasePlugin.getInstance(), task);
+        QueryExecutor.getExecutorService().submit(task);
     }
 
     /**
@@ -78,15 +80,16 @@ public class GroupTasks {
      * @param groupDocument Groups to remove the player from
      */
     public void removePlayerFromGroupAndRecalculate(final Player player, final GroupDocument groupDocument) {
-        GroupTask task = new GroupTask(getDao().getDatastore(), null) {
+        SaveTask task = new SaveTask(getDao().getDatastore(), groupDocument) {
             @Override
             public void run() {
                 Users users = new Users(UserDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
-                groupDocument.getMembers().remove(users.getUserFromPlayer(player));
-                getDao().save(groupDocument);
+                GroupDocument document = (GroupDocument) getDocument();
+                document.getMembers().remove(users.getUserFromPlayer(player));
+                getDao().save(document);
                 assignPermissions(player);
             }
         };
-        Bukkit.getScheduler().runTaskAsynchronously(DynamicDatabasePlugin.getInstance(), task);
+        QueryExecutor.getExecutorService().submit(task);
     }
 }

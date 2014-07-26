@@ -1,17 +1,17 @@
 package us.nsakt.dynamicdatabase.tasks;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.joda.time.Duration;
 import us.nsakt.dynamicdatabase.Debug;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
+import us.nsakt.dynamicdatabase.QueryExecutor;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Sessions;
 import us.nsakt.dynamicdatabase.daos.Users;
 import us.nsakt.dynamicdatabase.documents.SessionDocument;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
-import us.nsakt.dynamicdatabase.tasks.runners.SessionTask;
+import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
 
 import java.util.Date;
 
@@ -38,7 +38,7 @@ public class SessionTasks {
     public void startSession(final PlayerLoginEvent event) {
         final SessionDocument document = new SessionDocument();
         final UserDocument userDocument = new Users(UserDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class)).getUserFromPlayer(event.getPlayer());
-        SessionTask task = new SessionTask(getDao().getDatastore(), document) {
+        SaveTask task = new SaveTask(getDao().getDatastore(), document) {
             @Override
             public void run() {
                 document.setServer(DynamicDatabasePlugin.getInstance().getCurrentServerDocument());
@@ -48,7 +48,7 @@ public class SessionTasks {
                 getDao().save(document);
             }
         };
-        Bukkit.getScheduler().runTaskAsynchronously(DynamicDatabasePlugin.getInstance(), task);
+        QueryExecutor.getExecutorService().submit(task);
     }
 
     /**
@@ -61,7 +61,7 @@ public class SessionTasks {
     public void endSession(final Player player, final boolean endedCorrectly, final boolean endedWithPunish) {
         final UserDocument userDocument = new Users(UserDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class)).getUserFromPlayer(player);
         final SessionDocument sessionDocument = userDocument.getLastSession();
-        SessionTask task = new SessionTask(getDao().getDatastore(), sessionDocument) {
+        SaveTask task = new SaveTask(getDao().getDatastore(), sessionDocument) {
             @Override
             public void run() {
                 if (sessionDocument.getEnd() != null) Debug.EXCEPTION.debug("Tried to end an already ended session!");
@@ -72,6 +72,6 @@ public class SessionTasks {
                 getDao().save(sessionDocument);
             }
         };
-        Bukkit.getScheduler().runTaskAsynchronously(DynamicDatabasePlugin.getInstance(), task);
+        QueryExecutor.getExecutorService().submit(task);
     }
 }

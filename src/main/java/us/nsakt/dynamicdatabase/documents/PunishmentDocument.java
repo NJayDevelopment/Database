@@ -1,5 +1,6 @@
 package us.nsakt.dynamicdatabase.documents;
 
+import com.sk89q.minecraft.util.commands.ChatColor;
 import org.joda.time.Duration;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
@@ -139,8 +140,21 @@ public class PunishmentDocument extends Document {
                 '}';
     }
 
+    public String generateKickmessage() {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(ChatColor.RED).append("You have been ").append(ChatColor.GOLD).append(this.getType().past).append("!");
+
+        return builder.toString();
+    }
+
     public enum PunishmentType {
-        WARN, KICK, BAN, UNKNOWN
+        WARN("warned"), KICK("kicked"), BAN("banned"), UNKNOWN(null);
+        String past;
+
+        PunishmentType(String past) {
+            this.past = past;
+        }
     }
 
     public enum MongoFields {

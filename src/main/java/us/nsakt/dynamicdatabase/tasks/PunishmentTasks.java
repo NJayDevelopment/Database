@@ -1,12 +1,11 @@
 package us.nsakt.dynamicdatabase.tasks;
 
-import org.bukkit.Bukkit;
 import org.joda.time.Duration;
-import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
+import us.nsakt.dynamicdatabase.QueryExecutor;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Punishments;
 import us.nsakt.dynamicdatabase.documents.PunishmentDocument;
-import us.nsakt.dynamicdatabase.tasks.runners.PunishmentTask;
+import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
 
 import java.util.List;
 import java.util.UUID;
@@ -36,7 +35,7 @@ public class PunishmentTasks {
      * @param punishmentDocument Already generated document to set the type and expiration date for.
      */
     public void punish(final UUID uuid, final PunishmentDocument punishmentDocument) {
-        PunishmentTask task = new PunishmentTask(getDao().getDatastore(), punishmentDocument) {
+        SaveTask task = new SaveTask(getDao().getDatastore(), punishmentDocument) {
             @Override
             public void run() {
                 PunishmentDocument.PunishmentType type = PunishmentDocument.PunishmentType.UNKNOWN;
@@ -62,6 +61,6 @@ public class PunishmentTasks {
                 getDao().save(punishmentDocument);
             }
         };
-        Bukkit.getScheduler().runTaskAsynchronously(DynamicDatabasePlugin.getInstance(), task);
+        QueryExecutor.getExecutorService().submit(task);
     }
 }

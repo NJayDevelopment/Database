@@ -1,15 +1,17 @@
-package us.nsakt.dynamicdatabase.tasks.runners;
+package us.nsakt.dynamicdatabase.tasks.core.base;
 
 import org.mongodb.morphia.Datastore;
+
+import java.util.concurrent.Callable;
 
 /**
  * Superclass to represent a runnable that is meant to interact with a document.
  */
-public abstract class Task implements Runnable {
+public abstract class DBCallable implements Callable {
 
     protected Datastore datastore;
 
-    public Task(Datastore datastore) {
+    public DBCallable(Datastore datastore) {
         this.datastore = datastore;
     }
 

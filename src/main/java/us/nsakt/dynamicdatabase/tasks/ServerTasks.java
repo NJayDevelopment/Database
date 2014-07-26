@@ -1,11 +1,10 @@
 package us.nsakt.dynamicdatabase.tasks;
 
-import org.bukkit.Bukkit;
-import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
+import us.nsakt.dynamicdatabase.QueryExecutor;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Servers;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
-import us.nsakt.dynamicdatabase.tasks.runners.ServerTask;
+import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
 
 import java.util.UUID;
 
@@ -31,13 +30,13 @@ public class ServerTasks {
      * @param player         Player to be added
      */
     public void addPlayerToOnline(final ServerDocument serverDocument, final UUID player) {
-        ServerTask task = new ServerTask(getDao().getDatastore(), serverDocument) {
+        SaveTask task = new SaveTask(getDao().getDatastore(), serverDocument) {
             @Override
             public void run() {
                 serverDocument.getOnlinePlayers().add(player);
             }
         };
-        Bukkit.getScheduler().runTaskAsynchronously(DynamicDatabasePlugin.getInstance(), task);
+        QueryExecutor.getExecutorService().submit(task);
     }
 
     /**
@@ -47,12 +46,12 @@ public class ServerTasks {
      * @param player         Player to be removed
      */
     public void removePlayerFromOnline(final ServerDocument serverDocument, final UUID player) {
-        ServerTask task = new ServerTask(getDao().getDatastore(), serverDocument) {
+        SaveTask task = new SaveTask(getDao().getDatastore(), serverDocument) {
             @Override
             public void run() {
                 serverDocument.getOnlinePlayers().remove(player);
             }
         };
-        Bukkit.getScheduler().runTaskAsynchronously(DynamicDatabasePlugin.getInstance(), task);
+        QueryExecutor.getExecutorService().submit(task);
     }
 }
