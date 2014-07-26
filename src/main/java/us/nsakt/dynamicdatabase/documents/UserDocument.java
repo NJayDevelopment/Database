@@ -2,6 +2,7 @@ package us.nsakt.dynamicdatabase.documents;
 
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
+import org.mongodb.morphia.annotations.Reference;
 
 import java.util.Date;
 import java.util.List;
@@ -22,9 +23,6 @@ public class UserDocument extends Document {
 
     private String email;
 
-    @Property("last_sign_in_ip")
-    private String lastSignInIp;
-
     @Property("mc_sign_ins")
     private int mcSignIns;
 
@@ -33,6 +31,10 @@ public class UserDocument extends Document {
 
     @Property("first_sign_in")
     private Date firstSignIn;
+
+    @Reference
+    @Property("last_session")
+    private SessionDocument lastSession;
 
     public UUID getUuid() {
         return uuid;
@@ -66,14 +68,6 @@ public class UserDocument extends Document {
         this.email = email;
     }
 
-    public String getLastSignInIp() {
-        return lastSignInIp;
-    }
-
-    public void setLastSignInIp(String lastSignInIp) {
-        this.lastSignInIp = lastSignInIp;
-    }
-
     public int getMcSignIns() {
         return mcSignIns;
     }
@@ -98,16 +92,24 @@ public class UserDocument extends Document {
         this.firstSignIn = firstSignIn;
     }
 
+    public SessionDocument getLastSession() {
+        return lastSession;
+    }
+
+    public void setLastSession(SessionDocument lastSession) {
+        this.lastSession = lastSession;
+    }
+
     public enum MongoFields {
         id("_id"),
         UUID("uuid"),
         USERNAMES("usernames"),
         LAST_USERNAME("last_username"),
         EMAIL("email"),
-        LAST_SIGN_IN_IP("last_sign_in_ip"),
         MC_SIGN_INS("mc_sign_ins"),
         LAST_SIGN_IN("last_sign_in"),
-        FIRST_SIGN_IN("first_sign_in");
+        FIRST_SIGN_IN("first_sign_in"),
+        LAST_SESSION("last_session");
 
         public String fieldName;
 

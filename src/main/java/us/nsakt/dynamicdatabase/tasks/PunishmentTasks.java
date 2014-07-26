@@ -40,7 +40,7 @@ public class PunishmentTasks {
         PunishmentTask task = new PunishmentTask(getDao().getDatastore(), punishmentDocument) {
             @Override
             public void run() {
-                PunishmentDocument.PunishmentType type = PunishmentDocument.PunishmentType.UNKNOW;
+                PunishmentDocument.PunishmentType type = PunishmentDocument.PunishmentType.UNKNOWN;
                 List<PunishmentDocument> kicks = getDao().getAllPunishmentsOfType(uuid, PunishmentDocument.PunishmentType.KICK);
                 List<PunishmentDocument> bans = getDao().getAllPunishmentsOfType(uuid, PunishmentDocument.PunishmentType.BAN);
 

@@ -59,7 +59,6 @@ public class UserTasks {
         updates.inc(UserDocument.MongoFields.MC_SIGN_INS.fieldName);
         updates.set(UserDocument.MongoFields.LAST_USERNAME.fieldName, event.getPlayer().getName());
         updates.add(UserDocument.MongoFields.USERNAMES.fieldName, event.getPlayer().getName());
-        updates.set(UserDocument.MongoFields.LAST_SIGN_IN_IP.fieldName, event.getAddress().getAddress());
         updates.set(UserDocument.MongoFields.LAST_SIGN_IN.fieldName, new Date());
         getDao().update(result, updates);
     }
