@@ -5,7 +5,6 @@ import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
 
 import java.util.Date;
-import java.util.UUID;
 
 /**
  * Class to represent a punishment to a user.

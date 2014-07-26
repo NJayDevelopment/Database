@@ -43,7 +43,8 @@ public class ServerDocument extends Document {
 
     private boolean online;
 
-    @Transient private Visibility visibilityEnum;
+    @Transient
+    private Visibility visibilityEnum;
 
     /**
      * Get the server's private name for internal operations

@@ -17,22 +17,22 @@ public class UserDocument extends Document {
 
     private List<String> usernames;
 
-    @Property("last_username") private
-    String lastUsername;
+    @Property("last_username")
+    private String lastUsername;
 
     private String email;
 
-    @Property("last_sign_in_ip") private
-    String lastSignInIp;
+    @Property("last_sign_in_ip")
+    private String lastSignInIp;
 
-    @Property("mc_sign_ins") private
-    int mcSignIns;
+    @Property("mc_sign_ins")
+    private int mcSignIns;
 
-    @Property("last_sign_in") private
-    Date lastSignIn;
+    @Property("last_sign_in")
+    private Date lastSignIn;
 
-    @Property("first_sign_in") private
-    Date firstSignIn;
+    @Property("first_sign_in")
+    private Date firstSignIn;
 
     public UUID getUuid() {
         return uuid;

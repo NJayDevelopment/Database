@@ -9,7 +9,6 @@ import org.mongodb.morphia.annotations.Reference;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Class to represent a group of players with a set of permissions and other attributes.
