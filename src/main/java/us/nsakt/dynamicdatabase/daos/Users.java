@@ -1,6 +1,7 @@
 package us.nsakt.dynamicdatabase.daos;
 
 import org.bson.types.ObjectId;
+import org.bukkit.entity.Player;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
@@ -43,5 +44,16 @@ public class Users extends BasicDAO<UserDocument, ObjectId> {
      */
     public boolean exists(UUID uuid) {
         return getDatastore().find(UserDocument.class).field(UserDocument.MongoFields.UUID.fieldName).equal(uuid).get() != null;
+    }
+
+    /**
+     * Get a UserDocument from a Bukkit player.
+     *
+     * @param player Player to get the document for
+     * @return a UserDocument from the Bukkit player.
+     */
+    public UserDocument getUserFromPlayer(Player player) {
+        UUID uuid = player.getUniqueId();
+        return getDatastore().find(UserDocument.class).field(UserDocument.MongoFields.UUID.fieldName).equal(uuid).get();
     }
 }
