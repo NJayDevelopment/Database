@@ -6,7 +6,9 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
 import us.nsakt.dynamicdatabase.daos.Groups;
+import us.nsakt.dynamicdatabase.daos.Users;
 import us.nsakt.dynamicdatabase.documents.GroupDocument;
+import us.nsakt.dynamicdatabase.documents.UserDocument;
 import us.nsakt.dynamicdatabase.tasks.runners.GroupTask;
 
 import java.util.HashMap;
@@ -60,7 +62,8 @@ public class GroupTasks {
         GroupTask task = new GroupTask(getDao().getDatastore(), null) {
             @Override
             public void run() {
-                groupDocument.getMembers().add(player.getUniqueId());
+                Users users = new Users(UserDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
+                groupDocument.getMembers().add(users.getUserFromPlayer(player));
                 getDao().save(groupDocument);
                 assignPermissions(player);
             }
@@ -78,7 +81,8 @@ public class GroupTasks {
         GroupTask task = new GroupTask(getDao().getDatastore(), null) {
             @Override
             public void run() {
-                groupDocument.getMembers().remove(player.getUniqueId());
+                Users users = new Users(UserDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
+                groupDocument.getMembers().remove(users.getUserFromPlayer(player));
                 getDao().save(groupDocument);
                 assignPermissions(player);
             }
