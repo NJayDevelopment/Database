@@ -49,7 +49,7 @@ public class ClusterDocument extends Document {
 
     @Override
     public String toString() {
-        return "Cluster{" +
+        return "Clusters{" +
                 "name='" + getName() + '\'' +
                 ", visibility=" + getVisibility() +
                 '}';

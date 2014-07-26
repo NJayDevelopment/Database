@@ -3,6 +3,7 @@ package us.nsakt.dynamicdatabase.tasks;
 import org.bukkit.Bukkit;
 import org.joda.time.Duration;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
+import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Punishments;
 import us.nsakt.dynamicdatabase.documents.PunishmentDocument;
 import us.nsakt.dynamicdatabase.tasks.runners.PunishmentTask;
@@ -15,15 +16,13 @@ import java.util.UUID;
  */
 public class PunishmentTasks {
 
-    Punishments punishments = new Punishments(PunishmentDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(PunishmentDocument.class));
-
     /**
      * Get the document's relative data access object.
      *
      * @return the document's relative data access object.
      */
     private Punishments getDao() {
-        return punishments;
+        return new DAOGetter().getPunishments();
     }
 
     /**

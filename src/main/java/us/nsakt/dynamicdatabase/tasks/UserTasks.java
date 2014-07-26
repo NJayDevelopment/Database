@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
-import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
+import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Users;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
 
@@ -18,7 +18,6 @@ import java.util.UUID;
  */
 public class UserTasks {
 
-    Users users = new Users(UserDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
 
     /**
      * Get the document's relative data access object.
@@ -26,7 +25,7 @@ public class UserTasks {
      * @return the document's relative data access object.
      */
     private Users getDao() {
-        return users;
+        return new DAOGetter().getUsers();
     }
 
     /**

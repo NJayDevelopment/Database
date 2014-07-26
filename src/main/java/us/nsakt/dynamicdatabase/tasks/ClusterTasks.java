@@ -3,6 +3,7 @@ package us.nsakt.dynamicdatabase.tasks;
 import org.bukkit.Bukkit;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
 import us.nsakt.dynamicdatabase.daos.Clusters;
+import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.documents.ClusterDocument;
 import us.nsakt.dynamicdatabase.tasks.runners.ClusterTask;
 import us.nsakt.dynamicdatabase.util.Visibility;
@@ -12,21 +13,19 @@ import us.nsakt.dynamicdatabase.util.Visibility;
  */
 public class ClusterTasks {
 
-    Clusters clusters = new Clusters(ClusterDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(ClusterDocument.class));
-
     /**
      * Get the document's relative data access object.
      *
      * @return the document's relative data access object.
      */
     private Clusters getDao() {
-        return clusters;
+        return new DAOGetter().getClusters();
     }
 
     /**
-     * Create the default cluster
+     * Create the default clusters
      *
-     * @return the default cluster
+     * @return the default clusters
      */
     public ClusterDocument createDefaultAllCluster() {
         ClusterDocument clusterDocument = new ClusterDocument();

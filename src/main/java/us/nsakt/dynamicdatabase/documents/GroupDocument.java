@@ -162,7 +162,7 @@ public class GroupDocument extends Document {
 
     @Override
     public String toString() {
-        return "Group{" +
+        return "Groups{" +
                 "name='" + getName() + '\'' +
                 ", flair='" + getFlair() + '\'' +
                 ", flairColor='" + getFlairColor() + '\'' +

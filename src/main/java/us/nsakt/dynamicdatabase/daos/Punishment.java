@@ -11,7 +11,7 @@ import java.util.UUID;
 /**
  * Data access object to represent the punishments datastore.
  */
-public class Punishments extends BasicDAO<PunishmentDocument, ObjectId> {
+public class Punishment extends BasicDAO<PunishmentDocument, ObjectId> {
 
     /**
      * Constructor
@@ -19,7 +19,7 @@ public class Punishments extends BasicDAO<PunishmentDocument, ObjectId> {
      * @param document  Document class to represent
      * @param datastore Datastore that contains the objects
      */
-    public Punishments(Class<PunishmentDocument> document, Datastore datastore) {
+    public Punishment(Class<PunishmentDocument> document, Datastore datastore) {
         super(document, datastore);
     }
 

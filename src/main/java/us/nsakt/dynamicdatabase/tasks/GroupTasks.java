@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
+import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Groups;
 import us.nsakt.dynamicdatabase.daos.Users;
 import us.nsakt.dynamicdatabase.documents.GroupDocument;
@@ -20,7 +21,6 @@ import java.util.UUID;
  */
 public class GroupTasks {
 
-    Groups groups = new Groups(GroupDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(GroupDocument.class));
 
     /**
      * Get the document's relative data access object.
@@ -28,7 +28,7 @@ public class GroupTasks {
      * @return the document's relative data access object.
      */
     private Groups getDao() {
-        return groups;
+        return new DAOGetter().getGroups();
     }
 
     /**
@@ -53,10 +53,10 @@ public class GroupTasks {
     }
 
     /**
-     * Add a player to a group, then recalculate the player's permissions
+     * Add a player to a groups, then recalculate the player's permissions
      *
      * @param player        Player to be added
-     * @param groupDocument Group to add the player to
+     * @param groupDocument Groups to add the player to
      */
     public void addPlayerToGroupAndRecalculate(final Player player, final GroupDocument groupDocument) {
         GroupTask task = new GroupTask(getDao().getDatastore(), null) {
@@ -72,10 +72,10 @@ public class GroupTasks {
     }
 
     /**
-     * Remove a player from a group, then recalculate the player's permissions
+     * Remove a player from a groups, then recalculate the player's permissions
      *
      * @param player        Player to be removed
-     * @param groupDocument Group to remove the player from
+     * @param groupDocument Groups to remove the player from
      */
     public void removePlayerFromGroupAndRecalculate(final Player player, final GroupDocument groupDocument) {
         GroupTask task = new GroupTask(getDao().getDatastore(), null) {

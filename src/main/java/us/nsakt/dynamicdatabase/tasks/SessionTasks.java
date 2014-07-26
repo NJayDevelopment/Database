@@ -5,6 +5,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.joda.time.Duration;
 import us.nsakt.dynamicdatabase.Debug;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
+import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Sessions;
 import us.nsakt.dynamicdatabase.daos.Users;
 import us.nsakt.dynamicdatabase.documents.SessionDocument;
@@ -17,7 +18,6 @@ import java.util.Date;
  */
 public class SessionTasks {
 
-    Sessions sessions = new Sessions(SessionDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(SessionDocument.class));
 
     /**
      * Get the document's relative data access object.
@@ -25,7 +25,7 @@ public class SessionTasks {
      * @return the document's relative data access object.
      */
     private Sessions getDao() {
-        return sessions;
+        return new DAOGetter().getSessions();
     }
 
     /**

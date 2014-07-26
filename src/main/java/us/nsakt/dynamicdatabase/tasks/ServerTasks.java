@@ -2,6 +2,7 @@ package us.nsakt.dynamicdatabase.tasks;
 
 import org.bukkit.Bukkit;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
+import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Servers;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
 import us.nsakt.dynamicdatabase.tasks.runners.ServerTask;
@@ -13,7 +14,6 @@ import java.util.UUID;
  */
 public class ServerTasks {
 
-    Servers servers = new Servers(ServerDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(ServerDocument.class));
 
     /**
      * Get the document's relative data access object.
@@ -21,7 +21,7 @@ public class ServerTasks {
      * @return the document's relative data access object.
      */
     private Servers getDao() {
-        return servers;
+        return new DAOGetter().getServers();
     }
 
     /**
