@@ -24,7 +24,9 @@ public class GroupDocument extends Document {
     private String flairColor;
 
     private int priority;
-    private List<UUID> members;
+
+    @Reference
+    private List<UserDocument> members;
 
     @Property("mc_permissions")
     private List<String> mcPermissions;
@@ -109,7 +111,7 @@ public class GroupDocument extends Document {
      *
      * @return
      */
-    public List<UUID> getMembers() {
+    public List<UserDocument> getMembers() {
         return members;
     }
 
@@ -118,7 +120,7 @@ public class GroupDocument extends Document {
      *
      * @param members
      */
-    public void setMembers(List<UUID> members) {
+    public void setMembers(List<UserDocument> members) {
         this.members = members;
     }
 

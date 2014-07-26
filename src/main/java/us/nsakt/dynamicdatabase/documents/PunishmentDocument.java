@@ -13,9 +13,14 @@ import java.util.UUID;
 @Entity("punishments")
 public class PunishmentDocument extends Document {
 
-    private UUID punisher;
-    private UUID punished;
+    @Reference
+    private UserDocument punisher;
+
+    @Reference
+    private UserDocument punished;
+
     private String reason;
+
     @Reference
     private ServerDocument server;
 
@@ -23,25 +28,26 @@ public class PunishmentDocument extends Document {
 
     @Reference
     private ClusterDocument cluster;
+
     private boolean active;
     private boolean appealable;
     private boolean automatic;
     private Date when;
     private Duration expires;
 
-    public UUID getPunisher() {
+    public UserDocument getPunisher() {
         return punisher;
     }
 
-    public void setPunisher(UUID punisher) {
+    public void setPunisher(UserDocument punisher) {
         this.punisher = punisher;
     }
 
-    public UUID getPunished() {
+    public UserDocument getPunished() {
         return punished;
     }
 
-    public void setPunished(UUID punished) {
+    public void setPunished(UserDocument punished) {
         this.punished = punished;
     }
 
@@ -135,7 +141,7 @@ public class PunishmentDocument extends Document {
     }
 
     public enum PunishmentType {
-        WARN, KICK, BAN, UNKNOW
+        WARN, KICK, BAN, UNKNOWN
     }
 
     public enum MongoFields {
