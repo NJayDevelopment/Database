@@ -32,6 +32,7 @@ import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.documents.Document;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
 import us.nsakt.dynamicdatabase.tasks.ClusterTasks;
+import us.nsakt.dynamicdatabase.tasks.GroupTasks;
 import us.nsakt.dynamicdatabase.util.LanguageFile;
 
 import java.io.File;
@@ -83,27 +84,9 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         setupLogging();
         setupMongo();
         QueryExecutor.createExecutorService();
-        testThings();
         setupServer();
         registerListeners();
         setupCommands();
-    }
-
-    public void testThings() {
-        try {
-            ServerDocument document = new ServerDocument();
-            document.setCluster(ClusterTasks.createDefaultAllCluster().get());
-            document.setAddress("oc.tc");
-            document.setPort(1337);
-            document.setName("HOLA");
-            new DAOGetter().getServers().save(document);
-            System.out.print("Saved");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
     }
 
     public void setupServer() {
@@ -189,7 +172,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         for (Class<? extends Document> doc : classes) {
             Datastore store = morphia.createDatastore(mongo, doc.getAnnotation(Entity.class).value());
             datastores.put(doc, store);
-            System.out.print(store.getDB());
+            store.ensureIndexes();
         }
     }
 
