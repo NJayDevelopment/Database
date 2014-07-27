@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.joda.time.Duration;
 import us.nsakt.dynamicdatabase.util.LanguageFile;
 import us.nsakt.dynamicdatabase.util.config.ConfigAnnotation;
 import us.nsakt.dynamicdatabase.util.config.ConfigStructure;
@@ -137,5 +138,171 @@ public class Config {
 
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Determines which channels are allowed to debug", def = "[\"Generic\", \"Morphia\", \"Exception\"]")
         public static final List<String> allowedChannels = get("debug.allowedChannels", Arrays.asList("Generic", "Morphia", "Exception"));
+    }
+
+    @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable document options")
+    public static class Documents {
+        @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable cluster options")
+        public static class Clusters {
+            @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if the server should respect a document's cluster. If false, all documents will be called, regardless of cluster", def = "true")
+            public static final boolean enabled = get("documents.clusters.enabled", true);
+        }
+
+        @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable group options")
+        public static class Groups {
+            @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if groups are enabled", def = "true")
+            public static final boolean enabled = get("documents.groups.enabled", true);
+
+            @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if users of a group with a flair should get the flair", def = "true")
+            public static final boolean giveFlair = get("documents.groups.give-flair", true);
+
+            @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if permissions should be grandfathered in from lower groups", def = "true")
+            public static final boolean pullLowerPerms = get("documents.groups.pull-perms-from-lower", true);
+
+            @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "List of clusters groups should be queried from", def = "all")
+            public static final List<String> clusters = get("documents.groups.clusters", Arrays.asList("all"));
+
+            @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "List of groups that should be ignored when giving permissions/flairs", def = "{}")
+            public static final List<String> ignoredGroups = get("documents.groups.ignored-groups", Arrays.asList());
+        }
+
+        @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable punishment options")
+        public static class Punishments {
+            @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if punishments are enabled", def = "true")
+            public static final boolean enabled = get("documents.punishments.enabled", true);
+
+            @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable punishment type options")
+            public static class Types {
+                @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable punishment type options (Warns)")
+                public static class Warns {
+                    @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if warns are enabled", def = "true")
+                    public static final boolean enabled = get("documents.punishments.types.warns.enabled", true);
+
+                    @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if warns should be broadcast (locally)", def = "true")
+                    public static final boolean globalBroadcast = get("documents.punishments.types.warns.global-broadcast", true);
+                }
+                @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable punishment type options (Kicks)")
+                public static class Kicks {
+                    @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if kicks are enabled", def = "true")
+                    public static final boolean enabled = get("documents.punishments.types.kicks.enabled", true);
+
+                    @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if kicks should be broadcast (locally)", def = "true")
+                    public static final boolean globalBroadcast = get("documents.punishments.types.kicks.global-broadcast", true);
+                }
+                @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable punishment type options (Bans)")
+                public static class Bans {
+                    @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if bans are enabled", def = "true")
+                    public static final boolean enabled = get("documents.punishments.types.bans.enabled", true);
+
+                    @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if bans should be broadcast (locally)", def = "true")
+                    public static final boolean globalBroadcast = get("documents.punishments.types.bans.global-broadcast", true);
+
+                    @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The default ban time", def = "10d")
+                    public static final Duration defBanTime = Duration.parse((String)get("documents.punishments.types.bans.default-ban-time", "10d"));
+
+                    @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if vans should be checked on login. If false, BANNED USERS CAN JOIN", def = "true")
+                    public static final boolean checkOnLogin = get("documents.punishments.types.bans.check-on-login", true);
+                }
+            }
+
+            @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable appeal options")
+            public static class Appeals {
+                @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if appeals are enabled (For ban messages and appeal alerts)", def = "true")
+                public static final boolean enabled = get("documents.punishments.appeals.enabled", true);
+
+                @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The URL users should be linked to if they need to access appeals", def = "raino.me")
+                public static final String url = get("documents.punishments.appeals.url", "raino.me");
+            }
+        }
+
+        @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable session options")
+        public static class Sessions {
+            @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if sessions should be recorded", def = "true")
+            public static final boolean record = get("documents.sessions.record", true);
+        }
+
+        @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable user options")
+        public static class Users {
+            @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if users are enabled", def = "true")
+            public static final boolean enabled = get("documents.users.enabled", true);
+
+            @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if new users should be recorded", def = "true")
+            public static final boolean recordnNew = get("documents.users.record-new", true);
+
+            @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if existing users should be updated on login", def = "true")
+            public static final boolean updateExisiting = get("documents.users.update-existing", true);
+
+            @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if users' IPs should be recorded", def = "true")
+            public static final boolean logIp = get("documents.users.log-ip", true);
+        }
+    }
+
+    @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable cross server options")
+    public static class CrossServer {
+        @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The ip address of the cross-server server", def = "localhost")
+        public static final String ip = get("cross-server.ip", "localhost");
+
+        @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The port of the cross-server server", def = "87652")
+        public static final String port = get("cross-server.port", 87652);
+
+        @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable admin chat options")
+        public static class AdminChat {
+            @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if admin chat is enabled", def = "true")
+            public static final boolean enabled = get("cross-server.admin-chat.enabled", true);
+
+            @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if admin chat should be sent", def = "true")
+            public static final boolean send = get("cross-server.admin-chat.send", true);
+
+            @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if admin chat should be received", def = "true")
+            public static final boolean receive = get("cross-server.admin-chat.receive", true);
+
+            @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "List of clusters that should be pulled from when displaying admin chat", def = "all")
+            public static final List<String> clusters = get("cross-server.admin-chat.clusters", Arrays.asList("all"));
+        }
+
+        @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable punishment options")
+        public static class Punishments {
+            @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if punishments are enabled", def = "true")
+            public static final boolean enabled = get("cross-server.punishments.enabled", true);
+
+            @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "List of clusters that should be pulled from when displaying punishments", def = "all")
+            public static final List<String> clusters = get("cross-server.punishments.clusters", Arrays.asList("all"));
+
+            @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable broadcast options")
+            public static class Broadcast {
+                @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if warns should be broadcast", def = "true")
+                public static final boolean warns = get("cross-server.punishments.broadcast.warns", true);
+
+                @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if kicks should be broadcast", def = "true")
+                public static final boolean kicks = get("cross-server.punishments.broadcast.kicks", true);
+
+                @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if bans should be broadcast", def = "true")
+                public static final boolean bans = get("cross-server.punishments.broadcast.bans", true);
+            }
+
+            @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable send options")
+            public static class Send {
+                @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if warns should be sent", def = "true")
+                public static final boolean warns = get("cross-server.punishments.send.warns", true);
+
+                @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if kicks should be sent", def = "true")
+                public static final boolean kicks = get("cross-server.punishments.send.kicks", true);
+
+                @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if bans should be sent", def = "true")
+                public static final boolean bans = get("cross-server.punishments.send.bans", true);
+            }
+
+            @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable receive options")
+            public static class Receive {
+                @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if warns should be received", def = "true")
+                public static final boolean warns = get("cross-server.punishments.receive.warns", true);
+
+                @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if kicks should be received", def = "true")
+                public static final boolean kicks = get("cross-server.punishments.receive.kicks", true);
+
+                @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if bans should be received", def = "true")
+                public static final boolean bans = get("cross-server.punishments.receive.bans", true);
+            }
+        }
     }
 }

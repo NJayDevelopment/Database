@@ -21,3 +21,64 @@ debug:
       - 'Generic'
       - 'Morphia'
       - 'Exception'
+
+documents:
+    clusters:
+        enabled: true
+    groups:
+        enabled: true
+        clusters:
+          - 'all'
+        give-flair: true
+        pull-perms-from-lower: true
+        ignored-groups: {}
+    punishments:
+        enabled: true
+        types:
+            warns:
+                enabled: true
+                global-broadcast: true
+            kicks:
+                enabled: true
+                global-broadcast: true
+            bans:
+                enabled: true
+                default-ban-time: 10d
+                global-broadcast: true
+                check-on-login: true
+        appeals:
+            enabled: true
+            url: "mapdev.it/appeal"
+    sessions:
+        record: true
+    users:
+        enabled: true
+        record-new: true
+        update-existing: true
+        log-ip: true
+
+cross-server:
+    ip: localhost
+    port: 87652
+    admin-chat:
+        enabled: true
+        send: true
+        receive: true
+        clusters:
+          - 'all'
+    punishments:
+        enabled: true
+        clusters:
+          - 'all'
+        broadcast:
+            warns: false
+            kicks: true
+            bans: true
+        send:
+            warns: true
+            kicks: true
+            bans: true
+        receive:
+            warns: true
+            kicks: true
+            bans: true
