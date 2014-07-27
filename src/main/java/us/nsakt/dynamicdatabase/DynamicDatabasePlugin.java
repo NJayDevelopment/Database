@@ -31,6 +31,7 @@ import org.reflections.Reflections;
 import us.nsakt.dynamicdatabase.documents.Document;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
 import us.nsakt.dynamicdatabase.util.LanguageFile;
+import us.nsakt.dynamicdatabase.util.LogLevel;
 
 import java.io.File;
 import java.net.UnknownHostException;
@@ -77,7 +78,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         instance = this;
         mainThread = Thread.currentThread();
         setupConfig();
-        setupLogging();
+        setupDebugging();
         setupMongo();
         QueryExecutor.createExecutorService();
         setupServer();
@@ -85,9 +86,15 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         setupCommands();
     }
 
+    public void setupDebugging() {
+        for (String classname : Config.Debug.allowedChannels) {
+            Debug.filter(classname);
+        }
+    }
+
     public void setupServer() {
         ServerDocument serverDocument = getDatastores().get(ServerDocument.class).createQuery(ServerDocument.class).filter("_id", ObjectId.massageToObjectId(Config.Mongo.serverId)).get();
-        if (serverDocument == null) Debug.MORPHIA.debug("Server not found in database!");
+        if (serverDocument == null) Debug.log(LogLevel.SEVERE, "Server not found in database!");
         this.currentServerDocument = serverDocument;
     }
 
@@ -111,12 +118,6 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         }
     }
 
-    private void setupLogging() {
-        if (Config.Debug.hijackPrintStream) Debug.replaceMainOutChannel();
-        for (String channel : Config.Debug.allowedChannels)
-            Debug.allow(channel);
-    }
-
     //Establish connection to mongo
     private void setupMongo() {
         MongoClient mongo = null;
@@ -129,7 +130,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
             else if (addresses.size() > 1) mongo = new MongoClient(addresses, clientOptions);
             else throw new MongoException("Unable to connect to any Mongo instance!");
         } catch (UnknownHostException e) {
-            Debug.EXCEPTION.debug(e);
+            Debug.log(e);
         }
 
         DB database = mongo.getDB(Config.Mongo.database);

@@ -133,8 +133,8 @@ public class Config {
 
     @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable debugging options")
     public static class Debug {
-        @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean to decide whether to use voodoo magic to take over the normal console to filter out specific channels")
-        public static final boolean hijackPrintStream = get("debug.hijack-printstream", true);
+        @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The mode of filtering", def = "BLACKLIST")
+        public static final String filterMode = get("debug.filterMode", "BLACKLIST");
 
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Determines which channels are allowed to debug", def = "[\"Generic\", \"Morphia\", \"Exception\"]")
         public static final List<String> allowedChannels = get("debug.allowedChannels", Arrays.asList("Generic", "Morphia", "Exception"));

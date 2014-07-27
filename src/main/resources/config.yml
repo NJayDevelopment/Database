@@ -16,7 +16,7 @@ languages:
       - 'en_CA'
 
 debug:
-    hijack-printstream: true
+    filterMode: BLACKLIST
     allowedChannels:
       - 'Generic'
       - 'Morphia'

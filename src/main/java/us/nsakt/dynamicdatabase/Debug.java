@@ -1,78 +1,77 @@
 package us.nsakt.dynamicdatabase;
 
 import com.google.common.collect.Lists;
-import org.bukkit.Bukkit;
+import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.joda.time.DateTime;
+import us.nsakt.dynamicdatabase.util.LogLevel;
 
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.lang.reflect.Field;
 import java.util.List;
 
+
 /**
- * A nice channel-style debugging system
- *
- * @author molenzwiebel
+ * Created by Nick on 7/5/14.
  */
-public enum Debug {
-    EXCEPTION("Exception"), GENERIC("Generic"), MORPHIA("Morphia"), UNSPECIFIED_OUT_DEBUGGING("System.out debug");
-    public static boolean PRINT_STACKTRACE = true;
-    private static List<String> allowed = Lists.newArrayList();
-    public String channel = "none";
+public class Debug {
 
-    Debug(String chn) {
-        this.channel = chn;
+    private static Class<?>[] classList;
+    private static FilterMode filterMode;
+    private static LogLevel lowLevel;
+
+    public static void filter(LogLevel level, FilterMode mode, Class<?>... classes) {
+        lowLevel = level;
+        filterMode = mode;
+        classList = classes;
     }
 
-    public static void allow(Debug deb) {
-        allow(deb.channel);
-    }
-
-    public static void allow(String str) {
-        allowed.add(str);
-    }
-
-    public static void replaceMainOutChannel() {
-        PrintStream origOut = System.out;
-        PrintStream interceptor = new Interceptor(origOut);
-        System.setOut(interceptor);
-    }
-
-    public void debug(Object obj) {
-        if (obj instanceof Throwable) {
-            Throwable thr = (Throwable) obj;
-            System.out.println("[DB] [Debug] [" + channel + "] EXCEPTION: " + thr.getMessage());
-            if (PRINT_STACKTRACE) {
-                System.out.println("[DB] [Debug] [" + channel + "] STACK TRACE:");
-                thr.printStackTrace();
-            }
-        } else if (allowed.contains(this.channel))
-            System.out.println("[DB] [Debug] [" + channel + "] " + obj.toString());
-    }
-
-    public void debugMembers(Object obj) {
-        try {
-            this.debug("Now printing debug information for object of class " + obj.getClass().getName());
-            for (Field f : obj.getClass().getDeclaredFields()) {
-                f.setAccessible(true);
-                this.debug(f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1) + ": " + f.get(obj).toString());
-            }
-        } catch (Exception e) {
-            this.debug(e);
-        }
-    }
-
-    private static class Interceptor extends PrintStream {
-        public Interceptor(OutputStream out) {
-            super(out, true);
-        }
-
-        @Override
-        public void print(String s) {
-            if (s.startsWith("[DB] [Debug]")) super.print(s);
-            else {
-                Bukkit.getLogger().severe("The following debug does not have a DebugType, and is therefore UNSPECIFIED. Please investigate.");
-                Debug.UNSPECIFIED_OUT_DEBUGGING.debug(s);
+    public static void filter(String... classNames) {
+        List<Class<?>> classes = Lists.newArrayList();
+        for (String clazz : classNames) {
+            try {
+                classes.add(Class.forName(clazz));
+            } catch (ClassNotFoundException e) {
+                Debug.log(e);
             }
         }
     }
+
+    public static void filter(FilterMode mode, Class<?>... classes) {
+        filterMode = mode;
+        classList = classes;
+    }
+
+    public static void filter(LogLevel level) {
+        lowLevel = level;
+    }
+
+    public static void log(Exception e) {
+        Validate.notNull(e, "e cannot be null");
+        log(LogLevel.WARNING, ExceptionUtils.getFullStackTrace(e));
+    }
+
+    public static void log(LogLevel level, String string) {
+        StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+        String className = elements[elements.length - 1].getClassName();
+        if (classList != null && filterMode != null) {
+            boolean foundMatch = (filterMode == FilterMode.BLACKLIST);
+            for (Class<?> clazz : classList)
+                if (clazz.getName().equals(className)) {
+                    foundMatch = !foundMatch;
+                    break;
+                }
+            if (!foundMatch) return;
+        }
+        if (lowLevel != null) {
+            if (lowLevel.getLevel() > level.getLevel())
+                return;
+        }
+        DateTime dTime = new DateTime();
+        System.out.println("[" + level.name().toUpperCase() + " " + dTime.getHourOfDay() + ":" + dTime.getMinuteOfHour() + ":" + dTime.getSecondOfMinute() + "] " + string);
+    }
+
+
+    public enum FilterMode {
+        WHITELIST, BLACKLIST;
+    }
+
 }
