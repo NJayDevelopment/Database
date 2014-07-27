@@ -181,6 +181,7 @@ public class Config {
                     @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if warns should be broadcast (locally)", def = "true")
                     public static final boolean globalBroadcast = get("documents.punishments.types.warns.global-broadcast", true);
                 }
+
                 @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable punishment type options (Kicks)")
                 public static class Kicks {
                     @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if kicks are enabled", def = "true")
@@ -189,6 +190,7 @@ public class Config {
                     @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if kicks should be broadcast (locally)", def = "true")
                     public static final boolean globalBroadcast = get("documents.punishments.types.kicks.global-broadcast", true);
                 }
+
                 @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable punishment type options (Bans)")
                 public static class Bans {
                     @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if bans are enabled", def = "true")
@@ -198,7 +200,7 @@ public class Config {
                     public static final boolean globalBroadcast = get("documents.punishments.types.bans.global-broadcast", true);
 
                     @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The default ban time", def = "10d")
-                    public static final Duration defBanTime = Duration.parse((String)get("documents.punishments.types.bans.default-ban-time", "10d"));
+                    public static final Duration defBanTime = Duration.parse((String) get("documents.punishments.types.bans.default-ban-time", "10d"));
 
                     @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if vans should be checked on login. If false, BANNED USERS CAN JOIN", def = "true")
                     public static final boolean checkOnLogin = get("documents.punishments.types.bans.check-on-login", true);

@@ -6,7 +6,6 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
 import us.nsakt.dynamicdatabase.QueryExecutor;
-import us.nsakt.dynamicdatabase.daos.Clusters;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Groups;
 import us.nsakt.dynamicdatabase.daos.Users;
@@ -18,7 +17,6 @@ import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Different tasks for working with groups.

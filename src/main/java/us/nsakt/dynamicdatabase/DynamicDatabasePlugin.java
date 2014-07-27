@@ -28,11 +28,8 @@ import org.mongodb.morphia.Morphia;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.mapping.DefaultCreator;
 import org.reflections.Reflections;
-import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.documents.Document;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
-import us.nsakt.dynamicdatabase.tasks.ClusterTasks;
-import us.nsakt.dynamicdatabase.tasks.GroupTasks;
 import us.nsakt.dynamicdatabase.util.LanguageFile;
 
 import java.io.File;
@@ -40,7 +37,6 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Main Bukkit class
