@@ -1,10 +1,12 @@
 package us.nsakt.dynamicdatabase.tasks;
 
+import com.google.common.collect.Lists;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
 import us.nsakt.dynamicdatabase.QueryExecutor;
+import us.nsakt.dynamicdatabase.daos.Clusters;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Groups;
 import us.nsakt.dynamicdatabase.daos.Users;
@@ -16,6 +18,7 @@ import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Different tasks for working with groups.
@@ -88,6 +91,36 @@ public class GroupTasks {
                 document.getMembers().remove(users.getUserFromPlayer(player));
                 getDao().save(document);
                 assignPermissions(player);
+            }
+        };
+        QueryExecutor.getExecutorService().submit(task);
+    }
+
+    /**
+     * Creates the default group
+     */
+    public static void setupDefaultGroup() {
+        SaveTask task = new SaveTask(getDao().getDatastore(), new GroupDocument()) {
+            @Override
+            public void run() {
+                try {
+                    GroupDocument document = (GroupDocument) getDocument();
+                    document.setCluster(ClusterTasks.createDefaultAllCluster().get());
+                    document.setName("default");
+                    document.setPriority(0);
+                    document.setMcPermissions(Lists.newArrayList(
+                            "#Hi, this is the default group created by DynamicDatabase",
+                            "#All players will be in this group",
+                            "#If this group is deleted, it will be re-created",
+                            "#DO NOT change this group's priority!",
+                            "#All groups above this group will inherit its permissions",
+                            "#You can negate said permissions by adding a '-' before the permission in the higher groups"
+                    ));
+                    getDao().save(document);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
         };
         QueryExecutor.getExecutorService().submit(task);
