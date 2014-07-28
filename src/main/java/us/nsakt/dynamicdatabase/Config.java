@@ -1,5 +1,6 @@
 package us.nsakt.dynamicdatabase;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -63,6 +64,23 @@ public class Config {
     @SuppressWarnings("unchecked")
     public static <T> T get(String path) {
         return (T) getBukkitConfig().get(path);
+    }
+
+    /**
+     * Loop through the config, find all sections that match the query, and add the values of that section to a list, then return the list.
+     *
+     * @param search Section to search for
+     * @param <T>    Type of element
+     * @return A list of values from the found sections
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> List<T> getAllMatchingSections(String search) {
+        List<T> results = Lists.newArrayList();
+        for (String key : getBukkitConfig().getKeys(true)) {
+            if (!key.endsWith(search)) continue;
+            results.add((T) getBukkitConfig().get(key));
+        }
+        return results;
     }
 
     /**
@@ -137,7 +155,7 @@ public class Config {
         public static final String filterMode = get("debug.filterMode", "BLACKLIST");
 
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Determines which channels are allowed to debug", def = "[\"Generic\", \"Morphia\", \"Exception\"]")
-        public static final List<String> allowedChannels = get("debug.allowedChannels", Arrays.asList("Generic", "Morphia", "Exception"));
+        public static final List<String> allowedChannels = get("debug.channels", Arrays.asList());
     }
 
     @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Configurable document options")

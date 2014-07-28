@@ -37,14 +37,4 @@ public class QueryExecutor {
             return;
         } else executorService.shutdown();
     }
-
-    /**
-     * Class representing a Runnable Query to the Database
-     */
-    public static abstract class Query implements Runnable {
-        /**
-         * Executes the query
-         */
-        public abstract void execute();
-    }
 }

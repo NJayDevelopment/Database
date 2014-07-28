@@ -45,7 +45,7 @@ public class QueryTask extends DBCallable {
      * Called when the task is ran, needs to be overridden.
      */
     @Override
-    public Query call() {
-        return this.getQuery();
+    public Document call() {
+        return (Document) this.getQuery().get();
     }
 }

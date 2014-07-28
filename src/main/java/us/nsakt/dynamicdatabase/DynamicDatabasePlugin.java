@@ -81,6 +81,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         setupDebugging();
         setupMongo();
         QueryExecutor.createExecutorService();
+        ConfigEnforcer.ConfigTasks.convertAllNamesToClusters();
         setupServer();
         registerListeners();
         setupCommands();

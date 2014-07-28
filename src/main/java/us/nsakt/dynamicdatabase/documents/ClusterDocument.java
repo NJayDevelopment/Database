@@ -60,7 +60,7 @@ public class ClusterDocument extends Document {
         return this;
     }
 
-    protected enum MongoFields {
+    public enum MongoFields {
         id("_id"),
         NAME("name"),
         VISIBILITY("visibility");

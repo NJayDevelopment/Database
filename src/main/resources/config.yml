@@ -17,10 +17,7 @@ languages:
 
 debug:
     filterMode: BLACKLIST
-    allowedChannels:
-      - 'Generic'
-      - 'Morphia'
-      - 'Exception'
+    channels: []
 
 documents:
     clusters:
@@ -31,7 +28,7 @@ documents:
           - 'all'
         give-flair: true
         pull-perms-from-lower: true
-        ignored-groups: {}
+        ignored-groups: []
     punishments:
         enabled: true
         types:
