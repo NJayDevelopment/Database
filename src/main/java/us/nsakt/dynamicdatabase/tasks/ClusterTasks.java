@@ -1,10 +1,12 @@
 package us.nsakt.dynamicdatabase.tasks;
 
+import us.nsakt.dynamicdatabase.ConfigEnforcer;
 import us.nsakt.dynamicdatabase.QueryExecutor;
 import us.nsakt.dynamicdatabase.daos.Clusters;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.documents.ClusterDocument;
 import us.nsakt.dynamicdatabase.tasks.core.ResultedSaveTask;
+import us.nsakt.dynamicdatabase.util.NsaktException;
 import us.nsakt.dynamicdatabase.util.Visibility;
 
 import java.util.concurrent.ExecutionException;
@@ -25,6 +27,11 @@ public class ClusterTasks {
     }
 
     public static Future<ClusterDocument> createDefaultAllCluster() throws InterruptedException, ExecutionException {
+        try {
+            ConfigEnforcer.Documents.Clusters.ensureEnabled();
+        } catch (NsaktException e) {
+            // silence
+        }
         ResultedSaveTask task = new ResultedSaveTask(getDao().getDatastore(), new ClusterDocument()) {
             @Override
             public ClusterDocument call() {

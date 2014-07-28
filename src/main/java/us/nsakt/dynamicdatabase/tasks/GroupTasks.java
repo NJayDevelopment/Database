@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
+import us.nsakt.dynamicdatabase.ConfigEnforcer;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
 import us.nsakt.dynamicdatabase.QueryExecutor;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
@@ -13,6 +14,7 @@ import us.nsakt.dynamicdatabase.documents.GroupDocument;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
 import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
 import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
+import us.nsakt.dynamicdatabase.util.NsaktException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +24,6 @@ import java.util.UUID;
  * Different tasks for working with groups.
  */
 public class GroupTasks {
-
 
     /**
      * Get the document's relative data access object.
@@ -39,6 +40,11 @@ public class GroupTasks {
      * @param player Player to assign permissions to
      */
     public static void assignPermissions(final Player player) {
+        try {
+            ConfigEnforcer.Documents.Groups.ensureEnabled();
+        } catch (NsaktException e) {
+            // silence
+        }
         final UUID playerUUID = player.getUniqueId();
         QueryActionTask task = new QueryActionTask(getDao().getDatastore(), null) {
             @Override
@@ -61,6 +67,11 @@ public class GroupTasks {
      * @param groupDocument Groups to add the player to
      */
     public static void addPlayerToGroupAndRecalculate(final Player player, final GroupDocument groupDocument) {
+        try {
+            ConfigEnforcer.Documents.Groups.ensureEnabled();
+        } catch (NsaktException e) {
+            // silence
+        }
         SaveTask task = new SaveTask(getDao().getDatastore(), groupDocument) {
             @Override
             public void run() {
@@ -81,6 +92,11 @@ public class GroupTasks {
      * @param groupDocument Groups to remove the player from
      */
     public static void removePlayerFromGroupAndRecalculate(final Player player, final GroupDocument groupDocument) {
+        try {
+            ConfigEnforcer.Documents.Groups.ensureEnabled();
+        } catch (NsaktException e) {
+            // silence
+        }
         SaveTask task = new SaveTask(getDao().getDatastore(), groupDocument) {
             @Override
             public void run() {
@@ -98,6 +114,11 @@ public class GroupTasks {
      * Creates the default group
      */
     public static void setupDefaultGroup() {
+        try {
+            ConfigEnforcer.Documents.Groups.ensureEnabled();
+        } catch (NsaktException e) {
+            // silence
+        }
         SaveTask task = new SaveTask(getDao().getDatastore(), new GroupDocument()) {
             @Override
             public void run() {

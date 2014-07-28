@@ -58,6 +58,7 @@ documents:
         log-ip: true
 
 cross-server:
+    enabled: true
     ip: localhost
     port: 87652
     admin-chat:

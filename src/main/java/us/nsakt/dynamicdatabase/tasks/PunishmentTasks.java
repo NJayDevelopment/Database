@@ -1,11 +1,13 @@
 package us.nsakt.dynamicdatabase.tasks;
 
 import org.joda.time.Duration;
+import us.nsakt.dynamicdatabase.ConfigEnforcer;
 import us.nsakt.dynamicdatabase.QueryExecutor;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Punishments;
 import us.nsakt.dynamicdatabase.documents.PunishmentDocument;
 import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
+import us.nsakt.dynamicdatabase.util.NsaktException;
 
 import java.util.List;
 import java.util.UUID;
@@ -35,6 +37,11 @@ public class PunishmentTasks {
      * @param punishmentDocument Already generated document to set the type and expiration date for.
      */
     public static void punish(final UUID uuid, final PunishmentDocument punishmentDocument) {
+        try {
+            ConfigEnforcer.Documents.Punishments.ensureEnabled();
+        } catch (NsaktException e) {
+            // silence
+        }
         SaveTask task = new SaveTask(getDao().getDatastore(), punishmentDocument) {
             @Override
             public void run() {
