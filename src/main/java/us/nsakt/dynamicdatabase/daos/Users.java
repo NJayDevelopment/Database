@@ -4,7 +4,10 @@ import org.bson.types.ObjectId;
 import org.bukkit.entity.Player;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
+import us.nsakt.dynamicdatabase.QueryExecutor;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
+import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
+import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -52,8 +55,15 @@ public class Users extends BasicDAO<UserDocument, ObjectId> {
      * @param player Player to get the document for
      * @return a UserDocument from the Bukkit player.
      */
-    public UserDocument getUserFromPlayer(Player player) {
-        UUID uuid = player.getUniqueId();
-        return getDatastore().find(UserDocument.class).field(UserDocument.MongoFields.UUID.fieldName).equal(uuid).get();
+    public void getUserFromPlayer(final Player player, final DBCallback callback) {
+        final UUID uuid = player.getUniqueId();
+        QueryActionTask task = new QueryActionTask(getDatastore(), getDatastore().createQuery(getEntityClazz())) {
+            @Override
+            public void run() {
+                getQuery().field(UserDocument.MongoFields.UUID.fieldName).equal(uuid);
+                callback.call(getQuery().get());
+            }
+        };
+        QueryExecutor.getExecutorService().submit(task);
     }
 }

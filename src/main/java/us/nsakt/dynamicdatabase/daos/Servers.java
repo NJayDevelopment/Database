@@ -6,8 +6,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
+import us.nsakt.dynamicdatabase.QueryExecutor;
 import us.nsakt.dynamicdatabase.documents.ClusterDocument;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
+import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
+import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
 
 import java.util.List;
 
@@ -33,12 +36,18 @@ public class Servers extends BasicDAO<ServerDocument, ObjectId> {
      * @param plugin Plugin that the player has permissions assigned to
      * @return All servers the player can see.
      */
-    public List<ServerDocument> getAllServersPlayerCanSee(Player player, Plugin plugin) {
-        List<ServerDocument> result = Lists.newArrayList();
-        for (ServerDocument document : getDatastore().find(ServerDocument.class).asList()) {
-            if (document.canSee(player, plugin)) result.add(document);
-        }
-        return result;
+    public void getAllServersPlayerCanSee(final Player player, final Plugin plugin, final DBCallback callback) {
+        QueryActionTask task = new QueryActionTask(getDatastore(), getDatastore().createQuery(getEntityClazz())) {
+            @Override
+            public void run() {
+                List<ServerDocument> result = Lists.newArrayList();
+                for (ServerDocument document : getDatastore().find(ServerDocument.class).asList()) {
+                    if (document.canSee(player, plugin)) result.add(document);
+                }
+                callback.call(result);
+            }
+        };
+        QueryExecutor.getExecutorService().submit(task);
     }
 
     /**
@@ -46,12 +55,18 @@ public class Servers extends BasicDAO<ServerDocument, ObjectId> {
      *
      * @return A list of all public servers.
      */
-    public List<ServerDocument> getAllPublicServers() {
-        List<ServerDocument> result = Lists.newArrayList();
-        for (ServerDocument document : getDatastore().find(ServerDocument.class).asList()) {
-            if (document.isPublic()) result.add(document);
-        }
-        return result;
+    public void getAllPublicServers(final DBCallback callback) {
+        QueryActionTask task = new QueryActionTask(getDatastore(), getDatastore().createQuery(getEntityClazz())) {
+            @Override
+            public void run() {
+                List<ServerDocument> result = Lists.newArrayList();
+                for (ServerDocument document : getDatastore().find(ServerDocument.class).asList()) {
+                    if (document.isPublic()) result.add(document);
+                }
+                callback.call(result);
+            }
+        };
+        QueryExecutor.getExecutorService().submit(task);
     }
 
     /**
@@ -59,11 +74,17 @@ public class Servers extends BasicDAO<ServerDocument, ObjectId> {
      *
      * @return A list of all public servers.
      */
-    public List<ServerDocument> getAllPublicServers(ClusterDocument cluster) {
-        List<ServerDocument> result = Lists.newArrayList();
-        for (ServerDocument document : getDatastore().find(ServerDocument.class).field(ServerDocument.MongoFields.CLUSTER.fieldName).equal(cluster).asList()) {
-            if (document.isPublic()) result.add(document);
-        }
-        return result;
+    public void getAllPublicServers(final ClusterDocument cluster, final DBCallback callback) {
+        QueryActionTask task = new QueryActionTask(getDatastore(), getDatastore().createQuery(getEntityClazz())) {
+            @Override
+            public void run() {
+                List<ServerDocument> result = Lists.newArrayList();
+                for (ServerDocument document : getDatastore().find(ServerDocument.class).field(ServerDocument.MongoFields.CLUSTER.fieldName).equal(cluster).asList()) {
+                    if (document.isPublic()) result.add(document);
+                }
+                callback.call(result);
+            }
+        };
+        QueryExecutor.getExecutorService().submit(task);
     }
 }

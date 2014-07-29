@@ -1,15 +1,16 @@
 package us.nsakt.dynamicdatabase.daos;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.bson.types.ObjectId;
 import org.bukkit.permissions.Permission;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
+import us.nsakt.dynamicdatabase.QueryExecutor;
 import us.nsakt.dynamicdatabase.documents.GroupDocument;
+import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
+import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -33,10 +34,16 @@ public class Groups extends BasicDAO<GroupDocument, ObjectId> {
      * @param uuid UUID to search for
      * @return A list of groups the UUID was found in
      */
-    public List<GroupDocument> getAllGroups(UUID uuid) {
-        List<GroupDocument> groupDocuments = Lists.newArrayList();
-        groupDocuments = getDatastore().find(getEntityClazz()).field(GroupDocument.MongoFields.MEMBERS.fieldName).contains(uuid.toString()).order(GroupDocument.MongoFields.PRIORITY.fieldName).asList();
-        return groupDocuments;
+    public void getAllGroups(final UUID uuid, final DBCallback callback) {
+        QueryActionTask task = new QueryActionTask(getDatastore(), getDatastore().createQuery(getEntityClazz())) {
+            @Override
+            public void run() {
+                getQuery().field(GroupDocument.MongoFields.MEMBERS.fieldName).contains(uuid.toString());
+                getQuery().order(GroupDocument.MongoFields.PRIORITY.fieldName);
+                callback.call(getQuery().asList());
+            }
+        };
+        QueryExecutor.getExecutorService().submit(task);
     }
 
     /**
@@ -45,21 +52,21 @@ public class Groups extends BasicDAO<GroupDocument, ObjectId> {
      * @param uuid UUID to search for
      * @return all permissions the UUID has
      */
-    public HashMap<Permission, Boolean> getAllPermissions(UUID uuid) {
-        HashMap<Permission, Boolean> result = Maps.newHashMap();
-        for (GroupDocument groupDocument : getAllGroups(uuid)) {
-            result.putAll(groupDocument.getGroupPermissions());
-        }
-        return result;
-    }
+    public void getAllPermissions(final UUID uuid, final DBCallback finalCallback) {
+        final HashMap<Permission, Boolean> result = Maps.newHashMap();
+        DBCallback callback = new DBCallback() {
+            @Override
+            public void call() {
+            }
 
-    /**
-     * Get a UUID's highest priority group
-     *
-     * @param uuid UUID to search for
-     * @return a UUID's highest priority group
-     */
-    public GroupDocument getHighestPriorityGroup(UUID uuid) {
-        return getDatastore().find(GroupDocument.class).field(GroupDocument.MongoFields.MEMBERS.fieldName).contains(uuid.toString()).order(GroupDocument.MongoFields.PRIORITY.fieldName).limit(1).get();
+            @Override
+            public void call(Object... objects) {
+                Object o = objects[0];
+                result.putAll(((GroupDocument) o).getGroupPermissions());
+
+                finalCallback.call(result);
+            }
+        };
+        getAllGroups(uuid, callback);
     }
 }

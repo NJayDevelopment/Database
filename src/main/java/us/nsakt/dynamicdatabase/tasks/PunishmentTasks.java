@@ -2,11 +2,10 @@ package us.nsakt.dynamicdatabase.tasks;
 
 import org.joda.time.Duration;
 import us.nsakt.dynamicdatabase.ConfigEnforcer;
-import us.nsakt.dynamicdatabase.QueryExecutor;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Punishments;
 import us.nsakt.dynamicdatabase.documents.PunishmentDocument;
-import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
+import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
 import us.nsakt.dynamicdatabase.util.NsaktException;
 
 import java.util.List;
@@ -42,17 +41,15 @@ public class PunishmentTasks {
         } catch (NsaktException e) {
             // silence
         }
-        SaveTask task = new SaveTask(getDao().getDatastore(), punishmentDocument) {
+        DBCallback callback = new DBCallback() {
             @Override
-            public void run() {
-                PunishmentDocument.PunishmentType type = PunishmentDocument.PunishmentType.UNKNOWN;
-                List<PunishmentDocument> kicks = getDao().getAllPunishmentsOfType(uuid, PunishmentDocument.PunishmentType.KICK);
-                List<PunishmentDocument> bans = getDao().getAllPunishmentsOfType(uuid, PunishmentDocument.PunishmentType.BAN);
+            public void call() {
+            }
 
-                int kickSize = kicks.size();
-                int banSize = bans.size();
-                int totalPunishments = kickSize + banSize;
-
+            @Override
+            public void call(Object... objects) {
+                int totalPunishments = ((List) objects[0]).size();
+                PunishmentDocument.PunishmentType type;
                 switch (totalPunishments) {
                     case 0:
                         type = PunishmentDocument.PunishmentType.KICK;
@@ -68,6 +65,6 @@ public class PunishmentTasks {
                 getDao().save(punishmentDocument);
             }
         };
-        QueryExecutor.getExecutorService().submit(task);
+        getDao().getAllPunishments(uuid, callback);
     }
 }

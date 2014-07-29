@@ -10,10 +10,11 @@ import us.nsakt.dynamicdatabase.QueryExecutor;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Groups;
 import us.nsakt.dynamicdatabase.daos.Users;
+import us.nsakt.dynamicdatabase.documents.ClusterDocument;
 import us.nsakt.dynamicdatabase.documents.GroupDocument;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
-import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
 import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
+import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
 import us.nsakt.dynamicdatabase.util.NsaktException;
 
 import java.util.HashMap;
@@ -45,11 +46,16 @@ public class GroupTasks {
         } catch (NsaktException e) {
             // silence
         }
+
         final UUID playerUUID = player.getUniqueId();
-        QueryActionTask task = new QueryActionTask(getDao().getDatastore(), null) {
+        DBCallback callback = new DBCallback() {
             @Override
-            public void run() {
-                HashMap<Permission, Boolean> permissions = getDao().getAllPermissions(playerUUID);
+            public void call() {
+            }
+
+            @Override
+            public void call(Object... objects) {
+                HashMap<Permission, Boolean> permissions = (HashMap<Permission, Boolean>) objects[0];
                 for (Map.Entry<Permission, Boolean> entry : permissions.entrySet()) {
                     PermissionAttachment attachment = player.addAttachment(DynamicDatabasePlugin.getInstance());
                     attachment.setPermission(entry.getKey(), entry.getValue());
@@ -57,7 +63,7 @@ public class GroupTasks {
                 player.recalculatePermissions();
             }
         };
-        QueryExecutor.getExecutorService().submit(task);
+        getDao().getAllPermissions(playerUUID, callback);
     }
 
     /**
@@ -72,17 +78,21 @@ public class GroupTasks {
         } catch (NsaktException e) {
             // silence
         }
-        SaveTask task = new SaveTask(getDao().getDatastore(), groupDocument) {
+
+        DBCallback callback = new DBCallback() {
             @Override
-            public void run() {
-                Users users = new Users(UserDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
-                GroupDocument document = (GroupDocument) getDocument();
-                document.getMembers().add(users.getUserFromPlayer(player));
-                getDao().save(document);
+            public void call() {
+            }
+
+            @Override
+            public void call(Object... objects) {
+                groupDocument.getMembers().add((UserDocument) objects[0]);
+                getDao().save(groupDocument);
                 assignPermissions(player);
             }
         };
-        QueryExecutor.getExecutorService().submit(task);
+        Users users = new Users(UserDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
+        users.getUserFromPlayer(player, callback);
     }
 
     /**
@@ -97,17 +107,21 @@ public class GroupTasks {
         } catch (NsaktException e) {
             // silence
         }
-        SaveTask task = new SaveTask(getDao().getDatastore(), groupDocument) {
+
+        DBCallback callback = new DBCallback() {
             @Override
-            public void run() {
-                Users users = new Users(UserDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
-                GroupDocument document = (GroupDocument) getDocument();
-                document.getMembers().remove(users.getUserFromPlayer(player));
-                getDao().save(document);
+            public void call() {
+            }
+
+            @Override
+            public void call(Object... objects) {
+                groupDocument.getMembers().remove((UserDocument) objects[0]);
+                getDao().save(groupDocument);
                 assignPermissions(player);
             }
         };
-        QueryExecutor.getExecutorService().submit(task);
+        Users users = new Users(UserDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
+        users.getUserFromPlayer(player, callback);
     }
 
     /**
@@ -124,7 +138,7 @@ public class GroupTasks {
             public void run() {
                 try {
                     GroupDocument document = (GroupDocument) getDocument();
-                    document.setCluster(ClusterTasks.createDefaultAllCluster().get());
+                    document.setCluster(new DAOGetter().getClusters().getDatastore().find(ClusterDocument.class).field(ClusterDocument.MongoFields.NAME.fieldName).equal("all").get());
                     document.setName("default");
                     document.setPriority(0);
                     document.setMcPermissions(Lists.newArrayList(

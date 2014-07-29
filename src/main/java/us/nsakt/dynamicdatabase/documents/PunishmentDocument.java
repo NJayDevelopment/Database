@@ -149,7 +149,11 @@ public class PunishmentDocument extends Document {
     }
 
     public enum PunishmentType {
-        WARN("warned"), KICK("kicked"), BAN("banned"), UNKNOWN(null);
+        WARN("warned"),
+        KICK("kicked"),
+        BAN("banned"),
+        UNKNOWN(null);
+
         String past;
 
         PunishmentType(String past) {

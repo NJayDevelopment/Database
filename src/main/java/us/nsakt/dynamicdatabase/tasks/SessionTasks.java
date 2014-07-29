@@ -6,13 +6,11 @@ import org.joda.time.Duration;
 import us.nsakt.dynamicdatabase.ConfigEnforcer;
 import us.nsakt.dynamicdatabase.Debug;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
-import us.nsakt.dynamicdatabase.QueryExecutor;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Sessions;
-import us.nsakt.dynamicdatabase.daos.Users;
 import us.nsakt.dynamicdatabase.documents.SessionDocument;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
-import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
+import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
 import us.nsakt.dynamicdatabase.util.LogLevel;
 import us.nsakt.dynamicdatabase.util.NsaktException;
 
@@ -45,18 +43,22 @@ public class SessionTasks {
             // silence
         }
         final SessionDocument document = new SessionDocument();
-        final UserDocument userDocument = new Users(UserDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class)).getUserFromPlayer(event.getPlayer());
-        SaveTask task = new SaveTask(getDao().getDatastore(), document) {
+        DBCallback callback = new DBCallback() {
             @Override
-            public void run() {
+            public void call() {
+
+            }
+
+            @Override
+            public void call(Object... objects) {
                 document.setServer(DynamicDatabasePlugin.getInstance().getCurrentServerDocument());
-                document.setUser(userDocument);
+                document.setUser((UserDocument) objects[0]);
                 document.setStart(new Date());
                 document.setIp(event.getPlayer().getAddress().getAddress().toString());
                 getDao().save(document);
             }
         };
-        QueryExecutor.getExecutorService().submit(task);
+        new DAOGetter().getUsers().getUserFromPlayer(event.getPlayer(), callback);
     }
 
     /**
@@ -72,11 +74,16 @@ public class SessionTasks {
         } catch (NsaktException e) {
             // silence
         }
-        final UserDocument userDocument = new Users(UserDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class)).getUserFromPlayer(player);
-        final SessionDocument sessionDocument = userDocument.getLastSession();
-        SaveTask task = new SaveTask(getDao().getDatastore(), sessionDocument) {
+
+        DBCallback callback = new DBCallback() {
             @Override
-            public void run() {
+            public void call() {
+            }
+
+            @Override
+            public void call(Object... objects) {
+                final UserDocument userDocument = (UserDocument) objects[0];
+                final SessionDocument sessionDocument = userDocument.getLastSession();
                 if (sessionDocument.getEnd() != null)
                     Debug.log(LogLevel.WARNING, "Tried to end an already ended session!");
                 sessionDocument.setEnd(new Date());
@@ -86,6 +93,6 @@ public class SessionTasks {
                 getDao().save(sessionDocument);
             }
         };
-        QueryExecutor.getExecutorService().submit(task);
+        new DAOGetter().getUsers().getUserFromPlayer(player, callback);
     }
 }

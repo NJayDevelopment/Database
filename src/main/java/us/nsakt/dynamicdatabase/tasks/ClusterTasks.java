@@ -9,9 +9,6 @@ import us.nsakt.dynamicdatabase.tasks.core.ResultedSaveTask;
 import us.nsakt.dynamicdatabase.util.NsaktException;
 import us.nsakt.dynamicdatabase.util.Visibility;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
 /**
  * Different tasks for working with clusters.
  */
@@ -26,7 +23,7 @@ public class ClusterTasks {
         return new DAOGetter().getClusters();
     }
 
-    public static Future<ClusterDocument> createDefaultAllCluster() throws InterruptedException, ExecutionException {
+    public static void createDefaultAllCluster() {
         try {
             ConfigEnforcer.Documents.Clusters.ensureEnabled();
         } catch (NsaktException e) {
@@ -42,6 +39,6 @@ public class ClusterTasks {
                 return cluster;
             }
         };
-        return QueryExecutor.getExecutorService().submit(task);
+        QueryExecutor.getExecutorService().submit(task);
     }
 }

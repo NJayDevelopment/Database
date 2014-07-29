@@ -57,7 +57,6 @@ public class UserTasks {
             }
         };
         QueryExecutor.getExecutorService().submit(task);
-
     }
 
     /**
@@ -82,5 +81,6 @@ public class UserTasks {
                 getDao().update(getQuery(), updates);
             }
         };
+        QueryExecutor.getExecutorService().submit(task);
     }
 }

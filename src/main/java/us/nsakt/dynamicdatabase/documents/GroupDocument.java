@@ -6,6 +6,9 @@ import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
 import org.mongodb.morphia.annotations.Reference;
+import us.nsakt.dynamicdatabase.QueryExecutor;
+import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
+import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
 
 import java.util.HashMap;
 import java.util.List;
@@ -194,8 +197,16 @@ public class GroupDocument extends Document {
      *
      * @return all groups lower in priority than the group
      */
-    public List<GroupDocument> getLowerGroups(Datastore datastore) {
-        return datastore.find(GroupDocument.class).field(GroupDocument.MongoFields.PRIORITY.fieldName).lessThanOrEq(this.getPriority()).asList();
+    public void getLowerGroups(final Datastore datastore, final DBCallback callback) {
+        final GroupDocument parent = this;
+        QueryActionTask task = new QueryActionTask(datastore, datastore.createQuery(this.getClass())) {
+            @Override
+            public void run() {
+                getQuery().field(GroupDocument.MongoFields.PRIORITY.fieldName).lessThanOrEq(parent.getPriority());
+                callback.call();
+            }
+        };
+        QueryExecutor.getExecutorService().submit(task);
     }
 
     public enum MongoFields {
