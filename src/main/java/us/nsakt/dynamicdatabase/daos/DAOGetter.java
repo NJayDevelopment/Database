@@ -8,22 +8,23 @@ import us.nsakt.dynamicdatabase.documents.ServerDocument;
 import us.nsakt.dynamicdatabase.documents.SessionDocument;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
 
+/**
+ * A simple utility class to easily access DAO instance methods.
+ *
+ * @author NathanTheBook
+ */
 public class DAOGetter {
+    private Clusters clusters = new Clusters(DynamicDatabasePlugin.getInstance().getDatastores().get(ClusterDocument.class));
+    private Groups groups = new Groups(DynamicDatabasePlugin.getInstance().getDatastores().get(GroupDocument.class));
+    private Punishments punishments = new Punishments(DynamicDatabasePlugin.getInstance().getDatastores().get(PunishmentDocument.class));
+    private Servers servers = new Servers(DynamicDatabasePlugin.getInstance().getDatastores().get(ServerDocument.class));
+    private Sessions sessions = new Sessions(DynamicDatabasePlugin.getInstance().getDatastores().get(SessionDocument.class));
+    private Users users = new Users(DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
 
-    private Clusters clusters = new Clusters(ClusterDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(ClusterDocument.class));
-
-    private Groups groups = new Groups(GroupDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(GroupDocument.class));
-
-    private Punishments punishments = new Punishments(PunishmentDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(PunishmentDocument.class));
-
-    private Servers servers = new Servers(ServerDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(ServerDocument.class));
-
-    private Sessions sessions = new Sessions(SessionDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(SessionDocument.class));
-
-    private Users users = new Users(UserDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
-
+    /**
+     * Class needs to be initialised before and DAO getter methods can be accessed.
+     */
     public DAOGetter() {
-        // Have to have an instance so these don't hav to be static :)
     }
 
     public Clusters getClusters() {

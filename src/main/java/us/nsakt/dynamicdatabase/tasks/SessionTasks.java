@@ -11,44 +11,32 @@ import us.nsakt.dynamicdatabase.daos.Sessions;
 import us.nsakt.dynamicdatabase.documents.SessionDocument;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
 import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
-import us.nsakt.dynamicdatabase.util.LogLevel;
 import us.nsakt.dynamicdatabase.util.NsaktException;
 
 import java.util.Date;
 
 /**
- * Different tasks for working with sessions.
+ * Basic Utility class to perform action related to session documents.
+ *
+ * @author NathanTheBook
  */
 public class SessionTasks {
-
-
-    /**
-     * Get the document's relative data access object.
-     *
-     * @return the document's relative data access object.
-     */
     private static Sessions getDao() {
         return new DAOGetter().getSessions();
     }
 
     /**
-     * Start a session from a PlayerLoginEvent
+     * Start a new player session from a PlayerLoginEvent.
      *
-     * @param event Event to start the session from
+     * @param event Event that is starting the session
      */
     public static void startSession(final PlayerLoginEvent event) {
         try {
             ConfigEnforcer.Documents.Sessions.ensureEnabled();
         } catch (NsaktException e) {
-            // silence
         }
         final SessionDocument document = new SessionDocument();
         DBCallback callback = new DBCallback() {
-            @Override
-            public void call() {
-
-            }
-
             @Override
             public void call(Object... objects) {
                 document.setServer(DynamicDatabasePlugin.getInstance().getCurrentServerDocument());
@@ -62,30 +50,24 @@ public class SessionTasks {
     }
 
     /**
-     * End an already started session
+     * End a player's session
      *
-     * @param player          Player who owns the session
-     * @param endedCorrectly  If the session was ended correctly (Actually was intentional)
-     * @param endedWithPunish if the session was ended by a punishment
+     * @param player          Player that is quitting
+     * @param endedCorrectly  If the session was ended correctly (The player disconnected correctly)
+     * @param endedWithPunish If the player was kicked from the server
      */
     public static void endSession(final Player player, final boolean endedCorrectly, final boolean endedWithPunish) {
         try {
             ConfigEnforcer.Documents.Sessions.ensureEnabled();
         } catch (NsaktException e) {
-            // silence
         }
-
         DBCallback callback = new DBCallback() {
-            @Override
-            public void call() {
-            }
-
             @Override
             public void call(Object... objects) {
                 final UserDocument userDocument = (UserDocument) objects[0];
                 final SessionDocument sessionDocument = userDocument.getLastSession();
                 if (sessionDocument.getEnd() != null)
-                    Debug.log(LogLevel.WARNING, "Tried to end an already ended session!");
+                    Debug.log(Debug.LogLevel.WARNING, "Tried to end an already ended session!");
                 sessionDocument.setEnd(new Date());
                 sessionDocument.setEndedCorrectly(endedCorrectly);
                 sessionDocument.setEndedWithPunishment(endedWithPunish);

@@ -7,24 +7,25 @@ import org.mongodb.morphia.annotations.Reference;
 
 import java.util.Date;
 
+/**
+ * Class to represent a "session" document in the database.
+ * DOCUMENT DESCRIPTION: This document is meant to serve as an easy way to represent a user's online sessions on the server and store them for future reference.
+ *
+ * @author NathanTheBook
+ */
 @Entity("sessions")
 public class SessionDocument extends Document {
-
     @Reference
     private ServerDocument server;
-
     private Date start;
     private Date end;
     private Duration length;
-
     @Reference
     private UserDocument user;
-
     @Property("ended_correctly")
     private boolean endedCorrectly;
     @Property("ended_with_punish")
     private boolean endedWithPunishment;
-
     private String ip;
 
     public ServerDocument getServer() {
@@ -104,6 +105,9 @@ public class SessionDocument extends Document {
                 '}';
     }
 
+    /**
+     * An enum representation of all fields in the class for reference in Mongo operations.
+     */
     public enum MongoFields {
         id("_id"),
         SERVER("server"),

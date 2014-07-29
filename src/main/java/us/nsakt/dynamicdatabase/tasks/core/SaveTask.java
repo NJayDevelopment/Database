@@ -5,17 +5,11 @@ import us.nsakt.dynamicdatabase.documents.Document;
 import us.nsakt.dynamicdatabase.tasks.core.base.DBRunnable;
 
 /**
- * Class to represent a runnable that is meant to interact with a document.
+ * Base class to represent a runnable that is fitted with some extra document data.
  */
 public class SaveTask extends DBRunnable {
-
     Document document;
 
-    /**
-     * Constructor
-     *
-     * @param store The document's datastore
-     */
     public SaveTask(Datastore store, Document document) {
         super(store);
         this.document = document;
@@ -25,9 +19,6 @@ public class SaveTask extends DBRunnable {
         return document;
     }
 
-    /**
-     * Called when the task is ran.
-     */
     @Override
     public void run() {
         this.getDatastore().save(getDocument());

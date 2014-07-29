@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.mongodb.morphia.query.UpdateOperations;
 import us.nsakt.dynamicdatabase.ConfigEnforcer;
-import us.nsakt.dynamicdatabase.QueryExecutor;
+import us.nsakt.dynamicdatabase.MongoExecutionService;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Users;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
@@ -13,62 +13,53 @@ import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
 import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
 import us.nsakt.dynamicdatabase.util.NsaktException;
 
-import javax.annotation.Nullable;
 import java.util.Date;
 
 /**
- * Different tasks for working with users.
+ * Basic Utility class to perform action related to user documents.
+ *
+ * @author NathanTheBook
  */
 public class UserTasks {
-
-
-    /**
-     * Get the document's relative data access object.
-     *
-     * @return the document's relative data access object.
-     */
     private static Users getDao() {
         return new DAOGetter().getUsers();
     }
 
     /**
-     * Create a new user in the database
+     * Add a user to the database
      *
-     * @param player     Player to pull information from
-     * @param fistSignIn Optional first sign in date
+     * @param player Player to get the user information from
      */
-    public static void createUser(final Player player, final @Nullable Date fistSignIn) {
+    public static void createUser(final Player player) {
         try {
             ConfigEnforcer.Documents.Users.ensureEnabled();
         } catch (NsaktException e) {
-            // silence
         }
         SaveTask task = new SaveTask(getDao().getDatastore(), new UserDocument()) {
             @Override
             public void run() {
                 UserDocument user = (UserDocument) getDocument();
-                user.setFirstSignIn(fistSignIn);
+                user.setFirstSignIn(new Date());
                 user.setUuid(player.getUniqueId());
                 user.setUsernames(Lists.newArrayList(player.getName()));
                 user.setLastUsername(player.getName());
                 user.setMcSignIns(1);
-                user.setLastSignIn(fistSignIn);
+                user.setLastSignIn(new Date());
                 getDao().save(user);
             }
         };
-        QueryExecutor.getExecutorService().submit(task);
+        MongoExecutionService.getExecutorService().submit(task);
     }
 
     /**
-     * Update a user's stats on a PlayerLoginEvent
+     * Update a user's information when they sign in.
      *
-     * @param event the PlayerLoginEvent
+     * @param event Event to update player information from
      */
     public static void updateUserFromEvent(final PlayerLoginEvent event) {
         try {
             ConfigEnforcer.Documents.Users.ensureEnabled();
         } catch (NsaktException e) {
-            // silence
         }
         QueryActionTask task = new QueryActionTask(getDao().getDatastore(), getDao().createQuery().field("UUID").equal(event.getPlayer().getUniqueId())) {
             @Override
@@ -81,6 +72,6 @@ public class UserTasks {
                 getDao().update(getQuery(), updates);
             }
         };
-        QueryExecutor.getExecutorService().submit(task);
+        MongoExecutionService.getExecutorService().submit(task);
     }
 }

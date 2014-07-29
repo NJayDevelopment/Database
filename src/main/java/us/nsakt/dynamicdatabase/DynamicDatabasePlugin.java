@@ -31,7 +31,6 @@ import org.reflections.Reflections;
 import us.nsakt.dynamicdatabase.documents.Document;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
 import us.nsakt.dynamicdatabase.util.LanguageFile;
-import us.nsakt.dynamicdatabase.util.LogLevel;
 
 import java.io.File;
 import java.net.UnknownHostException;
@@ -40,25 +39,29 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Main Bukkit class
+ * Plugin main class
+ * <p/>
+ * ---------------| Project Information |---------------
+ * <p/>
+ * Project Lead: NathanTheBook
+ * With Help From: skipperguy12 & gcflames5 (Nick)
+ * <p/>
+ * Description:
+ * This plugin is meant to server as an easy way to store various documents in a Mongo database.
+ * The plugin strives to be easily configurable and extendable.
+ * This plugin is built with performance in mind.
+ * This is plugin is also UUID ready and fully supports users with multiple names.
  */
 public class DynamicDatabasePlugin extends JavaPlugin {
-    // Singleton instance
     private static DynamicDatabasePlugin instance;
-    //sk89q's command framework CommandsManager
     private CommandsManager<CommandSender> commands;
-    // The main DataStore
     private Datastore mainStore;
-    // Datastores for Morphia
     private Map<Class<? extends Document>, Datastore> datastores = Maps.newHashMap();
-    // The mainThread thread
     private Thread mainThread;
     private ServerDocument currentServerDocument;
 
     /**
-     * Gets the Singleton instance of DynamicDatabasePlugin
-     *
-     * @return Singleton instance of DynamicDatabasePlugin
+     * Get an instance of the plugin.
      */
     public static DynamicDatabasePlugin getInstance() {
         if (instance == null) instance = new DynamicDatabasePlugin();
@@ -66,60 +69,60 @@ public class DynamicDatabasePlugin extends JavaPlugin {
     }
 
     /**
-     * Gets the mainThread thread
-     *
-     * @return the mainThread thread
+     * Get the plugin's main thread
      */
     public Thread getMainThread() {
         return mainThread;
     }
 
+    @Override
     public void onEnable() {
         instance = this;
         mainThread = Thread.currentThread();
         setupConfig();
         setupDebugging();
         setupMongo();
-        QueryExecutor.createExecutorService();
-        ConfigEnforcer.ConfigTasks.convertAllNamesToClusters();
+        MongoExecutionService.createExecutorService();
+        Config.Tasks.convertAllNamesToClusters();
         setupServer();
         registerListeners();
         setupCommands();
     }
 
+    // Load the debugging service
     public void setupDebugging() {
         for (String classname : Config.Debug.allowedChannels) {
             Debug.filter(classname);
         }
     }
 
+    // Check if the server is in the database. If not, throw a warning.
     public void setupServer() {
         ServerDocument serverDocument = getDatastores().get(ServerDocument.class).createQuery(ServerDocument.class).filter("_id", ObjectId.massageToObjectId(Config.Mongo.serverId)).get();
-        if (serverDocument == null) Debug.log(LogLevel.SEVERE, "Server not found in database!");
+        if (serverDocument == null) Debug.log(Debug.LogLevel.SEVERE, "Server not found in database!");
         this.currentServerDocument = serverDocument;
     }
 
+    @Override
     public void onDisable() {
         instance = null;
-        QueryExecutor.destroyExecutorService(false);
+        MongoExecutionService.destroyExecutorService(false);
     }
 
-    // Sets up the Config for language
+    // Load the plugin configuration and language file
     private void setupConfig() {
         this.getConfig().options().copyDefaults(true);
         this.saveConfig();
-
         for (String string : Config.Languages.supportedLanguages) {
             File file = new File(string + ".lang");
             if (!file.exists()) continue;
-
             LanguageFile.LanguageEnum languageInfo = LanguageFile.getByAbbreviation(string);
             LanguageFile language = new LanguageFile(languageInfo);
             Config.getLanguageMap().put(languageInfo, language);
         }
     }
 
-    //Establish connection to mongo
+    // Connect to mongo.
     private void setupMongo() {
         MongoClient mongo = null;
         MongoClientOptions clientOptions = MongoClientOptions.builder().connectionsPerHost(10).build();
@@ -133,27 +136,23 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         } catch (UnknownHostException e) {
             Debug.log(e);
         }
-
         DB database = mongo.getDB(Config.Mongo.database);
-
         if (Config.Mongo.Authentication.useAthentication && !database.authenticate(Config.Mongo.Authentication.username, Config.Mongo.Authentication.password.toCharArray())) {
             throw new MongoException("Could not authenticate to database " + database.getName());
         }
-
         setupMorphia(mongo);
     }
 
-    //Initialize the morphia instance and handle any setup
+    // Map every class in the documents package to morphia.
     private void setupMorphia(MongoClient mongo) {
         Morphia morphia = new Morphia();
         morphia.mapPackage("us.nsakt.dynamicdatabase.documents", true);
         mainStore = morphia.createDatastore(mongo, Config.Mongo.database);
-
         fixClassLoader(morphia);
         setupDataStores(mongo, morphia);
     }
 
-    //Fix the morphia classloader
+    // Fix the morphia class loader.
     private void fixClassLoader(Morphia morphia) {
         morphia.getMapper().getOptions().objectFactory = new DefaultCreator() {
             @Override
@@ -163,7 +162,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         };
     }
 
-    //Set up multiple databases
+    // Create a map of datastores.
     private void setupDataStores(MongoClient mongo, Morphia morphia) {
         Reflections reflections = new Reflections("us.nsakt.dynamicdatabase");
         Set<Class<? extends Document>> classes = reflections.getSubTypesOf(Document.class);
@@ -174,9 +173,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         }
     }
 
-    /**
-     * sk89q's command framework method to setup commands from onEnable
-     */
+    // Setup the command framework.
     private void setupCommands() {
         this.commands = new CommandsManager<CommandSender>() {
             @Override
@@ -187,40 +184,30 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         CommandsManagerRegistration cmdRegister = new CommandsManagerRegistration(this, this.commands);
     }
 
-    /**
-     * Registers Listeners used by DynamicDatabasePlugin
-     */
+    // Register the plugin listeners. DO NOT PUT PACKET LISTENERS HERE!
     private void registerListeners() {
     }
 
-    /**
-     * Registers a Bukkit Listener with Bukkit's PluginManager
-     *
-     * @param listener Listener to register
-     */
+    // Utility to register a bukkit event listener.
     private void registerEvents(Listener listener) {
         Bukkit.getPluginManager().registerEvents(listener, this);
     }
 
     /**
-     * Gets the Datastore in use
-     *
-     * @return the Datastore in use
+     * Get the plugin's main datastore. (The one it initially connected to)
      */
     public Datastore getAuthDatastore() {
         return mainStore;
     }
 
     /**
-     * Gets the datastores map
-     *
-     * @return mapping of datastores
+     * Get all other datastores in a hashmap with their corresponding documents.
      */
     public Map<Class<? extends Document>, Datastore> getDatastores() {
         return datastores;
     }
 
-    // Passes commands from Bukkit to sk89q
+    // Pass commands to the framework
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         try {
@@ -242,10 +229,12 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         } catch (CommandException e) {
             sender.sendMessage(ChatColor.RED + e.getMessage());
         }
-
         return true;
     }
 
+    /**
+     * Get the ServerDocument connected to the current server.
+     */
     public ServerDocument getCurrentServerDocument() {
         return this.currentServerDocument;
     }

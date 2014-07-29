@@ -4,13 +4,13 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.joda.time.DateTime;
-import us.nsakt.dynamicdatabase.util.LogLevel;
 
 import java.util.List;
 
-
 /**
- * Created by Nick on 7/5/14.
+ * A utility class to make debugging cleaner.
+ *
+ * @author Nick
  */
 public class Debug {
 
@@ -69,9 +69,24 @@ public class Debug {
         System.out.println("[" + level.name().toUpperCase() + " " + dTime.getHourOfDay() + ":" + dTime.getMinuteOfHour() + ":" + dTime.getSecondOfMinute() + "] " + string);
     }
 
-
     public enum FilterMode {
         WHITELIST, BLACKLIST;
     }
 
+    /**
+     * Enum to represent a log level.
+     */
+    public enum LogLevel {
+        INFO(0), WARNING(1), SEVERE(2);
+
+        int level;
+
+        LogLevel(int level) {
+            this.level = level;
+        }
+
+        public int getLevel() {
+            return this.level;
+        }
+    }
 }

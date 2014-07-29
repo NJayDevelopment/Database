@@ -4,33 +4,21 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * QueryExecutor to make queries run asyncly with a thread pool
+ * An ExecutorService manager for mongo operations.
+ *
+ * @author skipperguy12
  */
-public class QueryExecutor {
-    // ExecutorService
+public class MongoExecutionService {
     private static ExecutorService executorService;
 
-    /**
-     * Gets the executor service
-     *
-     * @return ExecutorService
-     */
     public static ExecutorService getExecutorService() {
         return executorService;
     }
 
-    /**
-     * Creates a new ExecutorService with a fixed thread pool with thread count of 10 threads
-     */
     public static void createExecutorService() {
         executorService = Executors.newFixedThreadPool(10);
     }
 
-    /**
-     * Shuts the ExecutorService down
-     *
-     * @param force forces the shutdown
-     */
     public static void destroyExecutorService(boolean force) {
         if (force) {
             executorService.shutdownNow();

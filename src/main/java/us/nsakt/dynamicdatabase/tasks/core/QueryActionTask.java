@@ -5,17 +5,11 @@ import org.mongodb.morphia.query.Query;
 import us.nsakt.dynamicdatabase.tasks.core.base.DBRunnable;
 
 /**
- * Class to represent a runnable that is meant to interact with a document.
+ * Base class to represent a runnable that is fitted with some extra database query data.
  */
 public class QueryActionTask extends DBRunnable {
-
     Query query;
 
-    /**
-     * Constructor
-     *
-     * @param store The document's datastore
-     */
     public QueryActionTask(Datastore store, Query query) {
         super(store);
         this.query = query;
@@ -25,11 +19,7 @@ public class QueryActionTask extends DBRunnable {
         return query;
     }
 
-    /**
-     * Called when the task is ran.
-     */
     @Override
     public void run() {
-
     }
 }

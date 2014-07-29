@@ -3,7 +3,7 @@ package us.nsakt.dynamicdatabase.daos;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
-import us.nsakt.dynamicdatabase.QueryExecutor;
+import us.nsakt.dynamicdatabase.MongoExecutionService;
 import us.nsakt.dynamicdatabase.documents.PunishmentDocument;
 import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
 import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
@@ -11,25 +11,31 @@ import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
 import java.util.UUID;
 
 /**
- * Data access object to represent the punishments datastore.
+ * A dynamic way to interact with all punishments.
+ * This is the proper place to put find methods.
+ *
+ * @author NathanTheBook
  */
 public class Punishments extends BasicDAO<PunishmentDocument, ObjectId> {
-
     /**
-     * Constructor
+     * Default constructor for an instance of the DAO.
+     * DAO needs to be initiated before any finder methods can be ran.
      *
-     * @param document  Document class to represent
-     * @param datastore Datastore that contains the objects
+     * @param datastore The datastore that the documents are stored in.
      */
-    public Punishments(Class<PunishmentDocument> document, Datastore datastore) {
-        super(document, datastore);
+    public Punishments(Datastore datastore) {
+        super(datastore);
     }
 
     /**
-     * Get all punishments issued to a UUID
+     * Get all punishments that have been issued to a UUID.
+     * NOTE: For ban checks, callers need to check if the punishment is still active.
+     * <p/>
+     * ----------| CALLBACK INFORMATION |----------
+     * The only object that is passed to the callback is a list of PunishmentDocuments.
      *
-     * @param uuid UUID to search for
-     * @return all punishments issues to the UUID
+     * @param uuid     UUID to check punishments for.
+     * @param callback Task to run on completion of the punishment query,
      */
     public void getAllPunishments(final UUID uuid, final DBCallback callback) {
         QueryActionTask task = new QueryActionTask(getDatastore(), getDatastore().createQuery(getEntityClazz())) {
@@ -39,15 +45,19 @@ public class Punishments extends BasicDAO<PunishmentDocument, ObjectId> {
                 callback.call(getQuery().asList());
             }
         };
-        QueryExecutor.getExecutorService().submit(task);
+        MongoExecutionService.getExecutorService().submit(task);
     }
 
     /**
-     * Get all punishments issued to a UUID of a certain type
+     * Get all punishments that have been issued to a UUID (of a certain PunishmentType).
+     * NOTE: For ban checks, callers need to check if the punishment is still active.
+     * <p/>
+     * ----------| CALLBACK INFORMATION |----------
+     * The only object that is passed to the callback is a list of PunishmentDocuments.
      *
-     * @param uuid UUID to search for
-     * @param type PunishmentType to search for
-     * @return all punishments issued to the UUID of that type
+     * @param uuid     UUID to check punishments for.
+     * @param type     Specific PunishmentType to search for
+     * @param callback Task to run on completion of the punishment query,
      */
     public void getAllPunishmentsOfType(final UUID uuid, final PunishmentDocument.PunishmentType type, final DBCallback callback) {
         QueryActionTask task = new QueryActionTask(getDatastore(), getDatastore().createQuery(getEntityClazz())) {
@@ -58,6 +68,6 @@ public class Punishments extends BasicDAO<PunishmentDocument, ObjectId> {
                 callback.call(getQuery().asList());
             }
         };
-        QueryExecutor.getExecutorService().submit(task);
+        MongoExecutionService.getExecutorService().submit(task);
     }
 }

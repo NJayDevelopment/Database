@@ -6,7 +6,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import us.nsakt.dynamicdatabase.ConfigEnforcer;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
-import us.nsakt.dynamicdatabase.QueryExecutor;
+import us.nsakt.dynamicdatabase.MongoExecutionService;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Groups;
 import us.nsakt.dynamicdatabase.daos.Users;
@@ -22,37 +22,27 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Different tasks for working with groups.
+ * Basic Utility class to perform action related to group documents.
+ *
+ * @author NathanTheBook
  */
 public class GroupTasks {
-
-    /**
-     * Get the document's relative data access object.
-     *
-     * @return the document's relative data access object.
-     */
     private static Groups getDao() {
         return new DAOGetter().getGroups();
     }
 
     /**
-     * Assign permissions to a player
+     * Get all of a player's groups (based on clusters from config) and apply them to the player.
      *
-     * @param player Player to assign permissions to
+     * @param player Player to apply the permissions to.
      */
     public static void assignPermissions(final Player player) {
         try {
             ConfigEnforcer.Documents.Groups.ensureEnabled();
         } catch (NsaktException e) {
-            // silence
         }
-
         final UUID playerUUID = player.getUniqueId();
         DBCallback callback = new DBCallback() {
-            @Override
-            public void call() {
-            }
-
             @Override
             public void call(Object... objects) {
                 HashMap<Permission, Boolean> permissions = (HashMap<Permission, Boolean>) objects[0];
@@ -67,23 +57,17 @@ public class GroupTasks {
     }
 
     /**
-     * Add a player to a groups, then recalculate the player's permissions
+     * Add a player to a group, then recalculate the player's permissions.
      *
-     * @param player        Player to be added
-     * @param groupDocument Groups to add the player to
+     * @param player        Player to be added to the group.
+     * @param groupDocument Group to add the player to.
      */
     public static void addPlayerToGroupAndRecalculate(final Player player, final GroupDocument groupDocument) {
         try {
             ConfigEnforcer.Documents.Groups.ensureEnabled();
         } catch (NsaktException e) {
-            // silence
         }
-
         DBCallback callback = new DBCallback() {
-            @Override
-            public void call() {
-            }
-
             @Override
             public void call(Object... objects) {
                 groupDocument.getMembers().add((UserDocument) objects[0]);
@@ -91,28 +75,19 @@ public class GroupTasks {
                 assignPermissions(player);
             }
         };
-        Users users = new Users(UserDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
+        Users users = new Users(DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
         users.getUserFromPlayer(player, callback);
     }
 
     /**
-     * Remove a player from a groups, then recalculate the player's permissions
-     *
-     * @param player        Player to be removed
-     * @param groupDocument Groups to remove the player from
+     * Opposite action of {@link us.nsakt.dynamicdatabase.tasks.GroupTasks#addPlayerToGroupAndRecalculate}
      */
     public static void removePlayerFromGroupAndRecalculate(final Player player, final GroupDocument groupDocument) {
         try {
             ConfigEnforcer.Documents.Groups.ensureEnabled();
         } catch (NsaktException e) {
-            // silence
         }
-
         DBCallback callback = new DBCallback() {
-            @Override
-            public void call() {
-            }
-
             @Override
             public void call(Object... objects) {
                 groupDocument.getMembers().remove((UserDocument) objects[0]);
@@ -120,18 +95,19 @@ public class GroupTasks {
                 assignPermissions(player);
             }
         };
-        Users users = new Users(UserDocument.class, DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
+        Users users = new Users(DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
         users.getUserFromPlayer(player, callback);
     }
 
     /**
-     * Creates the default group
+     * Add the default group to the database.
+     * NOTE: Callers need to check if the default group is not already there.
+     * NOTE: The default cluster needs to be created first.
      */
     public static void setupDefaultGroup() {
         try {
             ConfigEnforcer.Documents.Groups.ensureEnabled();
         } catch (NsaktException e) {
-            // silence
         }
         SaveTask task = new SaveTask(getDao().getDatastore(), new GroupDocument()) {
             @Override
@@ -153,9 +129,8 @@ public class GroupTasks {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
             }
         };
-        QueryExecutor.getExecutorService().submit(task);
+        MongoExecutionService.getExecutorService().submit(task);
     }
 }

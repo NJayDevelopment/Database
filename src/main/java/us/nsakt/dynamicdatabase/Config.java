@@ -2,10 +2,16 @@ package us.nsakt.dynamicdatabase;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.bson.types.ObjectId;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.joda.time.Duration;
+import org.mongodb.morphia.Datastore;
+import us.nsakt.dynamicdatabase.daos.DAOGetter;
+import us.nsakt.dynamicdatabase.documents.ClusterDocument;
+import us.nsakt.dynamicdatabase.documents.Document;
+import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
 import us.nsakt.dynamicdatabase.util.LanguageFile;
 import us.nsakt.dynamicdatabase.util.config.ConfigAnnotation;
 import us.nsakt.dynamicdatabase.util.config.ConfigStructure;
@@ -15,51 +21,47 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Class to interface with Bukkits Configuration system
+ * Class to help manage the Bukkit  configuration.
+ *
+ * @author skipperguy12
+ * @author NathanTheBook
  */
 public class Config {
 
-    // mapping of LanguageEnum to the LanguageFile
+    public static HashMap<String, ObjectId> namesWithIds = Maps.newHashMap();
     private static HashMap<LanguageFile.LanguageEnum, LanguageFile> languageHashMap = Maps.newHashMap();
 
     /**
-     * Gets the languages which are loaded
-     *
-     * @return the mapping of LanguageEnum to the LanguageFile
+     * Return a HashMap of languages that are loaded.
      */
     public static HashMap<LanguageFile.LanguageEnum, LanguageFile> getLanguageMap() {
         return languageHashMap;
     }
 
     /**
-     * Gets the Bukkit Configuration
-     *
-     * @return the Configuration in use by Bukkit from the Main class
+     * Get the Bukkit configuration instance.
      */
     public static Configuration getBukkitConfig() {
-        // Singleton instance of Main class
         DynamicDatabasePlugin plugin = DynamicDatabasePlugin.getInstance();
-        // result from plugin
         FileConfiguration res = plugin.getConfig();
 
-        // return res if not null, else return a brand new YamlConfiguration
         if (res != null) return res;
         else return new YamlConfiguration();
     }
 
     /**
-     * Saves the Bukkit config
+     * Save the Bukkit config to disk.
      */
     public static void saveBukkitConfig() {
         DynamicDatabasePlugin.getInstance().saveConfig();
     }
 
     /**
-     * Gets an element form the Configuration file
+     * Generic way to get an Object from the config.
      *
-     * @param path path to element
-     * @param <T>  type of element
-     * @return found element
+     * @param path Path to the object
+     * @param <T>  Type of the object to be retrieved.
+     * @return The configuration object that resisded at the supplied path
      */
     @SuppressWarnings("unchecked")
     public static <T> T get(String path) {
@@ -67,11 +69,11 @@ public class Config {
     }
 
     /**
-     * Loop through the config, find all sections that match the query, and add the values of that section to a list, then return the list.
+     * Loop through the config, searching for all instances of a key matching the search term and compile a list of objects that were retrieved.
      *
-     * @param search Section to search for
-     * @param <T>    Type of element
-     * @return A list of values from the found sections
+     * @param search key to search for
+     * @param <T>    Type of the object to be retrieved.
+     * @return a list of objects that were retrieved
      */
     @SuppressWarnings("unchecked")
     public static <T> List<T> getAllMatchingSections(String search) {
@@ -84,12 +86,7 @@ public class Config {
     }
 
     /**
-     * Gets an element form the Configuration file, returning def if not found
-     *
-     * @param path path to element
-     * @param def  default value to return if element is not found
-     * @param <T>  type of element
-     * @return found element, def if null
+     * Same operation as {@link us.nsakt.dynamicdatabase.Config#get(String)}, just with a default value.
      */
     @SuppressWarnings("unchecked")
     public static <T> T get(String path, Object def) {
@@ -97,15 +94,42 @@ public class Config {
     }
 
     /**
-     * Sets a value in the configuration at path
+     * Set a key's value in the config.
      *
-     * @param path path to element
-     * @param val  value to set at path
+     * @param path Path of the key
+     * @param val  Value to be set
      */
     public static void set(String path, Object val) {
         getBukkitConfig().set(path, val);
     }
 
+    // General Tasks to make working with the config easier later.
+    public static class Tasks {
+        public static void stringToCluster(final String clusterName) {
+            Datastore datastore = new DAOGetter().getClusters().getDatastore();
+            QueryActionTask task = new QueryActionTask(datastore, datastore.createQuery(ClusterDocument.class)) {
+                @Override
+                public void run() {
+                    getQuery().field(ClusterDocument.MongoFields.NAME.fieldName).equal(clusterName);
+                    Document document = (Document) getQuery().get();
+                    us.nsakt.dynamicdatabase.Debug.log(us.nsakt.dynamicdatabase.Debug.LogLevel.INFO, document.getObjectId().toString());
+                    namesWithIds.keySet().removeAll(Lists.newArrayList(clusterName));
+                    namesWithIds.put(clusterName, document.getObjectId());
+                }
+            };
+            MongoExecutionService.getExecutorService().submit(task);
+        }
+
+        public static void convertAllNamesToClusters() {
+            for (Object t : getAllMatchingSections("clusters")) {
+                if (!(t instanceof List)) continue;
+                for (String s : (List<String>) t) {
+                    stringToCluster(s);
+                }
+            }
+        }
+
+    }
 
     @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Information for Mongo")
     public static class Mongo {
@@ -118,7 +142,6 @@ public class Config {
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The current Server's cluster.")
         public static final String serverCluster = get("mongo.server-cluster", "all");
 
-        // Actual connection stuff
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The hostname to attempt to connect to", def = "localhost")
         public static final List<String> hostnames = get("mongo.hostnames", Arrays.asList("localhost"));
 
@@ -128,10 +151,8 @@ public class Config {
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The main Mongo database to connect to", def = "nsakt_database")
         public static final String database = get("mongo.database", "nsakt_database");
 
-
         @ConfigAnnotation(type = ConfigStructure.SECTION, desc = "Information for Mongo authentication")
         public static class Authentication {
-
             @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if Mongo requires authentication to the DB", def = "false")
             public static final boolean useAthentication = get("mongo.authentication.use-authentication", false);
 

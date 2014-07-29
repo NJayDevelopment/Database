@@ -1,8 +1,10 @@
 package us.nsakt.dynamicdatabase.util.config;
 
 /**
- * Structure of the Configuration file, used in annotations for code readability
+ * Enum to represent a section in the configuration.
+ *
+ * @author skipperguy12
  */
 public enum ConfigStructure {
-    SECTION, SUBSECTION, VARIABLE
+    SECTION, VARIABLE
 }

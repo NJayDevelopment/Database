@@ -4,56 +4,70 @@ import org.bson.types.ObjectId;
 import org.bukkit.entity.Player;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
-import us.nsakt.dynamicdatabase.QueryExecutor;
+import us.nsakt.dynamicdatabase.MongoExecutionService;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
 import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
 import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.UUID;
 
 /**
- * Data access object to represent the users datastore.
+ * A dynamic way to interact with all users.
+ * This is the proper place to put find methods.
+ *
+ * @author NathanTheBook
  */
 public class Users extends BasicDAO<UserDocument, ObjectId> {
-
     /**
-     * Constructor
+     * Default constructor for an instance of the DAO.
+     * DAO needs to be initiated before any finder methods can be ran.
      *
-     * @param document  Document class to represent
-     * @param datastore Datastore that contains the objects
+     * @param datastore The datastore that the documents are stored in.
      */
-    public Users(Class<UserDocument> document, Datastore datastore) {
-        super(document, datastore);
+    public Users(Datastore datastore) {
+        super(datastore);
     }
 
     /**
-     * Get all users who have logged in with that username
+     * Find all users that have used the supplied username, and run a task on them.
+     * <p/>
+     * ----------| CALLBACK INFORMATION |----------
+     * The only object that is passed to the callback is a list of UserDocuments.
      *
-     * @param username Username to look for
-     * @param limit    Limit of how many should be returned
-     * @return all users who have logged in with that username
+     * @param username Username to search for
+     * @param limit    Optional limit on the number of results
+     * @param callback Action to run when the query is completed
      */
-    public List<UserDocument> getAllMatchingUsers(String username, @Nullable Integer limit) {
-        return getDatastore().find(UserDocument.class).field(UserDocument.MongoFields.USERNAMES.fieldName).contains(username).limit((limit != null) ? limit : 10000000).asList();
+    public void getAllMatchingUsers(final String username, final @Nullable Integer limit, final DBCallback callback) {
+        QueryActionTask task = new QueryActionTask(getDatastore(), getDatastore().createQuery(getEntityClazz())) {
+            @Override
+            public void run() {
+                getQuery().field(UserDocument.MongoFields.USERNAMES.fieldName).contains(username);
+                getQuery().limit((limit != null) ? limit : Integer.MAX_VALUE);
+                callback.call(getQuery().asList());
+            }
+        };
     }
 
     /**
-     * See if a user is in the database
+     * Check if a user exists.
      *
-     * @param uuid UUID to look for
-     * @return If the user exists
+     * @param uuid UUID to search for in databse
+     * @return If the UUID is in the database
      */
     public boolean exists(UUID uuid) {
         return getDatastore().find(UserDocument.class).field(UserDocument.MongoFields.UUID.fieldName).equal(uuid).get() != null;
     }
 
     /**
-     * Get a UserDocument from a Bukkit player.
+     * Convert a Bukkit player to a UserDocument, and run a task on them.
+     * <p/>
+     * ----------| CALLBACK INFORMATION |----------
+     * The only object that is passed to the callback is a UserDocument.
      *
-     * @param player Player to get the document for
-     * @return a UserDocument from the Bukkit player.
+     * @param player   Player to convert to UserDocument
+     * @param callback Action to run when the query is completed
      */
     public void getUserFromPlayer(final Player player, final DBCallback callback) {
         final UUID uuid = player.getUniqueId();
@@ -64,6 +78,6 @@ public class Users extends BasicDAO<UserDocument, ObjectId> {
                 callback.call(getQuery().get());
             }
         };
-        QueryExecutor.getExecutorService().submit(task);
+        MongoExecutionService.getExecutorService().submit(task);
     }
 }

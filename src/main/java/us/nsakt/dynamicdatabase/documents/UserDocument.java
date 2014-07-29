@@ -9,29 +9,25 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Class to represent a user.
+ * Class to represent a "user" document in the database.
+ * DOCUMENT DESCRIPTION: This document is meant to serve as an easy way to represent a Bukkit player and store their information.
+ * NOTE: This class is UUID ready!
+ *
+ * @author NathanTheBook
  */
 @Entity("users")
 public class UserDocument extends Document {
-
     private UUID uuid;
-
     private List<String> usernames;
-
     @Property("last_username")
     private String lastUsername;
-
     private String email;
-
     @Property("mc_sign_ins")
     private int mcSignIns;
-
     @Property("last_sign_in")
     private Date lastSignIn;
-
     @Property("first_sign_in")
     private Date firstSignIn;
-
     @Reference("last_session")
     private SessionDocument lastSession;
 
@@ -99,6 +95,9 @@ public class UserDocument extends Document {
         this.lastSession = lastSession;
     }
 
+    /**
+     * An enum representation of all fields in the class for reference in Mongo operations.
+     */
     public enum MongoFields {
         id("_id"),
         UUID("uuid"),
