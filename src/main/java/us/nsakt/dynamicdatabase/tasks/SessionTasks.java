@@ -6,6 +6,7 @@ import org.joda.time.Duration;
 import us.nsakt.dynamicdatabase.ConfigEnforcer;
 import us.nsakt.dynamicdatabase.Debug;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
+import us.nsakt.dynamicdatabase.MongoExecutionService;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Sessions;
 import us.nsakt.dynamicdatabase.documents.SessionDocument;
@@ -34,14 +35,20 @@ public class SessionTasks {
             ConfigEnforcer.Documents.Sessions.ensureEnabled();
         } catch (NsaktException e) {
         }
-        final SessionDocument document = new SessionDocument();
-        document.setServer(DynamicDatabasePlugin.getInstance().getCurrentServerDocument());
-        document.setUser(event.getPlayer().getUniqueId());
-        document.setStart(new Date());
-        document.setIp(event.getPlayer().getAddress().getAddress().toString());
-        getDao().save(document);
-        final UserDocument userDocument = new DAOGetter().getUsers().getUserFromPlayer(event.getPlayer());
-        userDocument.setLastSession(document);
+        Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                final SessionDocument document = new SessionDocument();
+                document.setServer(DynamicDatabasePlugin.getInstance().getCurrentServerDocument());
+                document.setUser(event.getPlayer().getUniqueId());
+                document.setStart(new Date());
+                document.setIp(event.getPlayer().getAddress().getAddress().toString());
+                getDao().save(document);
+                final UserDocument userDocument = new DAOGetter().getUsers().getUserFromPlayer(event.getPlayer());
+                userDocument.setLastSession(document);
+            }
+        };
+        MongoExecutionService.getExecutorService().submit(task);
     }
 
     /**
@@ -56,14 +63,20 @@ public class SessionTasks {
             ConfigEnforcer.Documents.Sessions.ensureEnabled();
         } catch (NsaktException e) {
         }
-        final UserDocument userDocument = new DAOGetter().getUsers().getUserFromPlayer(player);
-        final SessionDocument sessionDocument = userDocument.getLastSession();
-        if (sessionDocument.getEnd() != null)
-            Debug.log(Debug.LogLevel.WARNING, "Tried to end an already ended session!");
-        sessionDocument.setEnd(new Date());
-        sessionDocument.setEndedCorrectly(endedCorrectly);
-        sessionDocument.setEndedWithPunishment(endedWithPunish);
-        sessionDocument.setLength(new Duration(sessionDocument.getStart().getTime() - sessionDocument.getEnd().getTime()));
-        getDao().save(sessionDocument);
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                final UserDocument userDocument = new DAOGetter().getUsers().getUserFromPlayer(player);
+                final SessionDocument sessionDocument = userDocument.getLastSession();
+                if (sessionDocument.getEnd() != null)
+                    Debug.log(Debug.LogLevel.WARNING, "Tried to end an already ended session!");
+                sessionDocument.setEnd(new Date());
+                sessionDocument.setEndedCorrectly(endedCorrectly);
+                sessionDocument.setEndedWithPunishment(endedWithPunish);
+                sessionDocument.setLength(new Duration(sessionDocument.getStart().getTime() - sessionDocument.getEnd().getTime()));
+                getDao().save(sessionDocument);
+            }
+        };
+        MongoExecutionService.getExecutorService().submit(runnable);
     }
 }

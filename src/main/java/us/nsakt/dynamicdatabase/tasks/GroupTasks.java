@@ -1,6 +1,7 @@
 package us.nsakt.dynamicdatabase.tasks;
 
 import com.google.common.collect.Lists;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
@@ -41,13 +42,18 @@ public class GroupTasks {
         } catch (NsaktException e) {
         }
         final UUID playerUUID = player.getUniqueId();
-
-        HashMap<Permission, Boolean> permissions = getDao().getAllPermissions(playerUUID);
-        for (Map.Entry<Permission, Boolean> entry : permissions.entrySet()) {
-            PermissionAttachment attachment = player.addAttachment(DynamicDatabasePlugin.getInstance());
-            attachment.setPermission(entry.getKey(), entry.getValue());
-        }
-        player.recalculatePermissions();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                HashMap<Permission, Boolean> permissions = getDao().getAllPermissions(playerUUID);
+                for (Map.Entry<Permission, Boolean> entry : permissions.entrySet()) {
+                    PermissionAttachment attachment = player.addAttachment(DynamicDatabasePlugin.getInstance());
+                    attachment.setPermission(entry.getKey(), entry.getValue());
+                }
+                player.recalculatePermissions();
+            }
+        };
+        MongoExecutionService.getExecutorService().submit(runnable);
     }
 
     /**
@@ -61,10 +67,15 @@ public class GroupTasks {
             ConfigEnforcer.Documents.Groups.ensureEnabled();
         } catch (NsaktException e) {
         }
-        Users users = new Users(DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
-        groupDocument.getMembers().add(player.getUniqueId());
-        getDao().save(groupDocument);
-        assignPermissions(player);
+        SaveTask task = new SaveTask(getDao().getDatastore(), groupDocument) {
+            @Override
+            public void run() {
+                groupDocument.getMembers().add(player.getUniqueId());
+                getDao().save(groupDocument);
+                assignPermissions(player);
+            }
+        };
+        MongoExecutionService.getExecutorService().submit(task);
     }
 
     /**
@@ -75,12 +86,15 @@ public class GroupTasks {
             ConfigEnforcer.Documents.Groups.ensureEnabled();
         } catch (NsaktException e) {
         }
-
-        Users users = new Users(DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
-
-        groupDocument.getMembers().remove(player.getUniqueId());
-        getDao().save(groupDocument);
-        assignPermissions(player);
+        SaveTask task = new SaveTask(getDao().getDatastore(), groupDocument) {
+            @Override
+            public void run() {
+                groupDocument.getMembers().remove(player.getUniqueId());
+                getDao().save(groupDocument);
+                assignPermissions(player);
+            }
+        };
+        MongoExecutionService.getExecutorService().submit(task);
     }
 
     /**

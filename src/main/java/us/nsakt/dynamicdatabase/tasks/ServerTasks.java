@@ -1,6 +1,7 @@
 package us.nsakt.dynamicdatabase.tasks;
 
 import org.bukkit.entity.Player;
+import us.nsakt.dynamicdatabase.MongoExecutionService;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Servers;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
@@ -22,8 +23,15 @@ public class ServerTasks {
      * @param player         Player that is joining the server
      */
     public static void addPlayerToOnline(final ServerDocument serverDocument, final Player player) {
-        serverDocument.getOnlinePlayers().add(player.getUniqueId());
-        if (player.hasPermission("dynamicdb.staff.staff")) serverDocument.getOnlineStaff().add(player.getUniqueId());
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                serverDocument.getOnlinePlayers().add(player.getUniqueId());
+                if (player.hasPermission("dynamicdb.staff.staff")) serverDocument.getOnlineStaff().add(player.getUniqueId());
+                getDao().save(serverDocument);
+            }
+        };
+        MongoExecutionService.getExecutorService().submit(runnable);
     }
 
     /**
@@ -33,7 +41,13 @@ public class ServerTasks {
      * @param player         Player that is leaving the server
      */
     public static void removePlayerFromOnline(final ServerDocument serverDocument, final Player player) {
-        serverDocument.getOnlinePlayers().remove(player.getUniqueId());
-        if (player.hasPermission("dynamicdb.staff.staff")) serverDocument.getOnlineStaff().remove(player.getUniqueId());
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                serverDocument.getOnlinePlayers().remove(player.getUniqueId());
+                if (player.hasPermission("dynamicdb.staff.staff")) serverDocument.getOnlineStaff().remove(player.getUniqueId());
+            }
+        };
+        MongoExecutionService.getExecutorService().submit(runnable);
     }
 }

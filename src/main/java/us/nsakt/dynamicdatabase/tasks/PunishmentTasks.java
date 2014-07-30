@@ -2,9 +2,11 @@ package us.nsakt.dynamicdatabase.tasks;
 
 import org.joda.time.Duration;
 import us.nsakt.dynamicdatabase.ConfigEnforcer;
+import us.nsakt.dynamicdatabase.MongoExecutionService;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Punishments;
 import us.nsakt.dynamicdatabase.documents.PunishmentDocument;
+import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
 import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
 import us.nsakt.dynamicdatabase.util.NsaktException;
 
@@ -35,21 +37,27 @@ public class PunishmentTasks {
             ConfigEnforcer.Documents.Punishments.ensureEnabled();
         } catch (NsaktException e) {
         }
-        int totalPunishments = (getDao().getAllPunishmentsOfType(uuid, PunishmentDocument.PunishmentType.KICK).size() + getDao().getAllPunishmentsOfType(uuid, PunishmentDocument.PunishmentType.BAN).size());
-        PunishmentDocument.PunishmentType type;
-        switch (totalPunishments) {
-            case 0:
-                type = PunishmentDocument.PunishmentType.KICK;
-                punishmentDocument.setType(type);
-            case 1:
-                type = PunishmentDocument.PunishmentType.BAN;
-                punishmentDocument.setExpires(Duration.standardDays(10));
-                punishmentDocument.setType(type);
-            default:
-                type = PunishmentDocument.PunishmentType.BAN;
-                punishmentDocument.setType(type);
-        }
-        getDao().save(punishmentDocument);
-        onFinish.call(uuid, punishmentDocument);
+        SaveTask task = new SaveTask(getDao().getDatastore(), punishmentDocument) {
+            @Override
+            public void run() {
+                int totalPunishments = (getDao().getAllPunishmentsOfType(uuid, PunishmentDocument.PunishmentType.KICK).size() + getDao().getAllPunishmentsOfType(uuid, PunishmentDocument.PunishmentType.BAN).size());
+                PunishmentDocument.PunishmentType type;
+                switch (totalPunishments) {
+                    case 0:
+                        type = PunishmentDocument.PunishmentType.KICK;
+                        punishmentDocument.setType(type);
+                    case 1:
+                        type = PunishmentDocument.PunishmentType.BAN;
+                        punishmentDocument.setExpires(Duration.standardDays(10));
+                        punishmentDocument.setType(type);
+                    default:
+                        type = PunishmentDocument.PunishmentType.BAN;
+                        punishmentDocument.setType(type);
+                }
+                getDao().save(punishmentDocument);
+                onFinish.call(uuid, punishmentDocument);
+            }
+        };
+        MongoExecutionService.getExecutorService().submit(task);
     }
 }
