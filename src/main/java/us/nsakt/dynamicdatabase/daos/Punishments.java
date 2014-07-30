@@ -3,11 +3,13 @@ package us.nsakt.dynamicdatabase.daos;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
+import org.mongodb.morphia.query.Query;
 import us.nsakt.dynamicdatabase.MongoExecutionService;
 import us.nsakt.dynamicdatabase.documents.PunishmentDocument;
 import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
 import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -30,44 +32,26 @@ public class Punishments extends BasicDAO<PunishmentDocument, ObjectId> {
     /**
      * Get all punishments that have been issued to a UUID.
      * NOTE: For ban checks, callers need to check if the punishment is still active.
-     * <p/>
-     * ----------| CALLBACK INFORMATION |----------
-     * The only object that is passed to the callback is a list of PunishmentDocuments.
      *
-     * @param uuid     UUID to check punishments for.
-     * @param callback Task to run on completion of the punishment query,
+     * @param uuid UUID to check punishments for.
      */
-    public void getAllPunishments(final UUID uuid, final DBCallback callback) {
-        QueryActionTask task = new QueryActionTask(getDatastore(), getDatastore().createQuery(getEntityClazz())) {
-            @Override
-            public void run() {
-                getQuery().field(PunishmentDocument.MongoFields.PUNISHED.fieldName).equal(uuid);
-                callback.call(getQuery().asList());
-            }
-        };
-        MongoExecutionService.getExecutorService().submit(task);
+    public List<PunishmentDocument> getAllPunishments(final UUID uuid) {
+        Query<PunishmentDocument> query = getDatastore().createQuery(PunishmentDocument.class);
+        query.field(PunishmentDocument.MongoFields.PUNISHED.fieldName).equal(uuid);
+        return query.asList();
     }
 
     /**
      * Get all punishments that have been issued to a UUID (of a certain PunishmentType).
      * NOTE: For ban checks, callers need to check if the punishment is still active.
-     * <p/>
-     * ----------| CALLBACK INFORMATION |----------
-     * The only object that is passed to the callback is a list of PunishmentDocuments.
      *
      * @param uuid     UUID to check punishments for.
      * @param type     Specific PunishmentType to search for
-     * @param callback Task to run on completion of the punishment query,
      */
-    public void getAllPunishmentsOfType(final UUID uuid, final PunishmentDocument.PunishmentType type, final DBCallback callback) {
-        QueryActionTask task = new QueryActionTask(getDatastore(), getDatastore().createQuery(getEntityClazz())) {
-            @Override
-            public void run() {
-                getQuery().field(PunishmentDocument.MongoFields.PUNISHED.fieldName).equal(uuid);
-                getQuery().field(PunishmentDocument.MongoFields.TYPE.fieldName).equal(type);
-                callback.call(getQuery().asList());
-            }
-        };
-        MongoExecutionService.getExecutorService().submit(task);
+    public List<PunishmentDocument> getAllPunishmentsOfType(final UUID uuid, final PunishmentDocument.PunishmentType type) {
+        Query<PunishmentDocument> query = getDatastore().createQuery(PunishmentDocument.class);
+        query.field(PunishmentDocument.MongoFields.PUNISHED.fieldName).equal(uuid);
+        query.field(PunishmentDocument.MongoFields.TYPE.fieldName).equal(type);
+        return query.asList();
     }
 }

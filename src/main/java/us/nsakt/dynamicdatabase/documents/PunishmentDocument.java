@@ -123,17 +123,17 @@ public class PunishmentDocument extends Document {
     @Override
     public String toString() {
         return "PunishmentDocument{" +
-                "punisher=" + getPunisher() +
-                ", punished=" + getPunished() +
-                ", reason='" + getReason() + '\'' +
-                ", server=" + getServer() +
-                ", type='" + getType() + '\'' +
-                ", cluster=" + getCluster() +
-                ", active=" + isActive() +
-                ", appealable=" + isAppealable() +
-                ", automatic=" + isAutomatic() +
-                ", when=" + getWhen() +
-                ", expires=" + getExpires() +
+                "punisher=" + punisher +
+                ", punished=" + punished +
+                ", reason='" + reason + '\'' +
+                ", server=" + server +
+                ", type=" + type +
+                ", cluster=" + cluster +
+                ", active=" + active +
+                ", appealable=" + appealable +
+                ", automatic=" + automatic +
+                ", when=" + when +
+                ", expires=" + expires +
                 '}';
     }
 

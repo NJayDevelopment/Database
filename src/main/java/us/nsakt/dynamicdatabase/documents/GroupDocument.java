@@ -81,7 +81,6 @@ public class GroupDocument extends Document {
         this.mcPermissions = mcPermissions;
     }
 
-    @Override
     public ClusterDocument getCluster() {
         return cluster;
     }
@@ -92,14 +91,14 @@ public class GroupDocument extends Document {
 
     @Override
     public String toString() {
-        return "Groups{" +
-                "name='" + getName() + '\'' +
-                ", flair='" + getFlair() + '\'' +
-                ", flairColor='" + getFlairColor() + '\'' +
-                ", priority=" + getPriority() +
-                ", members=" + getMembers() +
-                ", mcPermissions=" + getMcPermissions() +
-                ", cluster=" + getCluster() +
+        return "GroupDocument{" +
+                "name='" + name + '\'' +
+                ", flair='" + flair + '\'' +
+                ", flairColor='" + flairColor + '\'' +
+                ", priority=" + priority +
+                ", members=" + members +
+                ", mcPermissions=" + mcPermissions +
+                ", cluster=" + cluster +
                 '}';
     }
 

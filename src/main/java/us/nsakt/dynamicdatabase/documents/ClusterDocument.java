@@ -32,9 +32,9 @@ public class ClusterDocument extends Document {
 
     @Override
     public String toString() {
-        return "Clusters{" +
-                "name='" + getName() + '\'' +
-                ", visibility=" + getVisibility() +
+        return "ClusterDocument{" +
+                "name='" + name + '\'' +
+                ", visibility=" + visibility +
                 '}';
     }
 

@@ -68,15 +68,15 @@ public class SessionDocument extends Document {
         this.user = user;
     }
 
-    public boolean wasEndedCorrectly() {
+    public boolean isEndedCorrectly() {
         return endedCorrectly;
     }
 
-    public void setEndedCorrectly(boolean endedCorrecly) {
-        this.endedCorrectly = endedCorrecly;
+    public void setEndedCorrectly(boolean endedCorrectly) {
+        this.endedCorrectly = endedCorrectly;
     }
 
-    public boolean wasEndedWithPunishment() {
+    public boolean isEndedWithPunishment() {
         return endedWithPunishment;
     }
 
@@ -95,13 +95,14 @@ public class SessionDocument extends Document {
     @Override
     public String toString() {
         return "SessionDocument{" +
-                "server=" + getServer() +
-                ", start=" + getStart() +
-                ", end=" + getEnd() +
-                ", length=" + getLength() +
-                ", user=" + getUser() +
-                ", endedCorrectly=" + wasEndedCorrectly() +
-                ", endedWithPunishment=" + wasEndedWithPunishment() +
+                "server=" + server +
+                ", start=" + start +
+                ", end=" + end +
+                ", length=" + length +
+                ", user=" + user +
+                ", endedCorrectly=" + endedCorrectly +
+                ", endedWithPunishment=" + endedWithPunishment +
+                ", ip='" + ip + '\'' +
                 '}';
     }
 

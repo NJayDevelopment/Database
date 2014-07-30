@@ -36,27 +36,21 @@ public class PunishmentTasks {
             ConfigEnforcer.Documents.Punishments.ensureEnabled();
         } catch (NsaktException e) {
         }
-        DBCallback callback = new DBCallback() {
-            @Override
-            public void call(Object... objects) {
-                int totalPunishments = ((List) objects[0]).size();
-                PunishmentDocument.PunishmentType type;
-                switch (totalPunishments) {
-                    case 0:
-                        type = PunishmentDocument.PunishmentType.KICK;
-                        punishmentDocument.setType(type);
-                    case 1:
-                        type = PunishmentDocument.PunishmentType.BAN;
-                        punishmentDocument.setExpires(Duration.standardDays(10));
-                        punishmentDocument.setType(type);
-                    default:
-                        type = PunishmentDocument.PunishmentType.BAN;
-                        punishmentDocument.setType(type);
-                }
-                getDao().save(punishmentDocument);
-                onFinish.call(uuid, punishmentDocument);
-            }
-        };
-        getDao().getAllPunishments(uuid, callback);
+        int totalPunishments = (getDao().getAllPunishmentsOfType(uuid, PunishmentDocument.PunishmentType.KICK).size() + getDao().getAllPunishmentsOfType(uuid, PunishmentDocument.PunishmentType.BAN).size());
+        PunishmentDocument.PunishmentType type;
+        switch (totalPunishments) {
+            case 0:
+                type = PunishmentDocument.PunishmentType.KICK;
+                punishmentDocument.setType(type);
+            case 1:
+                type = PunishmentDocument.PunishmentType.BAN;
+                punishmentDocument.setExpires(Duration.standardDays(10));
+                punishmentDocument.setType(type);
+            default:
+                type = PunishmentDocument.PunishmentType.BAN;
+                punishmentDocument.setType(type);
+        }
+        getDao().save(punishmentDocument);
+        onFinish.call(uuid, punishmentDocument);
     }
 }

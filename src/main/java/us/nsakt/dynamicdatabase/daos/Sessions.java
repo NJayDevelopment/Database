@@ -32,62 +32,42 @@ public class Sessions extends BasicDAO<SessionDocument, ObjectId> {
     }
 
     /**
-     * Find all sessions that start at a certain time, with an optional cluster specification, and run a task when the query is completed.
+     * Find all sessions that start at a certain time, with an optional cluster specification.
      * NOTE: Callers need to check if the session has already ended if they plan on modifying it.
-     * <p/>
-     * ----------| CALLBACK INFORMATION |----------
-     * The only object that is passed to the callback is a list of SessionDocuments.
      *
      * @param start    Date that the session started.
      * @param cluster  Optional cluster that the session was in. Null value can be provided, null checks are ran (null = all).
-     * @param callback Action to run when the query is completed
      */
-    public void finSessionsStartingAt(final Date start, final @Nullable ClusterDocument cluster, final DBCallback callback) {
-        QueryActionTask task = new QueryActionTask(getDatastore(), getDatastore().createQuery(getEntityClazz())) {
-            @Override
-            public void run() {
-                List<SessionDocument> result = Lists.newArrayList();
-                if (cluster == null)
-                    result = getDatastore().find(SessionDocument.class).field(SessionDocument.MongoFields.START.fieldName).equal(start).asList();
-                else {
-                    List<SessionDocument> docs = getDatastore().find(SessionDocument.class).field(SessionDocument.MongoFields.START.fieldName).equal(start).asList();
-                    for (SessionDocument document : docs) {
-                        if (document.getServer().getCluster().equals(cluster)) result.add(document);
-                    }
-                }
-                callback.call(result);
+    public List<SessionDocument> finSessionsStartingAt(final Date start, final @Nullable ClusterDocument cluster) {
+        List<SessionDocument> result = Lists.newArrayList();
+        if (cluster == null)
+            result = getDatastore().find(SessionDocument.class).field(SessionDocument.MongoFields.START.fieldName).equal(start).asList();
+        else {
+            List<SessionDocument> docs = getDatastore().find(SessionDocument.class).field(SessionDocument.MongoFields.START.fieldName).equal(start).asList();
+            for (SessionDocument document : docs) {
+                if (document.getServer().getCluster().equals(cluster)) result.add(document);
             }
-        };
-        MongoExecutionService.getExecutorService().submit(task);
+        }
+        return result;
     }
 
     /**
-     * Find all sessions that end at a certain time, with an optional cluster specification, and run a task when the query is completed.
-     * <p/>
-     * ----------| CALLBACK INFORMATION |----------
-     * The only object that is passed to the callback is a list of SessionDocuments.
+     * Find all sessions that end at a certain time, with an optional cluster specification.
      *
      * @param end      Date that the session ended.
      * @param cluster  Optional cluster that the session was in. Null value can be provided, null checks are ran (null = all).
-     * @param callback Action to run when the query is completed
      */
-    public void finSessionsEndingAt(final Date end, final @Nullable ClusterDocument cluster, final DBCallback callback) {
-        QueryActionTask task = new QueryActionTask(getDatastore(), getDatastore().createQuery(getEntityClazz())) {
-            @Override
-            public void run() {
-                List<SessionDocument> result = Lists.newArrayList();
-                if (cluster == null)
-                    result = getDatastore().find(SessionDocument.class).field(SessionDocument.MongoFields.END.fieldName).equal(end).asList();
-                else {
-                    List<SessionDocument> docs = getDatastore().find(SessionDocument.class).field(SessionDocument.MongoFields.END.fieldName).equal(end).asList();
-                    for (SessionDocument document : docs) {
-                        if (document.getServer().getCluster().equals(cluster)) result.add(document);
-                    }
-                }
-                callback.call(result);
+    public List<SessionDocument> finSessionsEndingAt(final Date end, final @Nullable ClusterDocument cluster) {
+        List<SessionDocument> result = Lists.newArrayList();
+        if (cluster == null)
+            result = getDatastore().find(SessionDocument.class).field(SessionDocument.MongoFields.END.fieldName).equal(end).asList();
+        else {
+            List<SessionDocument> docs = getDatastore().find(SessionDocument.class).field(SessionDocument.MongoFields.END.fieldName).equal(end).asList();
+            for (SessionDocument document : docs) {
+                if (document.getServer().getCluster().equals(cluster)) result.add(document);
             }
-        };
-        MongoExecutionService.getExecutorService().submit(task);
+        }
+        return result;
     }
 
 }

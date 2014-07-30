@@ -1,7 +1,7 @@
 package us.nsakt.dynamicdatabase.util;
 
 import com.google.common.collect.Maps;
-import net.minecraft.util.org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.entity.Player;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
 

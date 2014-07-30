@@ -33,33 +33,11 @@ public class ServerDocument extends Document {
     @Property("max_players")
     private int maxPlayers;
     private Duration uptime;
-    @Property("online_players")
-    private List<UUID> onlinePlayers;
+    @Reference("online_players")
+    private List<UserDocument> onlinePlayers;
+    @Reference("online_staff")
+    private List<UserDocument> onlineStaff;
     private boolean online;
-
-    public String getInternalName() {
-        return internalName;
-    }
-
-    public void setInternalName(String internalName) {
-        this.internalName = internalName;
-    }
-
-    public String getInternalAddress() {
-        return internalAddress;
-    }
-
-    public void setInternalAddress(String internalAddress) {
-        this.internalAddress = internalAddress;
-    }
-
-    public int getInternalPort() {
-        return internalPort;
-    }
-
-    public void setInternalPort(int internalPort) {
-        this.internalPort = internalPort;
-    }
 
     public String getName() {
         return name;
@@ -85,7 +63,22 @@ public class ServerDocument extends Document {
         this.visibility = visibility;
     }
 
-    @Override
+    public String getInternalName() {
+        return internalName;
+    }
+
+    public void setInternalName(String internalName) {
+        this.internalName = internalName;
+    }
+
+    public String getInternalAddress() {
+        return internalAddress;
+    }
+
+    public void setInternalAddress(String internalAddress) {
+        this.internalAddress = internalAddress;
+    }
+
     public ClusterDocument getCluster() {
         return cluster;
     }
@@ -100,6 +93,14 @@ public class ServerDocument extends Document {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public int getInternalPort() {
+        return internalPort;
+    }
+
+    public void setInternalPort(int internalPort) {
+        this.internalPort = internalPort;
     }
 
     public int getMaxPlayers() {
@@ -118,26 +119,20 @@ public class ServerDocument extends Document {
         this.uptime = uptime;
     }
 
-    public List<UUID> getOnlinePlayers() {
+    public List<UserDocument> getOnlinePlayers() {
         return onlinePlayers;
     }
 
-    public void setOnlinePlayers(List<UUID> onlinePlayers) {
+    public void setOnlinePlayers(List<UserDocument> onlinePlayers) {
         this.onlinePlayers = onlinePlayers;
     }
 
-    @Override
-    public String toString() {
-        return "Server{" +
-                "name='" + getName() + '\'' +
-                ", address='" + getAddress() + '\'' +
-                ", visibility='" + getVisibility() + '\'' +
-                ", cluster=" + getCluster() +
-                ", port=" + getPort() +
-                ", maxPlayers=" + getMaxPlayers() +
-                ", uptime=" + getUptime() +
-                ", onlinePlayers=" + getOnlinePlayers() +
-                '}';
+    public List<UserDocument> getOnlineStaff() {
+        return onlineStaff;
+    }
+
+    public void setOnlineStaff(List<UserDocument> onlineStaff) {
+        this.onlineStaff = onlineStaff;
     }
 
     public boolean isFull() {
@@ -154,6 +149,25 @@ public class ServerDocument extends Document {
 
     public boolean isPublic() {
         return this.getCluster().getVisibility().equals(Visibility.PUBLIC) && this.getVisibility().equals(Visibility.PUBLIC);
+    }
+
+    @Override
+    public String toString() {
+        return "ServerDocument{" +
+                "name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", visibility=" + visibility +
+                ", internalName='" + internalName + '\'' +
+                ", internalAddress='" + internalAddress + '\'' +
+                ", cluster=" + cluster +
+                ", port=" + port +
+                ", internalPort=" + internalPort +
+                ", maxPlayers=" + maxPlayers +
+                ", uptime=" + uptime +
+                ", onlinePlayers=" + onlinePlayers +
+                ", onlineStaff=" + onlineStaff +
+                ", online=" + online +
+                '}';
     }
 
     /**

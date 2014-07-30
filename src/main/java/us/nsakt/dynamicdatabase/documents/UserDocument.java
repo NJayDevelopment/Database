@@ -95,6 +95,20 @@ public class UserDocument extends Document {
         this.lastSession = lastSession;
     }
 
+    @Override
+    public String toString() {
+        return "UserDocument{" +
+                "lastSession=" + lastSession +
+                ", uuid=" + uuid +
+                ", usernames=" + usernames +
+                ", lastUsername='" + lastUsername + '\'' +
+                ", email='" + email + '\'' +
+                ", mcSignIns=" + mcSignIns +
+                ", lastSignIn=" + lastSignIn +
+                ", firstSignIn=" + firstSignIn +
+                '}';
+    }
+
     /**
      * An enum representation of all fields in the class for reference in Mongo operations.
      */

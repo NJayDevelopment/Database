@@ -29,6 +29,8 @@ import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.mapping.DefaultCreator;
 import org.reflections.Reflections;
 import us.nsakt.dynamicdatabase.commands.AdminChatCommand;
+import us.nsakt.dynamicdatabase.commands.PlayerCommands;
+import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.documents.Document;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
 import us.nsakt.dynamicdatabase.serverinterconnect.ConnectionManager;
@@ -186,6 +188,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         };
         CommandsManagerRegistration cmdRegister = new CommandsManagerRegistration(this, this.commands);
         cmdRegister.register(AdminChatCommand.class);
+        cmdRegister.register(PlayerCommands.class);
     }
 
     // Register the plugin listeners. DO NOT PUT PACKET LISTENERS HERE!

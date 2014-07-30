@@ -42,18 +42,13 @@ public class GroupTasks {
         } catch (NsaktException e) {
         }
         final UUID playerUUID = player.getUniqueId();
-        DBCallback callback = new DBCallback() {
-            @Override
-            public void call(Object... objects) {
-                HashMap<Permission, Boolean> permissions = (HashMap<Permission, Boolean>) objects[0];
-                for (Map.Entry<Permission, Boolean> entry : permissions.entrySet()) {
-                    PermissionAttachment attachment = player.addAttachment(DynamicDatabasePlugin.getInstance());
-                    attachment.setPermission(entry.getKey(), entry.getValue());
-                }
-                player.recalculatePermissions();
-            }
-        };
-        getDao().getAllPermissions(playerUUID, callback);
+
+        HashMap<Permission, Boolean> permissions = getDao().getAllPermissions(playerUUID);
+        for (Map.Entry<Permission, Boolean> entry : permissions.entrySet()) {
+            PermissionAttachment attachment = player.addAttachment(DynamicDatabasePlugin.getInstance());
+            attachment.setPermission(entry.getKey(), entry.getValue());
+        }
+        player.recalculatePermissions();
     }
 
     /**
@@ -67,16 +62,10 @@ public class GroupTasks {
             ConfigEnforcer.Documents.Groups.ensureEnabled();
         } catch (NsaktException e) {
         }
-        DBCallback callback = new DBCallback() {
-            @Override
-            public void call(Object... objects) {
-                groupDocument.getMembers().add((UserDocument) objects[0]);
-                getDao().save(groupDocument);
-                assignPermissions(player);
-            }
-        };
         Users users = new Users(DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
-        users.getUserFromPlayer(player, callback);
+        groupDocument.getMembers().add(users.getUserFromPlayer(player));
+        getDao().save(groupDocument);
+        assignPermissions(player);
     }
 
     /**
@@ -87,16 +76,12 @@ public class GroupTasks {
             ConfigEnforcer.Documents.Groups.ensureEnabled();
         } catch (NsaktException e) {
         }
-        DBCallback callback = new DBCallback() {
-            @Override
-            public void call(Object... objects) {
-                groupDocument.getMembers().remove((UserDocument) objects[0]);
-                getDao().save(groupDocument);
-                assignPermissions(player);
-            }
-        };
+
         Users users = new Users(DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
-        users.getUserFromPlayer(player, callback);
+
+        groupDocument.getMembers().remove(users.getUserFromPlayer(player));
+        getDao().save(groupDocument);
+        assignPermissions(player);
     }
 
     /**

@@ -1,6 +1,6 @@
 package us.nsakt.dynamicdatabase.util;
 
-import org.bukkit.ChatColor;
+import com.sk89q.minecraft.util.commands.ChatColor;
 import org.bukkit.util.ChatPaginator;
 
 import java.util.Collection;

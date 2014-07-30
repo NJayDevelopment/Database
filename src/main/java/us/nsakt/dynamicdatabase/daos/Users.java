@@ -4,12 +4,14 @@ import org.bson.types.ObjectId;
 import org.bukkit.entity.Player;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
+import org.mongodb.morphia.query.Query;
 import us.nsakt.dynamicdatabase.MongoExecutionService;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
 import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
 import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -30,24 +32,16 @@ public class Users extends BasicDAO<UserDocument, ObjectId> {
     }
 
     /**
-     * Find all users that have used the supplied username, and run a task on them.
-     * <p/>
-     * ----------| CALLBACK INFORMATION |----------
-     * The only object that is passed to the callback is a list of UserDocuments.
+     * Find all users that have used the supplied username.
      *
      * @param username Username to search for
      * @param limit    Optional limit on the number of results
-     * @param callback Action to run when the query is completed
      */
-    public void getAllMatchingUsers(final String username, final @Nullable Integer limit, final DBCallback callback) {
-        QueryActionTask task = new QueryActionTask(getDatastore(), getDatastore().createQuery(getEntityClazz())) {
-            @Override
-            public void run() {
-                getQuery().field(UserDocument.MongoFields.USERNAMES.fieldName).contains(username);
-                getQuery().limit((limit != null) ? limit : Integer.MAX_VALUE);
-                callback.call(getQuery().asList());
-            }
-        };
+    public List<UserDocument> getAllMatchingUsers(final String username, final @Nullable Integer limit) {
+        Query<UserDocument> query = getDatastore().createQuery(UserDocument.class);
+        query.field(UserDocument.MongoFields.USERNAMES.fieldName).contains(username);
+        query.limit((limit != null) ? limit : Integer.MAX_VALUE);
+        return query.asList();
     }
 
     /**
@@ -62,22 +56,13 @@ public class Users extends BasicDAO<UserDocument, ObjectId> {
 
     /**
      * Convert a Bukkit player to a UserDocument, and run a task on them.
-     * <p/>
-     * ----------| CALLBACK INFORMATION |----------
-     * The only object that is passed to the callback is a UserDocument.
      *
      * @param player   Player to convert to UserDocument
-     * @param callback Action to run when the query is completed
      */
-    public void getUserFromPlayer(final Player player, final DBCallback callback) {
+    public UserDocument getUserFromPlayer(final Player player) {
         final UUID uuid = player.getUniqueId();
-        QueryActionTask task = new QueryActionTask(getDatastore(), getDatastore().createQuery(getEntityClazz())) {
-            @Override
-            public void run() {
-                getQuery().field(UserDocument.MongoFields.UUID.fieldName).equal(uuid);
-                callback.call(getQuery().get());
-            }
-        };
-        MongoExecutionService.getExecutorService().submit(task);
+        Query<UserDocument> query = getDatastore().createQuery(UserDocument.class);
+        query.field(UserDocument.MongoFields.UUID.fieldName).equal(uuid);
+        return query.get();
     }
 }
