@@ -3,14 +3,17 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>us.nsakt</groupId>
     <artifactId>DynamicDatabase</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>DynamicDatabase</name>
     <description>Extremely dynamic Mongo database system for multiple networks</description>
-
     <dependencies>
+        <dependency>
+            <groupId>net.njay</groupId>
+            <artifactId>ServerInterconnect</artifactId>
+            <version>1.0.1</version>
+        </dependency>
         <dependency>
             <groupId>org.mongodb.morphia</groupId>
             <artifactId>morphia</artifactId>
@@ -20,13 +23,11 @@
             <groupId>com.sk89q</groupId>
             <artifactId>command-framework-bukkit</artifactId>
             <version>0.5-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sk89q</groupId>
             <artifactId>command-framework-core</artifactId>
             <version>0.5-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>tc.oc</groupId>

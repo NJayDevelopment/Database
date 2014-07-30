@@ -284,7 +284,7 @@ public class Config {
         public static final String ip = get("cross-server.ip", "localhost");
 
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The port of the cross-server server", def = "87652")
-        public static final String port = get("cross-server.port", 87652);
+        public static final int port = get("cross-server.port", 1330);
 
         @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if cross server actions are enabled", def = "true")
         public static final boolean enabled = get("cross-server.enabled", true);

@@ -28,8 +28,10 @@ import org.mongodb.morphia.Morphia;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.mapping.DefaultCreator;
 import org.reflections.Reflections;
+import us.nsakt.dynamicdatabase.commands.AdminChatCommand;
 import us.nsakt.dynamicdatabase.documents.Document;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
+import us.nsakt.dynamicdatabase.serverinterconnect.ConnectionManager;
 import us.nsakt.dynamicdatabase.util.LanguageFile;
 
 import java.io.File;
@@ -87,6 +89,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         setupServer();
         registerListeners();
         setupCommands();
+        if (Config.CrossServer.enabled) ConnectionManager.enable(Config.CrossServer.ip, Config.CrossServer.port);
     }
 
     // Load the debugging service
@@ -182,6 +185,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
             }
         };
         CommandsManagerRegistration cmdRegister = new CommandsManagerRegistration(this, this.commands);
+        cmdRegister.register(AdminChatCommand.class);
     }
 
     // Register the plugin listeners. DO NOT PUT PACKET LISTENERS HERE!

@@ -57,7 +57,7 @@ documents:
 cross-server:
     enabled: true
     ip: localhost
-    port: 87652
+    port: 1330
     admin-chat:
         enabled: true
         send: true

@@ -1,7 +1,6 @@
 package us.nsakt.dynamicdatabase.documents;
 
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.joda.time.Duration;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
