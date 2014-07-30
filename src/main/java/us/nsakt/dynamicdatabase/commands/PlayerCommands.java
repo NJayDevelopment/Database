@@ -75,6 +75,7 @@ public class PlayerCommands {
                 }
                 else if (args.argsLength() > 0) {
                     ServerDocument serverDocument = new DAOGetter().getServers().getDatastore().find(ServerDocument.class).field(ServerDocument.MongoFields.CLUSTER.fieldName).equal(DynamicDatabasePlugin.getInstance().getCurrentServerDocument().getCluster()).field(ServerDocument.MongoFields.NAME.fieldName).equal(args.getString(0)).get();
+                    if (serverDocument == null) sender.sendMessage(ChatColor.RED + "Server not found!" + ChatColor.AQUA + "Use " + ChatColor.GOLD + "/servers " + ChatColor.AQUA + "for a list of all servers.");
                     message.append(StringUtils.padMessage("Online Staff [" + serverDocument.getName() + "]", ChatColor.STRIKETHROUGH + "-", ChatColor.GREEN, ChatColor.DARK_AQUA));
                     message.append("\n");
                     message.append(ChatColor.DARK_AQUA).append(serverDocument.getName()).append(ChatColor.RESET).append(": ");
@@ -95,6 +96,7 @@ public class PlayerCommands {
                         players.add(Bukkit.getPlayer(user.getUuid()).getDisplayName());
                     }
                     message.append("\n").append(StringUtils.listToEnglishCompound(players));
+                    sender.sendMessage(message.toString());
                 }
             }
         };
