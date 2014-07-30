@@ -1,7 +1,6 @@
 package us.nsakt.dynamicdatabase.util;
 
 import com.sk89q.minecraft.util.commands.ChatColor;
-import us.nsakt.dynamicdatabase.documents.ServerDocument;
 
 /**
  * Utilities to handle working with Visibilities
@@ -34,17 +33,5 @@ public class VisibilityUtils {
      */
     public String visibilityText(Visibility visibility) {
         return getVisibilityColor(visibility) + visibility.displayName;
-    }
-
-    /**
-     * Get a ChatColor based on a server's online status.
-     *
-     * @param document Server to check the status of.
-     * @return A ChatColor based on a server's online status.
-     */
-    public ChatColor getStatusColor(ServerDocument document) {
-        if (document.isOnline()) return ChatColor.GREEN;
-        else if (document.isFull()) return ChatColor.GOLD;
-        else return ChatColor.DARK_RED;
     }
 }

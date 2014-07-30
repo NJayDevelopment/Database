@@ -1,8 +1,9 @@
 package us.nsakt.dynamicdatabase.documents;
 
+import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
-import org.mongodb.morphia.annotations.Reference;
+import us.nsakt.dynamicdatabase.daos.DAOGetter;
 
 import java.util.Date;
 import java.util.List;
@@ -28,8 +29,8 @@ public class UserDocument extends Document {
     private Date lastSignIn;
     @Property("first_sign_in")
     private Date firstSignIn;
-    @Reference("last_session")
-    private SessionDocument lastSession;
+    @Property("last_session")
+    private ObjectId lastSession;
 
     public UUID getUuid() {
         return uuid;
@@ -88,11 +89,11 @@ public class UserDocument extends Document {
     }
 
     public SessionDocument getLastSession() {
-        return lastSession;
+        return new DAOGetter().getSessions().findOne(SessionDocument.MongoFields.id.fieldName, lastSession);
     }
 
-    public void setLastSession(SessionDocument lastSession) {
-        this.lastSession = lastSession;
+    public void setLastSession(SessionDocument session) {
+        this.lastSession = session.getObjectId();
     }
 
     @Override

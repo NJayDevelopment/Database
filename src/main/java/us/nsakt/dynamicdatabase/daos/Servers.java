@@ -6,11 +6,9 @@ import org.bukkit.entity.Player;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
 import us.nsakt.dynamicdatabase.Debug;
-import us.nsakt.dynamicdatabase.MongoExecutionService;
 import us.nsakt.dynamicdatabase.documents.ClusterDocument;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
-import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
-import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
+import us.nsakt.dynamicdatabase.util.Visibility;
 
 import java.util.List;
 
@@ -66,7 +64,8 @@ public class Servers extends BasicDAO<ServerDocument, ObjectId> {
     public List<ServerDocument> getAllPublicServers() {
         List<ServerDocument> result = Lists.newArrayList();
         for (ServerDocument document : getDatastore().find(ServerDocument.class).asList()) {
-            if (document.isPublic()) result.add(document);
+            Debug.log(Debug.LogLevel.INFO, document.toString());
+            if (document.getVisibility().equals(Visibility.PUBLIC)) result.add(document);
         }
         return result;
     }
@@ -79,8 +78,8 @@ public class Servers extends BasicDAO<ServerDocument, ObjectId> {
      */
     public List<ServerDocument> getAllPublicServers(final ClusterDocument cluster) {
         List<ServerDocument> result = Lists.newArrayList();
-        for (ServerDocument document : getDatastore().find(ServerDocument.class).field(ServerDocument.MongoFields.CLUSTER.fieldName).equal(cluster).asList()) {
-            if (document.isPublic()) result.add(document);
+        for (ServerDocument document : getDatastore().find(ServerDocument.class).field(ServerDocument.MongoFields.CLUSTER.fieldName).equal(cluster.getObjectId()).asList()) {
+            if (document.getVisibility().equals(Visibility.PUBLIC)) result.add(document);
         }
         return result;
     }

@@ -1,17 +1,19 @@
 package us.nsakt.dynamicdatabase.documents;
 
 import com.google.common.collect.Maps;
+import org.bson.types.ObjectId;
 import org.bukkit.permissions.Permission;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
-import org.mongodb.morphia.annotations.Reference;
 import us.nsakt.dynamicdatabase.MongoExecutionService;
+import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
 import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Class to represent a "group" document in the database.
@@ -26,12 +28,10 @@ public class GroupDocument extends Document {
     @Property("flair_color")
     private String flairColor;
     private int priority;
-    @Reference
-    private List<UserDocument> members;
+    private List<UUID> members;
     @Property("mc_permissions")
     private List<String> mcPermissions;
-    @Reference
-    private ClusterDocument cluster;
+    private ObjectId cluster;
 
     public String getName() {
         return name;
@@ -65,11 +65,11 @@ public class GroupDocument extends Document {
         this.priority = priority;
     }
 
-    public List<UserDocument> getMembers() {
+    public List<UUID> getMembers() {
         return members;
     }
 
-    public void setMembers(List<UserDocument> members) {
+    public void setMembers(List<UUID> members) {
         this.members = members;
     }
 
@@ -82,11 +82,11 @@ public class GroupDocument extends Document {
     }
 
     public ClusterDocument getCluster() {
-        return cluster;
+        return new DAOGetter().getClusters().findOne(ClusterDocument.MongoFields.id.fieldName, cluster);
     }
 
     public void setCluster(ClusterDocument cluster) {
-        this.cluster = cluster;
+        this.cluster = cluster.getObjectId();
     }
 
     @Override

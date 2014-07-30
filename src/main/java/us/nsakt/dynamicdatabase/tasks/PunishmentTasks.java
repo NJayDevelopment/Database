@@ -8,7 +8,6 @@ import us.nsakt.dynamicdatabase.documents.PunishmentDocument;
 import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
 import us.nsakt.dynamicdatabase.util.NsaktException;
 
-import java.util.List;
 import java.util.UUID;
 
 /**

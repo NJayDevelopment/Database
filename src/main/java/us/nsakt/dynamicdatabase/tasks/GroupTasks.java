@@ -14,7 +14,6 @@ import us.nsakt.dynamicdatabase.documents.ClusterDocument;
 import us.nsakt.dynamicdatabase.documents.GroupDocument;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
 import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
-import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
 import us.nsakt.dynamicdatabase.util.NsaktException;
 
 import java.util.HashMap;
@@ -63,7 +62,7 @@ public class GroupTasks {
         } catch (NsaktException e) {
         }
         Users users = new Users(DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
-        groupDocument.getMembers().add(users.getUserFromPlayer(player));
+        groupDocument.getMembers().add(player.getUniqueId());
         getDao().save(groupDocument);
         assignPermissions(player);
     }
@@ -79,7 +78,7 @@ public class GroupTasks {
 
         Users users = new Users(DynamicDatabasePlugin.getInstance().getDatastores().get(UserDocument.class));
 
-        groupDocument.getMembers().remove(users.getUserFromPlayer(player));
+        groupDocument.getMembers().remove(player.getUniqueId());
         getDao().save(groupDocument);
         assignPermissions(player);
     }

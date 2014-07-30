@@ -1,10 +1,11 @@
 package us.nsakt.dynamicdatabase.documents;
 
+import org.bson.types.ObjectId;
 import org.bukkit.entity.Player;
 import org.joda.time.Duration;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
-import org.mongodb.morphia.annotations.Reference;
+import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.util.Visibility;
 
 import java.util.List;
@@ -25,18 +26,15 @@ public class ServerDocument extends Document {
     private String internalName;
     @Property("internal_address")
     private String internalAddress;
-    @Reference
-    private ClusterDocument cluster;
+    private ObjectId cluster;
     private int port;
     @Property("internal_port")
     private int internalPort;
     @Property("max_players")
     private int maxPlayers;
     private Duration uptime;
-    @Reference("online_players")
-    private List<UserDocument> onlinePlayers;
-    @Reference("online_staff")
-    private List<UserDocument> onlineStaff;
+    private List<UUID> onlinePlayers;
+    private List<UUID> onlineStaff;
     private boolean online;
 
     public String getName() {
@@ -80,11 +78,11 @@ public class ServerDocument extends Document {
     }
 
     public ClusterDocument getCluster() {
-        return cluster;
+        return new DAOGetter().getClusters().findOne(ClusterDocument.MongoFields.id.fieldName, cluster);
     }
 
     public void setCluster(ClusterDocument cluster) {
-        this.cluster = cluster;
+        this.cluster = cluster.getObjectId();
     }
 
     public int getPort() {
@@ -119,36 +117,28 @@ public class ServerDocument extends Document {
         this.uptime = uptime;
     }
 
-    public List<UserDocument> getOnlinePlayers() {
+    public List<UUID> getOnlinePlayers() {
         return onlinePlayers;
     }
 
-    public void setOnlinePlayers(List<UserDocument> onlinePlayers) {
+    public void setOnlinePlayers(List<UUID> onlinePlayers) {
         this.onlinePlayers = onlinePlayers;
     }
 
-    public List<UserDocument> getOnlineStaff() {
+    public List<UUID> getOnlineStaff() {
         return onlineStaff;
     }
 
-    public void setOnlineStaff(List<UserDocument> onlineStaff) {
+    public void setOnlineStaff(List<UUID> onlineStaff) {
         this.onlineStaff = onlineStaff;
     }
 
-    public boolean isFull() {
-        return this.getMaxPlayers() <= this.getOnlinePlayers().size();
-    }
-
     public boolean isOnline() {
-        return this.online;
+        return online;
     }
 
     public void setOnline(boolean online) {
         this.online = online;
-    }
-
-    public boolean isPublic() {
-        return this.getVisibility().equals(Visibility.PUBLIC);
     }
 
     @Override

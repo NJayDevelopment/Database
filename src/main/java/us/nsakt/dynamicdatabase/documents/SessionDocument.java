@@ -1,11 +1,13 @@
 package us.nsakt.dynamicdatabase.documents;
 
+import org.bson.types.ObjectId;
 import org.joda.time.Duration;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
-import org.mongodb.morphia.annotations.Reference;
+import us.nsakt.dynamicdatabase.daos.DAOGetter;
 
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Class to represent a "session" document in the database.
@@ -15,13 +17,11 @@ import java.util.Date;
  */
 @Entity("sessions")
 public class SessionDocument extends Document {
-    @Reference
-    private ServerDocument server;
+    private ObjectId server;
     private Date start;
     private Date end;
     private Duration length;
-    @Reference
-    private UserDocument user;
+    private UUID user;
     @Property("ended_correctly")
     private boolean endedCorrectly;
     @Property("ended_with_punish")
@@ -29,11 +29,11 @@ public class SessionDocument extends Document {
     private String ip;
 
     public ServerDocument getServer() {
-        return server;
+        return new DAOGetter().getServers().findOne(ServerDocument.MongoFields.id.fieldName, server);
     }
 
     public void setServer(ServerDocument server) {
-        this.server = server;
+        this.server = server.getObjectId();
     }
 
     public Date getStart() {
@@ -60,11 +60,11 @@ public class SessionDocument extends Document {
         this.length = length;
     }
 
-    public UserDocument getUser() {
+    public UUID getUser() {
         return user;
     }
 
-    public void setUser(UserDocument user) {
+    public void setUser(UUID user) {
         this.user = user;
     }
 

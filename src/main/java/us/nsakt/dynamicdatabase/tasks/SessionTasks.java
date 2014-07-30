@@ -10,7 +10,6 @@ import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Sessions;
 import us.nsakt.dynamicdatabase.documents.SessionDocument;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
-import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
 import us.nsakt.dynamicdatabase.util.NsaktException;
 
 import java.util.Date;
@@ -37,10 +36,12 @@ public class SessionTasks {
         }
         final SessionDocument document = new SessionDocument();
         document.setServer(DynamicDatabasePlugin.getInstance().getCurrentServerDocument());
-        document.setUser(new DAOGetter().getUsers().getUserFromPlayer(event.getPlayer()));
+        document.setUser(event.getPlayer().getUniqueId());
         document.setStart(new Date());
         document.setIp(event.getPlayer().getAddress().getAddress().toString());
         getDao().save(document);
+        final UserDocument userDocument = new DAOGetter().getUsers().getUserFromPlayer(event.getPlayer());
+        userDocument.setLastSession(document);
     }
 
     /**
