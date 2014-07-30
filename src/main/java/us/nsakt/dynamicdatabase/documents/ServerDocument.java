@@ -148,7 +148,7 @@ public class ServerDocument extends Document {
     }
 
     public boolean isPublic() {
-        return this.getCluster().getVisibility().equals(Visibility.PUBLIC) && this.getVisibility().equals(Visibility.PUBLIC);
+        return this.getVisibility().equals(Visibility.PUBLIC);
     }
 
     @Override
