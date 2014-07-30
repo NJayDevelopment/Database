@@ -46,6 +46,7 @@ public class SessionTasks {
                 getDao().save(document);
                 final UserDocument userDocument = new DAOGetter().getUsers().getUserFromPlayer(event.getPlayer());
                 userDocument.setLastSession(document);
+                new DAOGetter().getUsers().save(userDocument);
             }
         };
         MongoExecutionService.getExecutorService().submit(task);

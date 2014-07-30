@@ -61,7 +61,7 @@ public class UserTasks {
             ConfigEnforcer.Documents.Users.ensureEnabled();
         } catch (NsaktException e) {
         }
-        QueryActionTask task = new QueryActionTask(getDao().getDatastore(), getDao().createQuery().field("UUID").equal(event.getPlayer().getUniqueId())) {
+        QueryActionTask task = new QueryActionTask(getDao().getDatastore(), getDao().createQuery().field("uuid").equal(event.getPlayer().getUniqueId())) {
             @Override
             public void run() {
                 UpdateOperations<UserDocument> updates = getDao().createUpdateOperations();

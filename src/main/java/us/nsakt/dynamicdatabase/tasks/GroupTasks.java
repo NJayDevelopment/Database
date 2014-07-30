@@ -1,7 +1,6 @@
 package us.nsakt.dynamicdatabase.tasks;
 
 import com.google.common.collect.Lists;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
@@ -10,10 +9,8 @@ import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
 import us.nsakt.dynamicdatabase.MongoExecutionService;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Groups;
-import us.nsakt.dynamicdatabase.daos.Users;
 import us.nsakt.dynamicdatabase.documents.ClusterDocument;
 import us.nsakt.dynamicdatabase.documents.GroupDocument;
-import us.nsakt.dynamicdatabase.documents.UserDocument;
 import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
 import us.nsakt.dynamicdatabase.util.NsaktException;
 

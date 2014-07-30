@@ -32,6 +32,8 @@ import us.nsakt.dynamicdatabase.commands.AdminChatCommand;
 import us.nsakt.dynamicdatabase.commands.PlayerCommands;
 import us.nsakt.dynamicdatabase.documents.Document;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
+import us.nsakt.dynamicdatabase.listeners.SessionListener;
+import us.nsakt.dynamicdatabase.listeners.UserListener;
 import us.nsakt.dynamicdatabase.serverinterconnect.ConnectionManager;
 import us.nsakt.dynamicdatabase.util.LanguageFile;
 
@@ -192,6 +194,8 @@ public class DynamicDatabasePlugin extends JavaPlugin {
 
     // Register the plugin listeners. DO NOT PUT PACKET LISTENERS HERE!
     private void registerListeners() {
+        registerEvents(new UserListener());
+        registerEvents(new SessionListener());
     }
 
     // Utility to register a bukkit event listener.
