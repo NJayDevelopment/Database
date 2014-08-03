@@ -62,4 +62,15 @@ public class Users extends BasicDAO<UserDocument, ObjectId> {
         query.field(UserDocument.MongoFields.UUID.fieldName).equal(uuid);
         return query.get();
     }
+
+    /**
+     * Convert a UUID to a UserDocument, and run a task on them.
+     *
+     * @param uuid   UUID to convert to UserDocument
+     */
+    public UserDocument getUserFromUuid(final UUID uuid) {
+        Query<UserDocument> query = getDatastore().createQuery(UserDocument.class);
+        query.field(UserDocument.MongoFields.UUID.fieldName).equal(uuid);
+        return query.get();
+    }
 }

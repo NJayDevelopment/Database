@@ -1,20 +1,28 @@
 package us.nsakt.dynamicdatabase.tasks;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.sk89q.minecraft.util.commands.ChatColor;
+import org.bson.types.ObjectId;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import us.nsakt.dynamicdatabase.ConfigEnforcer;
+import us.nsakt.dynamicdatabase.Debug;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
 import us.nsakt.dynamicdatabase.MongoExecutionService;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Groups;
 import us.nsakt.dynamicdatabase.documents.ClusterDocument;
 import us.nsakt.dynamicdatabase.documents.GroupDocument;
+import us.nsakt.dynamicdatabase.documents.UserDocument;
 import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
 import us.nsakt.dynamicdatabase.util.NsaktException;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,8 +32,63 @@ import java.util.UUID;
  * @author NathanTheBook
  */
 public class GroupTasks {
+
     private static Groups getDao() {
         return new DAOGetter().getGroups();
+    }
+
+    public static class LoginTasks {
+        static final HashMap<UserDocument, HashMap<Permission, Boolean>> permsMap = Maps.newHashMap();
+
+        /**
+         * Get all of a player's groups (based on clusters from config) and add them to the permsMap.
+         *
+         * @param uuid UUID to get the permissions from.
+         */
+        public static void addPermsToMap(final UUID uuid) {
+            try {
+                ConfigEnforcer.Documents.Groups.ensureEnabled();
+            } catch (NsaktException e) {
+            }
+            final UserDocument userDocument = new DAOGetter().getUsers().getUserFromUuid(uuid);
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    HashMap<Permission, Boolean> permissions = getDao().getAllPermissions(userDocument);
+                    if (permissions == null || permissions.isEmpty()) return;
+                    permsMap.put(userDocument, permissions);
+                }
+            };
+            MongoExecutionService.getExecutorService().execute(runnable);
+        }
+
+        /**
+         * Get player's perms from permsMap and apply them to the player.
+         *
+         * @param player Player to apply the permissions to.
+         */
+        public static void assignPermissions(final Player player) {
+            try {
+                ConfigEnforcer.Documents.Groups.ensureEnabled();
+            } catch (NsaktException e) {
+            }
+            final UserDocument userDocument = new DAOGetter().getUsers().getUserFromPlayer(player);
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    HashMap<Permission, Boolean> permissions = permsMap.get(userDocument);
+                    if (permissions == null || permissions.isEmpty()) return;
+                    for (Map.Entry<Permission, Boolean> entry : permissions.entrySet()) {
+                        PermissionAttachment attachment = player.addAttachment(DynamicDatabasePlugin.getInstance());
+                        attachment.setPermission(entry.getKey(), entry.getValue());
+                        Debug.log(Debug.LogLevel.INFO, attachment.toString());
+                    }
+                    permsMap.remove(userDocument);
+                    player.recalculatePermissions();
+                }
+            };
+            MongoExecutionService.getExecutorService().execute(runnable);
+        }
     }
 
     /**
@@ -38,19 +101,46 @@ public class GroupTasks {
             ConfigEnforcer.Documents.Groups.ensureEnabled();
         } catch (NsaktException e) {
         }
-        final UUID playerUUID = player.getUniqueId();
+        final UserDocument userDocument = new DAOGetter().getUsers().getUserFromPlayer(player);
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                HashMap<Permission, Boolean> permissions = getDao().getAllPermissions(playerUUID);
+                HashMap<Permission, Boolean> permissions = getDao().getAllPermissions(userDocument);
+                if (permissions == null || permissions.isEmpty()) return;
                 for (Map.Entry<Permission, Boolean> entry : permissions.entrySet()) {
                     PermissionAttachment attachment = player.addAttachment(DynamicDatabasePlugin.getInstance());
                     attachment.setPermission(entry.getKey(), entry.getValue());
+                    Debug.log(Debug.LogLevel.INFO, attachment.toString());
                 }
                 player.recalculatePermissions();
             }
         };
-        MongoExecutionService.getExecutorService().submit(runnable);
+        MongoExecutionService.getExecutorService().execute(runnable);
+    }
+
+    public static void addGroupFlairs(final Player player) {
+        try {
+            ConfigEnforcer.Documents.Groups.ensureEnabled();
+        } catch (NsaktException e) {
+        }
+        final UserDocument userDocument = new DAOGetter().getUsers().getUserFromPlayer(player);
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                StringBuilder flairBuilder = new StringBuilder();
+                List<GroupDocument> groups = getDao().getAllGroups(userDocument);
+                if (groups == null || groups.isEmpty()) {
+                    player.setDisplayName(ChatColor.AQUA + player.getName() + ChatColor.RESET);
+                    return;
+                }
+                for (GroupDocument group : groups) {
+                    if (group.getFlair() == null) return;
+                    flairBuilder.append((group.getFlairColor() != null? ChatColor.valueOf(group.getFlairColor()) : ChatColor.WHITE)).append(group.getFlair());
+                }
+                player.setDisplayName(flairBuilder.toString() + ChatColor.RESET + ChatColor.AQUA + player.getName() + ChatColor.RESET);
+            }
+        };
+        MongoExecutionService.getExecutorService().execute(runnable);
     }
 
     /**
@@ -67,12 +157,30 @@ public class GroupTasks {
         SaveTask task = new SaveTask(getDao().getDatastore(), groupDocument) {
             @Override
             public void run() {
-                groupDocument.getMembers().add(player.getUniqueId());
+                groupDocument.getMembers().add(new DAOGetter().getUsers().getUserFromPlayer(player).getObjectId());
                 getDao().save(groupDocument);
                 assignPermissions(player);
             }
         };
-        MongoExecutionService.getExecutorService().submit(task);
+        MongoExecutionService.getExecutorService().execute(task);
+    }
+
+    public static void addPlayerToAllDefaults(final UUID uuid) {
+        try {
+            ConfigEnforcer.Documents.Groups.ensureEnabled();
+        } catch (NsaktException e) {
+        }
+        SaveTask task = new SaveTask(getDao().getDatastore(), null) {
+            @Override
+            public void run() {
+                for (GroupDocument groupDocument : getDao().getAllDefaultGroups(DynamicDatabasePlugin.getInstance().getCurrentServerDocument().getCluster())) {
+                    if (groupDocument.getMembers().contains(new DAOGetter().getUsers().getUserFromUuid(uuid).getObjectId())) return;
+                    groupDocument.getMembers().add(new DAOGetter().getUsers().getUserFromUuid(uuid).getObjectId());
+                    getDao().save(groupDocument);
+                }
+            }
+        };
+        MongoExecutionService.getExecutorService().execute(task);
     }
 
     /**
@@ -86,46 +194,11 @@ public class GroupTasks {
         SaveTask task = new SaveTask(getDao().getDatastore(), groupDocument) {
             @Override
             public void run() {
-                groupDocument.getMembers().remove(player.getUniqueId());
+                groupDocument.getMembers().remove(new DAOGetter().getUsers().getUserFromPlayer(player).getObjectId());
                 getDao().save(groupDocument);
                 assignPermissions(player);
             }
         };
-        MongoExecutionService.getExecutorService().submit(task);
-    }
-
-    /**
-     * Add the default group to the database.
-     * NOTE: Callers need to check if the default group is not already there.
-     * NOTE: The default cluster needs to be created first.
-     */
-    public static void setupDefaultGroup() {
-        try {
-            ConfigEnforcer.Documents.Groups.ensureEnabled();
-        } catch (NsaktException e) {
-        }
-        SaveTask task = new SaveTask(getDao().getDatastore(), new GroupDocument()) {
-            @Override
-            public void run() {
-                try {
-                    GroupDocument document = (GroupDocument) getDocument();
-                    document.setCluster(new DAOGetter().getClusters().getDatastore().find(ClusterDocument.class).field(ClusterDocument.MongoFields.NAME.fieldName).equal("all").get());
-                    document.setName("default");
-                    document.setPriority(0);
-                    document.setMcPermissions(Lists.newArrayList(
-                            "#Hi, this is the default group created by DynamicDatabase",
-                            "#All players will be in this group",
-                            "#If this group is deleted, it will be re-created",
-                            "#DO NOT change this group's priority!",
-                            "#All groups above this group will inherit its permissions",
-                            "#You can negate said permissions by adding a '-' before the permission in the higher groups"
-                    ));
-                    getDao().save(document);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        MongoExecutionService.getExecutorService().submit(task);
+        MongoExecutionService.getExecutorService().execute(task);
     }
 }

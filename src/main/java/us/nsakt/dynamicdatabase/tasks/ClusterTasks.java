@@ -37,6 +37,6 @@ public class ClusterTasks {
                 getDao().save(cluster);
             }
         };
-        MongoExecutionService.getExecutorService().submit(task);
+        MongoExecutionService.getExecutorService().execute(task);
     }
 }

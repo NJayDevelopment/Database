@@ -15,7 +15,7 @@ import java.util.UUID;
  *
  * @author NathanTheBook
  */
-@Entity("sessions")
+@Entity("dndb_sessions")
 public class SessionDocument extends Document {
     private ObjectId server;
     private Date start;

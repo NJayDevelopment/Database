@@ -58,6 +58,6 @@ public class PunishmentTasks {
                 onFinish.call(uuid, punishmentDocument);
             }
         };
-        MongoExecutionService.getExecutorService().submit(task);
+        MongoExecutionService.getExecutorService().execute(task);
     }
 }

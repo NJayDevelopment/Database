@@ -16,7 +16,7 @@ import java.util.UUID;
  *
  * @author NathanTheBook
  */
-@Entity("punishments")
+@Entity("dndb_punishments")
 public class PunishmentDocument extends Document {
     private UUID punisher;
     private UUID punished;

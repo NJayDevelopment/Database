@@ -1,6 +1,7 @@
 package us.nsakt.dynamicdatabase.tasks;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.joda.time.Duration;
 import us.nsakt.dynamicdatabase.ConfigEnforcer;
@@ -30,7 +31,7 @@ public class SessionTasks {
      *
      * @param event Event that is starting the session
      */
-    public static void startSession(final PlayerLoginEvent event) {
+    public static void startSession(final PlayerJoinEvent event) {
         try {
             ConfigEnforcer.Documents.Sessions.ensureEnabled();
         } catch (NsaktException e) {
@@ -42,14 +43,14 @@ public class SessionTasks {
                 document.setServer(DynamicDatabasePlugin.getInstance().getCurrentServerDocument());
                 document.setUser(event.getPlayer().getUniqueId());
                 document.setStart(new Date());
-                document.setIp(event.getPlayer().getAddress().getAddress().toString());
+                document.setIp(event.getPlayer().getAddress().getAddress().getHostAddress());
                 getDao().save(document);
                 final UserDocument userDocument = new DAOGetter().getUsers().getUserFromPlayer(event.getPlayer());
                 userDocument.setLastSession(document);
                 new DAOGetter().getUsers().save(userDocument);
             }
         };
-        MongoExecutionService.getExecutorService().submit(task);
+        MongoExecutionService.getExecutorService().execute(task);
     }
 
     /**
@@ -69,6 +70,7 @@ public class SessionTasks {
             public void run() {
                 final UserDocument userDocument = new DAOGetter().getUsers().getUserFromPlayer(player);
                 final SessionDocument sessionDocument = userDocument.getLastSession();
+                if (sessionDocument == null) {Debug.log(Debug.LogLevel.SEVERE, "User does not have a session to end"); return;}
                 if (sessionDocument.getEnd() != null)
                     Debug.log(Debug.LogLevel.WARNING, "Tried to end an already ended session!");
                 sessionDocument.setEnd(new Date());
@@ -78,6 +80,6 @@ public class SessionTasks {
                 getDao().save(sessionDocument);
             }
         };
-        MongoExecutionService.getExecutorService().submit(runnable);
+        MongoExecutionService.getExecutorService().execute(runnable);
     }
 }

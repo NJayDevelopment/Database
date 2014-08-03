@@ -6,8 +6,12 @@ import org.bukkit.permissions.Permission;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
 import org.mongodb.morphia.query.Query;
+import us.nsakt.dynamicdatabase.Debug;
+import us.nsakt.dynamicdatabase.documents.ClusterDocument;
 import us.nsakt.dynamicdatabase.documents.GroupDocument;
+import us.nsakt.dynamicdatabase.documents.UserDocument;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +23,7 @@ import java.util.UUID;
  * @author NathanTheBook
  */
 public class Groups extends BasicDAO<GroupDocument, ObjectId> {
+
     /**
      * Default constructor for an instance of the DAO.
      * DAO needs to be initiated before any finder methods can be ran.
@@ -30,26 +35,35 @@ public class Groups extends BasicDAO<GroupDocument, ObjectId> {
     }
 
     /**
-     * Find all groups a UUID is in, then run a task on the resulting list of groups.
+     * Find all groups a UserDocument is in.
      *
-     * @param uuid     UUID to get group information from.
+     * @param userDocument UserDocument to get group information from.
      */
-    public List<GroupDocument> getAllGroups(final UUID uuid) {
+    public List<GroupDocument> getAllGroups(final UserDocument userDocument) {
         Query<GroupDocument> query = getDatastore().createQuery(GroupDocument.class);
-        query.field(GroupDocument.MongoFields.MEMBERS.fieldName).contains(uuid.toString());
-        query.order(GroupDocument.MongoFields.PRIORITY.fieldName);
+        query.field(GroupDocument.MongoFields.MEMBERS.fieldName).hasAllOf(Arrays.asList(userDocument.getObjectId()));
+        query.order("-" + GroupDocument.MongoFields.PRIORITY.fieldName);
+        return query.asList();
+    }
+
+    public List<GroupDocument> getAllDefaultGroups(final ClusterDocument clusterDocument) {
+        Query<GroupDocument> query = getDatastore().createQuery(GroupDocument.class);
+        query.field(GroupDocument.MongoFields.GIVE_TO_NEW.fieldName).equal(true);
+        query.field(GroupDocument.MongoFields.CLUSTER.fieldName).equal(clusterDocument.getObjectId());
+        query.order("-" + GroupDocument.MongoFields.PRIORITY.fieldName);
         return query.asList();
     }
 
     /**
-     * Find all groups a UUID is in,, get the permissions from those groups, then run a task on the resulting list of permissions.
+     * Find all groups a UserDocument is in,, get the permissions from those groups
      *
-     * @param uuid UUID to get permission information from.
+     * @param userDocument UserDocument to get permission information from.
      */
-    public HashMap<Permission, Boolean> getAllPermissions(final UUID uuid) {
+    public HashMap<Permission, Boolean> getAllPermissions(final UserDocument userDocument) {
         final HashMap<Permission, Boolean> result = Maps.newHashMap();
 
-        List<GroupDocument> groupDocuments = getAllGroups(uuid);
+        List<GroupDocument> groupDocuments = getAllGroups(userDocument);
+        if (groupDocuments == null || groupDocuments.isEmpty()) return null;
         for (GroupDocument document : groupDocuments) {
             result.putAll(document.getGroupPermissions());
         }

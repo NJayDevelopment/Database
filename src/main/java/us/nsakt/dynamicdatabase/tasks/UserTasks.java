@@ -14,6 +14,7 @@ import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
 import us.nsakt.dynamicdatabase.util.NsaktException;
 
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Basic Utility class to perform action related to user documents.
@@ -28,9 +29,9 @@ public class UserTasks {
     /**
      * Add a user to the database
      *
-     * @param player Player to get the user information from
+     * @param uuid UUID to get the user information from
      */
-    public static void createUser(final Player player) {
+    public static void createUser(final UUID uuid) {
         try {
             ConfigEnforcer.Documents.Users.ensureEnabled();
         } catch (NsaktException e) {
@@ -40,15 +41,13 @@ public class UserTasks {
             public void run() {
                 UserDocument user = (UserDocument) getDocument();
                 user.setFirstSignIn(new Date());
-                user.setUuid(player.getUniqueId());
-                user.setUsernames(Lists.newArrayList(player.getName()));
-                user.setLastUsername(player.getName());
-                user.setMcSignIns(1);
+                user.setUuid(uuid);
+                user.setMcSignIns(0);
                 user.setLastSignIn(new Date());
                 getDao().save(user);
             }
         };
-        MongoExecutionService.getExecutorService().submit(task);
+        MongoExecutionService.getExecutorService().execute(task);
     }
 
     /**
@@ -61,6 +60,7 @@ public class UserTasks {
             ConfigEnforcer.Documents.Users.ensureEnabled();
         } catch (NsaktException e) {
         }
+        // Add listeners here for future reference.
         QueryActionTask task = new QueryActionTask(getDao().getDatastore(), getDao().createQuery().field("uuid").equal(event.getPlayer().getUniqueId())) {
             @Override
             public void run() {
@@ -72,6 +72,6 @@ public class UserTasks {
                 getDao().update(getQuery(), updates);
             }
         };
-        MongoExecutionService.getExecutorService().submit(task);
+        MongoExecutionService.getExecutorService().execute(task);
     }
 }

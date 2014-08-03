@@ -30,18 +30,26 @@ import org.mongodb.morphia.mapping.DefaultCreator;
 import org.reflections.Reflections;
 import us.nsakt.dynamicdatabase.commands.AdminChatCommand;
 import us.nsakt.dynamicdatabase.commands.PlayerCommands;
+import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.documents.Document;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
+import us.nsakt.dynamicdatabase.documents.UserDocument;
+import us.nsakt.dynamicdatabase.listeners.PermissionsListener;
 import us.nsakt.dynamicdatabase.listeners.SessionListener;
 import us.nsakt.dynamicdatabase.listeners.UserListener;
 import us.nsakt.dynamicdatabase.serverinterconnect.ConnectionManager;
+import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
+import us.nsakt.dynamicdatabase.util.ExceptionHandler;
 import us.nsakt.dynamicdatabase.util.LanguageFile;
 
 import java.io.File;
 import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Plugin main class
@@ -84,6 +92,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
         mainThread = Thread.currentThread();
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
         setupConfig();
         setupDebugging();
         setupMongo();
@@ -102,17 +111,44 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         }
     }
 
+    public void cleanUpServer() {
+        final ServerDocument serverDocument = this.currentServerDocument;
+        SaveTask task = new SaveTask(new DAOGetter().getServers().getDatastore(), serverDocument) {
+            @Override
+            public void run() {
+                serverDocument.setOnline(false);
+                serverDocument.setOnlinePlayers(Collections.<UUID>emptyList());
+                serverDocument.setOnlineStaff(Collections.<UUID>emptyList());
+                serverDocument.setStart(null);
+                getDatastore().save(serverDocument);
+            }
+        };
+        MongoExecutionService.getExecutorService().execute(task);
+    }
+
     // Check if the server is in the database. If not, throw a warning.
     public void setupServer() {
-        ServerDocument serverDocument = getDatastores().get(ServerDocument.class).createQuery(ServerDocument.class).filter("_id", ObjectId.massageToObjectId(Config.Mongo.serverId)).get();
-        if (serverDocument == null) Debug.log(Debug.LogLevel.SEVERE, "Server not found in database!");
+        final ServerDocument serverDocument = getDatastores().get(ServerDocument.class).createQuery(ServerDocument.class).filter("_id", ObjectId.massageToObjectId(Config.Mongo.serverId)).get();
+        if (serverDocument == null) { Debug.log(Debug.LogLevel.SEVERE, "Server not found in database!"); return;}
         this.currentServerDocument = serverDocument;
+        SaveTask task = new SaveTask(new DAOGetter().getServers().getDatastore(), serverDocument) {
+            @Override
+            public void run() {
+                serverDocument.setOnline(true);
+                serverDocument.setOnlinePlayers(Collections.<UUID>emptyList());
+                serverDocument.setOnlineStaff(Collections.<UUID>emptyList());
+                serverDocument.setStart(new Date());
+                getDatastore().save(serverDocument);
+            }
+        };
+        MongoExecutionService.getExecutorService().execute(task);
     }
 
     @Override
     public void onDisable() {
-        instance = null;
+        cleanUpServer();
         MongoExecutionService.destroyExecutorService(false);
+        instance = null;
     }
 
     // Load the plugin configuration and language file
@@ -196,6 +232,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
     private void registerListeners() {
         registerEvents(new UserListener());
         registerEvents(new SessionListener());
+        registerEvents(new PermissionsListener());
     }
 
     // Utility to register a bukkit event listener.
@@ -223,7 +260,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         try {
             this.commands.execute(cmd.getName(), args, sender, sender);
         } catch (CommandPermissionsException e) {
-            sender.sendMessage(ChatColor.RED + (sender instanceof Player ? Config.getLanguageMap().get(LanguageFile.getLocale((Player) sender)).get("sk89qCommands.noPermissionMessage") : Config.getLanguageMap().get(LanguageFile.LanguageEnum.ENGLISH).get("sk89qCommands.noPermissionMessage")));
+            sender.sendMessage(ChatColor.RED + "You do not have permission to use this command!");
         } catch (MissingNestedCommandException e) {
             sender.sendMessage(ChatColor.RED + e.getUsage());
         } catch (CommandUsageException e) {
@@ -231,9 +268,9 @@ public class DynamicDatabasePlugin extends JavaPlugin {
             sender.sendMessage(ChatColor.RED + e.getUsage());
         } catch (WrappedCommandException e) {
             if (e.getCause() instanceof NumberFormatException) {
-                sender.sendMessage(ChatColor.RED + (sender instanceof Player ? Config.getLanguageMap().get(LanguageFile.getLocale((Player) sender)).get("sk89qCommands.intExpectedStringReceived") : Config.getLanguageMap().get(LanguageFile.LanguageEnum.ENGLISH).get("sk89qCommands.intExpectedStringReceived")));
+                sender.sendMessage(ChatColor.RED + "Number expected, string received today");
             } else {
-                sender.sendMessage(ChatColor.RED + (sender instanceof Player ? Config.getLanguageMap().get(LanguageFile.getLocale((Player) sender)).get("sk89qCommands.errorOccurred") : Config.getLanguageMap().get(LanguageFile.LanguageEnum.ENGLISH).get("sk89qCommands.errorOccurred")));
+                sender.sendMessage(ChatColor.RED + "An error has occurred, see the console for more details.");
                 e.printStackTrace();
             }
         } catch (CommandException e) {

@@ -98,7 +98,7 @@ public class PlayerCommands {
                 }
             }
         };
-        MongoExecutionService.getExecutorService().submit(commandRunner);
+        MongoExecutionService.getExecutorService().execute(commandRunner);
     }
 
     @Command(
@@ -130,6 +130,6 @@ public class PlayerCommands {
                 }
             }
         };
-        MongoExecutionService.getExecutorService().submit(commandRunner);
+        Bukkit.getScheduler().runTaskAsynchronously(DynamicDatabasePlugin.getInstance(), commandRunner);
     }
 }

@@ -16,7 +16,7 @@ import java.util.UUID;
  *
  * @author NathanTheBook
  */
-@Entity("users")
+@Entity("dndb_users")
 public class UserDocument extends Document {
     private UUID uuid;
     private List<String> usernames;
@@ -25,11 +25,11 @@ public class UserDocument extends Document {
     private String email;
     @Property("mc_sign_ins")
     private int mcSignIns;
-    @Property("last_sign_in")
+    @Property("mc_last_sign_in")
     private Date lastSignIn;
-    @Property("first_sign_in")
+    @Property("mc_first_sign_in")
     private Date firstSignIn;
-    @Property("last_session")
+    @Property("mc_last_session")
     private ObjectId lastSession;
 
     public UUID getUuid() {
@@ -120,9 +120,9 @@ public class UserDocument extends Document {
         LAST_USERNAME("last_username"),
         EMAIL("email"),
         MC_SIGN_INS("mc_sign_ins"),
-        LAST_SIGN_IN("last_sign_in"),
-        FIRST_SIGN_IN("first_sign_in"),
-        LAST_SESSION("last_session");
+        LAST_SIGN_IN("mc_last_sign_in"),
+        FIRST_SIGN_IN("mc_first_sign_in"),
+        LAST_SESSION("mc_last_session");
 
         public String fieldName;
 

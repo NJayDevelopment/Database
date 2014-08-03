@@ -1,6 +1,9 @@
 package us.nsakt.dynamicdatabase.tasks;
 
+import com.google.common.collect.Lists;
 import org.bukkit.entity.Player;
+import org.mongodb.morphia.query.Query;
+import org.mongodb.morphia.query.UpdateOperations;
 import us.nsakt.dynamicdatabase.MongoExecutionService;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.daos.Servers;
@@ -26,12 +29,14 @@ public class ServerTasks {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                serverDocument.getOnlinePlayers().add(player.getUniqueId());
-                if (player.hasPermission("dynamicdb.staff.staff")) serverDocument.getOnlineStaff().add(player.getUniqueId());
-                getDao().save(serverDocument);
+                Query<ServerDocument> query = getDao().createQuery().filter(ServerDocument.MongoFields.id.fieldName, serverDocument.getObjectId());
+                UpdateOperations<ServerDocument> updates = getDao().createUpdateOperations();
+                updates.add(ServerDocument.MongoFields.ONLINE_PLAYERS.fieldName, player.getUniqueId());
+                if (player.hasPermission("dynamicdb.staff.staff")) updates.add(ServerDocument.MongoFields.ONLINE_STAFF.fieldName, player.getUniqueId());
+                getDao().update(query, updates);
             }
         };
-        MongoExecutionService.getExecutorService().submit(runnable);
+        MongoExecutionService.getExecutorService().execute(runnable);
     }
 
     /**
@@ -44,10 +49,13 @@ public class ServerTasks {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                serverDocument.getOnlinePlayers().remove(player.getUniqueId());
-                if (player.hasPermission("dynamicdb.staff.staff")) serverDocument.getOnlineStaff().remove(player.getUniqueId());
+                Query<ServerDocument> query = getDao().createQuery().filter(ServerDocument.MongoFields.id.fieldName, serverDocument.getObjectId());
+                UpdateOperations<ServerDocument> updates = getDao().createUpdateOperations();
+                updates.removeAll(ServerDocument.MongoFields.ONLINE_PLAYERS.fieldName, player.getUniqueId());
+                if (player.hasPermission("dynamicdb.staff.staff")) updates.removeAll(ServerDocument.MongoFields.ONLINE_STAFF.fieldName, player.getUniqueId());
+                getDao().update(query, updates);
             }
         };
-        MongoExecutionService.getExecutorService().submit(runnable);
+        MongoExecutionService.getExecutorService().execute(runnable);
     }
 }

@@ -21,17 +21,19 @@ import java.util.UUID;
  *
  * @author NathanTheBook
  */
-@Entity("groups")
+@Entity("dndb_groups")
 public class GroupDocument extends Document {
     private String name;
     private String flair;
     @Property("flair_color")
     private String flairColor;
     private int priority;
-    private List<UUID> members;
+    private List<ObjectId> members;
     @Property("mc_permissions")
     private List<String> mcPermissions;
     private ObjectId cluster;
+    @Property("give_to_new")
+    private boolean giveToNew;
 
     public String getName() {
         return name;
@@ -65,11 +67,11 @@ public class GroupDocument extends Document {
         this.priority = priority;
     }
 
-    public List<UUID> getMembers() {
+    public List<ObjectId> getMembers() {
         return members;
     }
 
-    public void setMembers(List<UUID> members) {
+    public void setMembers(List<ObjectId> members) {
         this.members = members;
     }
 
@@ -89,6 +91,14 @@ public class GroupDocument extends Document {
         this.cluster = cluster.getObjectId();
     }
 
+    public boolean isGiveToNew() {
+        return giveToNew;
+    }
+
+    public void setGiveToNew(boolean giveToNew) {
+        this.giveToNew = giveToNew;
+    }
+
     @Override
     public String toString() {
         return "GroupDocument{" +
@@ -99,6 +109,7 @@ public class GroupDocument extends Document {
                 ", members=" + members +
                 ", mcPermissions=" + mcPermissions +
                 ", cluster=" + cluster +
+                ", giveToNew=" + giveToNew +
                 '}';
     }
 
@@ -108,6 +119,7 @@ public class GroupDocument extends Document {
     public HashMap<Permission, Boolean> getGroupPermissions() {
         HashMap<Permission, Boolean> formattedPermissions = Maps.newHashMap();
         List<String> stringPerms = this.getMcPermissions();
+        if (stringPerms == null || stringPerms.isEmpty()) return null;
         for (String permission : stringPerms) {
             if (permission.startsWith("#")) continue;
             boolean add = !permission.startsWith("-");
@@ -136,7 +148,7 @@ public class GroupDocument extends Document {
                 callback.call(getQuery().asList());
             }
         };
-        MongoExecutionService.getExecutorService().submit(task);
+        MongoExecutionService.getExecutorService().execute(task);
     }
 
     /**
@@ -150,7 +162,8 @@ public class GroupDocument extends Document {
         PRIORITY("priority"),
         MEMBERS("members"),
         MC_PERMISSIONS("mc_permissions"),
-        CLUSTER("cluster");
+        CLUSTER("cluster"),
+        GIVE_TO_NEW("give_to_new");
 
         public String fieldName;
 

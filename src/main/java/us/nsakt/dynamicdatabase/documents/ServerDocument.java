@@ -8,6 +8,7 @@ import org.mongodb.morphia.annotations.Property;
 import us.nsakt.dynamicdatabase.daos.DAOGetter;
 import us.nsakt.dynamicdatabase.util.Visibility;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,7 +18,7 @@ import java.util.UUID;
  *
  * @author NathanTheBook
  */
-@Entity("servers")
+@Entity("dndb_servers")
 public class ServerDocument extends Document {
     private String name;
     private String address;
@@ -32,8 +33,10 @@ public class ServerDocument extends Document {
     private int internalPort;
     @Property("max_players")
     private int maxPlayers;
-    private Duration uptime;
+    private Date start;
+    @Property("online_players")
     private List<UUID> onlinePlayers;
+    @Property("online_staff")
     private List<UUID> onlineStaff;
     private boolean online;
 
@@ -109,12 +112,12 @@ public class ServerDocument extends Document {
         this.maxPlayers = maxPlayers;
     }
 
-    public Duration getUptime() {
-        return uptime;
+    public Date getStart() {
+        return start;
     }
 
-    public void setUptime(Duration uptime) {
-        this.uptime = uptime;
+    public void setStart(Date start) {
+        this.start = start;
     }
 
     public List<UUID> getOnlinePlayers() {
@@ -153,7 +156,7 @@ public class ServerDocument extends Document {
                 ", port=" + port +
                 ", internalPort=" + internalPort +
                 ", maxPlayers=" + maxPlayers +
-                ", uptime=" + uptime +
+                ", start=" + start +
                 ", onlinePlayers=" + onlinePlayers +
                 ", onlineStaff=" + onlineStaff +
                 ", online=" + online +
@@ -211,8 +214,9 @@ public class ServerDocument extends Document {
         CLUSTER("cluster"),
         PORT("port"),
         INTERNAL_PORT("internal_port"),
-        UPTIME("uptime"),
+        START("start"),
         ONLINE_PLAYERS("online_players"),
+        ONLINE_STAFF("online_staff"),
         ONLINE("online");
 
         public String fieldName;

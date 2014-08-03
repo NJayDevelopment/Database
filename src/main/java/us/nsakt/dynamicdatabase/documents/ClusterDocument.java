@@ -9,7 +9,7 @@ import us.nsakt.dynamicdatabase.util.Visibility;
  *
  * @author NathanTheBook
  */
-@Entity("clusters")
+@Entity("dndb_clusters")
 public class ClusterDocument extends Document {
     private String name;
     private Visibility visibility;

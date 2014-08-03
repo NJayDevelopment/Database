@@ -112,12 +112,12 @@ public class Config {
                 public void run() {
                     getQuery().field(ClusterDocument.MongoFields.NAME.fieldName).equal(clusterName);
                     Document document = (Document) getQuery().get();
-                    us.nsakt.dynamicdatabase.Debug.log(us.nsakt.dynamicdatabase.Debug.LogLevel.INFO, document.getObjectId().toString());
+                    if (document == null) return;
                     namesWithIds.keySet().removeAll(Lists.newArrayList(clusterName));
                     namesWithIds.put(clusterName, document.getObjectId());
                 }
             };
-            MongoExecutionService.getExecutorService().submit(task);
+            MongoExecutionService.getExecutorService().execute(task);
         }
 
         public static void convertAllNamesToClusters() {

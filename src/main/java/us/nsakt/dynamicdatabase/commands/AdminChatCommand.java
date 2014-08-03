@@ -34,7 +34,7 @@ public class AdminChatCommand {
         message.append(" ");
         message.append(sender.getName()).append(ChatColor.RESET).append(": ");
         message.append(args.getJoinedStrings(0));
-        Bukkit.broadcastMessage(message.toString());
+        Bukkit.broadcast(message.toString(), "dynamicdb.adminchat.receive");
         Bukkit.getConsoleSender().sendMessage(message.toString());
         if (Config.CrossServer.enabled && Config.CrossServer.AdminChat.enabled && Config.CrossServer.AdminChat.send) {
             AdminChatPacket packet = new AdminChatPacket(DynamicDatabasePlugin.getInstance().getCurrentServerDocument().getObjectId(), DynamicDatabasePlugin.getInstance().getCurrentServerDocument().getCluster().getObjectId(), sender.getName(), args.getJoinedStrings(0));
