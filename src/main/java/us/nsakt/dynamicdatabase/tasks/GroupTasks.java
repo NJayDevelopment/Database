@@ -134,8 +134,10 @@ public class GroupTasks {
                     return;
                 }
                 for (GroupDocument group : groups) {
-                    if (group.getFlair() == null) return;
-                    flairBuilder.append((group.getFlairColor() != null? ChatColor.valueOf(group.getFlairColor()) : ChatColor.WHITE)).append(group.getFlair());
+                    if (group.getFlair() == null || group.getFlair().isEmpty()) return;
+                    if (group.getFlairColor() == null || group.getFlairColor().isEmpty()) flairBuilder.append(ChatColor.WHITE);
+                    else flairBuilder.append(ChatColor.valueOf(group.getFlairColor()));
+                    flairBuilder.append(group.getFlair());
                 }
                 player.setDisplayName(flairBuilder.toString() + ChatColor.RESET + ChatColor.AQUA + player.getName() + ChatColor.RESET);
             }
