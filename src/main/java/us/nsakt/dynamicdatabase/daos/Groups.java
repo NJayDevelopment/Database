@@ -65,6 +65,7 @@ public class Groups extends BasicDAO<GroupDocument, ObjectId> {
         List<GroupDocument> groupDocuments = getAllGroups(userDocument);
         if (groupDocuments == null || groupDocuments.isEmpty()) return null;
         for (GroupDocument document : groupDocuments) {
+            if (document.getGroupPermissions() == null || document.getGroupPermissions().isEmpty()) continue;
             result.putAll(document.getGroupPermissions());
         }
         return result;
