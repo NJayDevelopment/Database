@@ -1,10 +1,7 @@
 package us.nsakt.dynamicdatabase.tasks;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.sk89q.minecraft.util.commands.ChatColor;
-import org.bson.types.ObjectId;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
@@ -12,15 +9,13 @@ import us.nsakt.dynamicdatabase.ConfigEnforcer;
 import us.nsakt.dynamicdatabase.Debug;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
 import us.nsakt.dynamicdatabase.MongoExecutionService;
-import us.nsakt.dynamicdatabase.daos.DAOGetter;
+import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.daos.Groups;
-import us.nsakt.dynamicdatabase.documents.ClusterDocument;
 import us.nsakt.dynamicdatabase.documents.GroupDocument;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
 import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
 import us.nsakt.dynamicdatabase.util.NsaktException;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +29,7 @@ import java.util.UUID;
 public class GroupTasks {
 
     private static Groups getDao() {
-        return new DAOGetter().getGroups();
+        return DAOService.getGroups();
     }
 
     public static class LoginTasks {
@@ -50,7 +45,7 @@ public class GroupTasks {
                 ConfigEnforcer.Documents.Groups.ensureEnabled();
             } catch (NsaktException e) {
             }
-            final UserDocument userDocument = new DAOGetter().getUsers().getUserFromUuid(uuid);
+            final UserDocument userDocument = DAOService.getUsers().getUserFromUuid(uuid);
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
@@ -72,7 +67,7 @@ public class GroupTasks {
                 ConfigEnforcer.Documents.Groups.ensureEnabled();
             } catch (NsaktException e) {
             }
-            final UserDocument userDocument = new DAOGetter().getUsers().getUserFromPlayer(player);
+            final UserDocument userDocument = DAOService.getUsers().getUserFromPlayer(player);
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
@@ -101,7 +96,7 @@ public class GroupTasks {
             ConfigEnforcer.Documents.Groups.ensureEnabled();
         } catch (NsaktException e) {
         }
-        final UserDocument userDocument = new DAOGetter().getUsers().getUserFromPlayer(player);
+        final UserDocument userDocument = DAOService.getUsers().getUserFromPlayer(player);
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -123,7 +118,7 @@ public class GroupTasks {
             ConfigEnforcer.Documents.Groups.ensureEnabled();
         } catch (NsaktException e) {
         }
-        final UserDocument userDocument = new DAOGetter().getUsers().getUserFromPlayer(player);
+        final UserDocument userDocument = DAOService.getUsers().getUserFromPlayer(player);
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -159,7 +154,7 @@ public class GroupTasks {
         SaveTask task = new SaveTask(getDao().getDatastore(), groupDocument) {
             @Override
             public void run() {
-                groupDocument.getMembers().add(new DAOGetter().getUsers().getUserFromPlayer(player).getObjectId());
+                groupDocument.getMembers().add(DAOService.getUsers().getUserFromPlayer(player).getObjectId());
                 getDao().save(groupDocument);
                 assignPermissions(player);
             }
@@ -176,8 +171,8 @@ public class GroupTasks {
             @Override
             public void run() {
                 for (GroupDocument groupDocument : getDao().getAllDefaultGroups(DynamicDatabasePlugin.getInstance().getCurrentServerDocument().getCluster())) {
-                    if (groupDocument.getMembers().contains(new DAOGetter().getUsers().getUserFromUuid(uuid).getObjectId())) return;
-                    groupDocument.getMembers().add(new DAOGetter().getUsers().getUserFromUuid(uuid).getObjectId());
+                    if (groupDocument.getMembers().contains(DAOService.getUsers().getUserFromUuid(uuid).getObjectId())) return;
+                    groupDocument.getMembers().add(DAOService.getUsers().getUserFromUuid(uuid).getObjectId());
                     getDao().save(groupDocument);
                 }
             }
@@ -196,7 +191,7 @@ public class GroupTasks {
         SaveTask task = new SaveTask(getDao().getDatastore(), groupDocument) {
             @Override
             public void run() {
-                groupDocument.getMembers().remove(new DAOGetter().getUsers().getUserFromPlayer(player).getObjectId());
+                groupDocument.getMembers().remove(DAOService.getUsers().getUserFromPlayer(player).getObjectId());
                 getDao().save(groupDocument);
                 assignPermissions(player);
             }

@@ -1,12 +1,10 @@
 package us.nsakt.dynamicdatabase.tasks;
 
-import com.google.common.collect.Lists;
-import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.mongodb.morphia.query.UpdateOperations;
 import us.nsakt.dynamicdatabase.ConfigEnforcer;
 import us.nsakt.dynamicdatabase.MongoExecutionService;
-import us.nsakt.dynamicdatabase.daos.DAOGetter;
+import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.daos.Users;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
 import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
@@ -23,7 +21,7 @@ import java.util.UUID;
  */
 public class UserTasks {
     private static Users getDao() {
-        return new DAOGetter().getUsers();
+        return DAOService.getUsers();
     }
 
     /**

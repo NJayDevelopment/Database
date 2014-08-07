@@ -7,13 +7,12 @@ import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
 import us.nsakt.dynamicdatabase.MongoExecutionService;
-import us.nsakt.dynamicdatabase.daos.DAOGetter;
+import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
 import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Class to represent a "group" document in the database.
@@ -84,7 +83,7 @@ public class GroupDocument extends Document {
     }
 
     public ClusterDocument getCluster() {
-        return new DAOGetter().getClusters().findOne(ClusterDocument.MongoFields.id.fieldName, cluster);
+        return DAOService.getClusters().findOne(ClusterDocument.MongoFields.id.fieldName, cluster);
     }
 
     public void setCluster(ClusterDocument cluster) {

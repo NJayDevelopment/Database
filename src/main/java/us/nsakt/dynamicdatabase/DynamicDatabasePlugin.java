@@ -20,7 +20,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mongodb.morphia.Datastore;
@@ -30,10 +29,9 @@ import org.mongodb.morphia.mapping.DefaultCreator;
 import org.reflections.Reflections;
 import us.nsakt.dynamicdatabase.commands.AdminChatCommand;
 import us.nsakt.dynamicdatabase.commands.PlayerCommands;
-import us.nsakt.dynamicdatabase.daos.DAOGetter;
+import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.documents.Document;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
-import us.nsakt.dynamicdatabase.documents.UserDocument;
 import us.nsakt.dynamicdatabase.listeners.PermissionsListener;
 import us.nsakt.dynamicdatabase.listeners.SessionListener;
 import us.nsakt.dynamicdatabase.listeners.UserListener;
@@ -113,7 +111,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
 
     public void cleanUpServer() {
         final ServerDocument serverDocument = this.currentServerDocument;
-        SaveTask task = new SaveTask(new DAOGetter().getServers().getDatastore(), serverDocument) {
+        SaveTask task = new SaveTask(DAOService.getServers().getDatastore(), serverDocument) {
             @Override
             public void run() {
                 serverDocument.setOnline(false);
@@ -131,7 +129,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         final ServerDocument serverDocument = getDatastores().get(ServerDocument.class).createQuery(ServerDocument.class).filter("_id", ObjectId.massageToObjectId(Config.Mongo.serverId)).get();
         if (serverDocument == null) { Debug.log(Debug.LogLevel.SEVERE, "Server not found in database!"); return;}
         this.currentServerDocument = serverDocument;
-        SaveTask task = new SaveTask(new DAOGetter().getServers().getDatastore(), serverDocument) {
+        SaveTask task = new SaveTask(DAOService.getServers().getDatastore(), serverDocument) {
             @Override
             public void run() {
                 serverDocument.setOnline(true);

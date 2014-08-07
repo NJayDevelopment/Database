@@ -7,7 +7,7 @@ import event.Listener;
 import net.njay.serverinterconnect.event.PacketRecievedEvent;
 import org.bukkit.Bukkit;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
-import us.nsakt.dynamicdatabase.daos.DAOGetter;
+import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
 import us.nsakt.dynamicdatabase.serverinterconnect.packets.AdminChatPacket;
 import us.nsakt.dynamicdatabase.util.ChatUtils;
@@ -28,7 +28,7 @@ public class AdminChatListener implements Listener {
         AdminChatPacket packet = (AdminChatPacket) e.getPacket();
         if (packet.getServer().equals(DynamicDatabasePlugin.getInstance().getCurrentServerDocument().getObjectId()))
             return;
-        ServerDocument server = new DAOGetter().getServers().findOne(ServerDocument.MongoFields.id.fieldName, packet.getServer());
+        ServerDocument server = DAOService.getServers().findOne(ServerDocument.MongoFields.id.fieldName, packet.getServer());
         StringBuilder message = new StringBuilder();
         message.append(ChatUtils.generatePrefix(server.getName()));
         message.append(ChatUtils.generatePrefix("A")).append(" ");

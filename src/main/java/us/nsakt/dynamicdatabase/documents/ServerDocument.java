@@ -2,10 +2,9 @@ package us.nsakt.dynamicdatabase.documents;
 
 import org.bson.types.ObjectId;
 import org.bukkit.entity.Player;
-import org.joda.time.Duration;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
-import us.nsakt.dynamicdatabase.daos.DAOGetter;
+import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.util.Visibility;
 
 import java.util.Date;
@@ -81,7 +80,7 @@ public class ServerDocument extends Document {
     }
 
     public ClusterDocument getCluster() {
-        return new DAOGetter().getClusters().findOne(ClusterDocument.MongoFields.id.fieldName, cluster);
+        return DAOService.getClusters().findOne(ClusterDocument.MongoFields.id.fieldName, cluster);
     }
 
     public void setCluster(ClusterDocument cluster) {

@@ -4,11 +4,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
-import us.nsakt.dynamicdatabase.daos.DAOGetter;
+import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.tasks.GroupTasks;
 import us.nsakt.dynamicdatabase.tasks.ServerTasks;
 import us.nsakt.dynamicdatabase.tasks.UserTasks;
@@ -17,7 +16,7 @@ public class UserListener implements Listener {
 
     @EventHandler
     public static void handlePreLogin(final AsyncPlayerPreLoginEvent event) {
-        boolean exists = new DAOGetter().getUsers().exists(event.getUniqueId());
+        boolean exists = DAOService.getUsers().exists(event.getUniqueId());
         if (!exists) {
             UserTasks.createUser(event.getUniqueId());
             GroupTasks.addPlayerToAllDefaults(event.getUniqueId());

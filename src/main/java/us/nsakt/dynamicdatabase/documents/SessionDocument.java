@@ -4,7 +4,7 @@ import org.bson.types.ObjectId;
 import org.joda.time.Duration;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
-import us.nsakt.dynamicdatabase.daos.DAOGetter;
+import us.nsakt.dynamicdatabase.daos.DAOService;
 
 import java.util.Date;
 import java.util.UUID;
@@ -29,7 +29,7 @@ public class SessionDocument extends Document {
     private String ip;
 
     public ServerDocument getServer() {
-        return new DAOGetter().getServers().findOne(ServerDocument.MongoFields.id.fieldName, server);
+        return DAOService.getServers().findOne(ServerDocument.MongoFields.id.fieldName, server);
     }
 
     public void setServer(ServerDocument server) {

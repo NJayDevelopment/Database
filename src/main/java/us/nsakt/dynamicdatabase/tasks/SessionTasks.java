@@ -2,13 +2,12 @@ package us.nsakt.dynamicdatabase.tasks;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.joda.time.Duration;
 import us.nsakt.dynamicdatabase.ConfigEnforcer;
 import us.nsakt.dynamicdatabase.Debug;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
 import us.nsakt.dynamicdatabase.MongoExecutionService;
-import us.nsakt.dynamicdatabase.daos.DAOGetter;
+import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.daos.Sessions;
 import us.nsakt.dynamicdatabase.documents.SessionDocument;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
@@ -23,7 +22,7 @@ import java.util.Date;
  */
 public class SessionTasks {
     private static Sessions getDao() {
-        return new DAOGetter().getSessions();
+        return DAOService.getSessions();
     }
 
     /**
@@ -45,9 +44,9 @@ public class SessionTasks {
                 document.setStart(new Date());
                 document.setIp(event.getPlayer().getAddress().getAddress().getHostAddress());
                 getDao().save(document);
-                final UserDocument userDocument = new DAOGetter().getUsers().getUserFromPlayer(event.getPlayer());
+                final UserDocument userDocument = DAOService.getUsers().getUserFromPlayer(event.getPlayer());
                 userDocument.setLastSession(document);
-                new DAOGetter().getUsers().save(userDocument);
+                DAOService.getUsers().save(userDocument);
             }
         };
         MongoExecutionService.getExecutorService().execute(task);
@@ -68,7 +67,7 @@ public class SessionTasks {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                final UserDocument userDocument = new DAOGetter().getUsers().getUserFromPlayer(player);
+                final UserDocument userDocument = DAOService.getUsers().getUserFromPlayer(player);
                 final SessionDocument sessionDocument = userDocument.getLastSession();
                 if (sessionDocument == null) {Debug.log(Debug.LogLevel.SEVERE, "User does not have a session to end"); return;}
                 if (sessionDocument.getEnd() != null)

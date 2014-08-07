@@ -3,7 +3,7 @@ package us.nsakt.dynamicdatabase.tasks;
 import org.joda.time.Duration;
 import us.nsakt.dynamicdatabase.ConfigEnforcer;
 import us.nsakt.dynamicdatabase.MongoExecutionService;
-import us.nsakt.dynamicdatabase.daos.DAOGetter;
+import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.daos.Punishments;
 import us.nsakt.dynamicdatabase.documents.PunishmentDocument;
 import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
@@ -19,7 +19,7 @@ import java.util.UUID;
  */
 public class PunishmentTasks {
     private static Punishments getDao() {
-        return new DAOGetter().getPunishments();
+        return DAOService.getPunishments();
     }
 
     /**

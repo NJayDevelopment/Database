@@ -1,11 +1,10 @@
 package us.nsakt.dynamicdatabase.tasks;
 
-import com.google.common.collect.Lists;
 import org.bukkit.entity.Player;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 import us.nsakt.dynamicdatabase.MongoExecutionService;
-import us.nsakt.dynamicdatabase.daos.DAOGetter;
+import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.daos.Servers;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
 
@@ -16,7 +15,7 @@ import us.nsakt.dynamicdatabase.documents.ServerDocument;
  */
 public class ServerTasks {
     private static Servers getDao() {
-        return new DAOGetter().getServers();
+        return DAOService.getServers();
     }
 
     /**

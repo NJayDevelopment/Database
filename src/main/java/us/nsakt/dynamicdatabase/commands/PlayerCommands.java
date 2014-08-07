@@ -11,7 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
 import us.nsakt.dynamicdatabase.MongoExecutionService;
-import us.nsakt.dynamicdatabase.daos.DAOGetter;
+import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
 import us.nsakt.dynamicdatabase.util.PrettyPaginatedResult;
 import us.nsakt.dynamicdatabase.util.StringUtils;
@@ -41,7 +41,7 @@ public class PlayerCommands {
                 final StringBuilder message = new StringBuilder();
                 if (args.hasFlag('a')) {
                     List<ServerDocument> servers = Lists.newArrayList();
-                    servers = new DAOGetter().getServers().getAllPublicServers();
+                    servers = DAOService.getServers().getAllPublicServers();
                     message.append(StringUtils.padMessage("Online Staff [All Servers]", ChatColor.STRIKETHROUGH + "-", ChatColor.GREEN, ChatColor.DARK_AQUA));
                     message.append("\n");
                     if (servers.isEmpty()) {
@@ -72,7 +72,7 @@ public class PlayerCommands {
                     sender.sendMessage(message.toString());
                 }
                 else if (args.argsLength() > 0) {
-                    ServerDocument serverDocument = new DAOGetter().getServers().getDatastore().find(ServerDocument.class).field(ServerDocument.MongoFields.CLUSTER.fieldName).equal(DynamicDatabasePlugin.getInstance().getCurrentServerDocument().getCluster().getObjectId()).field(ServerDocument.MongoFields.NAME.fieldName).equal(args.getString(0)).get();
+                    ServerDocument serverDocument = DAOService.getServers().getDatastore().find(ServerDocument.class).field(ServerDocument.MongoFields.CLUSTER.fieldName).equal(DynamicDatabasePlugin.getInstance().getCurrentServerDocument().getCluster().getObjectId()).field(ServerDocument.MongoFields.NAME.fieldName).equal(args.getString(0)).get();
                     if (serverDocument == null) { sender.sendMessage(ChatColor.RED + "Server not found!" + ChatColor.AQUA + "Use " + ChatColor.GOLD + "/servers " + ChatColor.AQUA + "for a list of all servers."); return; }
                     message.append(StringUtils.padMessage("Online Staff [" + serverDocument.getName() + "]", ChatColor.STRIKETHROUGH + "-", ChatColor.GREEN, ChatColor.DARK_AQUA));
                     message.append("\n");
@@ -112,7 +112,7 @@ public class PlayerCommands {
         Runnable commandRunner = new Runnable() {
             @Override
             public void run() {
-                List<ServerDocument> serverDocuments = new DAOGetter().getServers().getAllPublicServers(DynamicDatabasePlugin.getInstance().getCurrentServerDocument().getCluster());
+                List<ServerDocument> serverDocuments = DAOService.getServers().getAllPublicServers(DynamicDatabasePlugin.getInstance().getCurrentServerDocument().getCluster());
                 try {
                     new PrettyPaginatedResult<ServerDocument>("All Servers") {
                         @Override public String format(ServerDocument entry, int index) {

@@ -5,7 +5,7 @@ import org.bson.types.ObjectId;
 import org.joda.time.Duration;
 import org.mongodb.morphia.annotations.Entity;
 import us.nsakt.dynamicdatabase.Config;
-import us.nsakt.dynamicdatabase.daos.DAOGetter;
+import us.nsakt.dynamicdatabase.daos.DAOService;
 
 import java.util.Date;
 import java.util.UUID;
@@ -55,7 +55,7 @@ public class PunishmentDocument extends Document {
     }
 
     public ServerDocument getServer() {
-        return new DAOGetter().getServers().findOne(ServerDocument.MongoFields.id.fieldName, cluster);
+        return DAOService.getServers().findOne(ServerDocument.MongoFields.id.fieldName, cluster);
     }
 
     public void setServer(ServerDocument server) {
@@ -71,7 +71,7 @@ public class PunishmentDocument extends Document {
     }
 
     public ClusterDocument getCluster() {
-        return new DAOGetter().getClusters().findOne(ClusterDocument.MongoFields.id.fieldName, cluster);
+        return DAOService.getClusters().findOne(ClusterDocument.MongoFields.id.fieldName, cluster);
     }
 
     public void setCluster(ClusterDocument cluster) {

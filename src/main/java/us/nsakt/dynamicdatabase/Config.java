@@ -8,7 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.joda.time.Duration;
 import org.mongodb.morphia.Datastore;
-import us.nsakt.dynamicdatabase.daos.DAOGetter;
+import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.documents.ClusterDocument;
 import us.nsakt.dynamicdatabase.documents.Document;
 import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
@@ -106,7 +106,7 @@ public class Config {
     // General Tasks to make working with the config easier later.
     public static class Tasks {
         public static void stringToCluster(final String clusterName) {
-            Datastore datastore = new DAOGetter().getClusters().getDatastore();
+            Datastore datastore = DAOService.getClusters().getDatastore();
             QueryActionTask task = new QueryActionTask(datastore, datastore.createQuery(ClusterDocument.class)) {
                 @Override
                 public void run() {

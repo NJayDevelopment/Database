@@ -3,7 +3,7 @@ package us.nsakt.dynamicdatabase.tasks;
 import us.nsakt.dynamicdatabase.ConfigEnforcer;
 import us.nsakt.dynamicdatabase.MongoExecutionService;
 import us.nsakt.dynamicdatabase.daos.Clusters;
-import us.nsakt.dynamicdatabase.daos.DAOGetter;
+import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.documents.ClusterDocument;
 import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
 import us.nsakt.dynamicdatabase.util.NsaktException;
@@ -16,7 +16,7 @@ import us.nsakt.dynamicdatabase.util.Visibility;
  */
 public class ClusterTasks {
     private static Clusters getDao() {
-        return new DAOGetter().getClusters();
+        return DAOService.getClusters();
     }
 
     /**

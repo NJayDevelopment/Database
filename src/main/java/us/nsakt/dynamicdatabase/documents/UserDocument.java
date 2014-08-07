@@ -3,7 +3,7 @@ package us.nsakt.dynamicdatabase.documents;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
-import us.nsakt.dynamicdatabase.daos.DAOGetter;
+import us.nsakt.dynamicdatabase.daos.DAOService;
 
 import java.util.Date;
 import java.util.List;
@@ -89,7 +89,7 @@ public class UserDocument extends Document {
     }
 
     public SessionDocument getLastSession() {
-        return new DAOGetter().getSessions().findOne(SessionDocument.MongoFields.id.fieldName, lastSession);
+        return DAOService.getSessions().findOne(SessionDocument.MongoFields.id.fieldName, lastSession);
     }
 
     public void setLastSession(SessionDocument session) {
