@@ -12,7 +12,7 @@ import org.mongodb.morphia.annotations.Property;
 import us.nsakt.dynamicdatabase.MongoExecutionService;
 import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
-import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
+import us.nsakt.dynamicdatabase.tasks.core.base.DBCallBack;
 
 import com.google.common.collect.Maps;
 
@@ -139,7 +139,7 @@ public class GroupDocument extends Document {
      * @param datastore Datastore that the group is in.
      * @param callback  Action to perform when the query is completed.
      */
-    public void getLowerGroups(final Datastore datastore, final DBCallback callback) {
+    public void getLowerGroups(final Datastore datastore, final DBCallBack callback) {
         final GroupDocument parent = this;
         QueryActionTask<GroupDocument> task = new QueryActionTask<GroupDocument>(datastore, datastore.createQuery(GroupDocument.class)) {
             @Override

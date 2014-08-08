@@ -24,6 +24,7 @@ import org.reflections.Reflections;
 
 import us.nsakt.dynamicdatabase.commands.AdminChatCommand;
 import us.nsakt.dynamicdatabase.commands.PlayerCommands;
+import us.nsakt.dynamicdatabase.commands.PunishmentCommands;
 import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.documents.Document;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
@@ -129,7 +130,10 @@ public class DynamicDatabasePlugin extends JavaPlugin {
     // Check if the server is in the database. If not, throw a warning.
     public void setupServer() {
         final ServerDocument serverDocument = getDatastores().get(ServerDocument.class).createQuery(ServerDocument.class).filter("_id", new ObjectId(Config.Mongo.serverId)).get();
-        if (serverDocument == null) { Debug.log(Debug.LogLevel.SEVERE, "Server not found in database!"); return;}
+        if (serverDocument == null) {
+            Debug.log(Debug.LogLevel.SEVERE, "Server not found in database!");
+            return;
+        }
         this.currentServerDocument = serverDocument;
         SaveTask task = new SaveTask(DAOService.getServers().getDatastore(), serverDocument) {
             @Override
@@ -226,6 +230,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         CommandsManagerRegistration cmdRegister = new CommandsManagerRegistration(this, this.commands);
         cmdRegister.register(AdminChatCommand.class);
         cmdRegister.register(PlayerCommands.class);
+        cmdRegister.register(PunishmentCommands.class);
     }
 
     // Register the plugin listeners. DO NOT PUT PACKET LISTENERS HERE!

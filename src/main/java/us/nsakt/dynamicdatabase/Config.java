@@ -1,16 +1,13 @@
 package us.nsakt.dynamicdatabase;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.bson.types.ObjectId;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.joda.time.Duration;
 import org.mongodb.morphia.Datastore;
-
 import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.documents.ClusterDocument;
 import us.nsakt.dynamicdatabase.documents.Document;
@@ -19,8 +16,9 @@ import us.nsakt.dynamicdatabase.util.LanguageFile;
 import us.nsakt.dynamicdatabase.util.config.ConfigAnnotation;
 import us.nsakt.dynamicdatabase.util.config.ConfigStructure;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Class to help manage the Bukkit  configuration.
@@ -109,7 +107,7 @@ public class Config {
     public static class Tasks {
         public static void stringToCluster(final String clusterName) {
             Datastore datastore = DAOService.getClusters().getDatastore();
-            QueryActionTask<ClusterDocument> task = new QueryActionTask<ClusterDocument>(datastore, datastore.createQuery(ClusterDocument.class)) {
+            QueryActionTask task = new QueryActionTask(datastore, datastore.createQuery(ClusterDocument.class)) {
                 @Override
                 public void run() {
                     getQuery().field(ClusterDocument.MongoFields.NAME.fieldName).equal(clusterName);
@@ -123,9 +121,9 @@ public class Config {
         }
 
         public static void convertAllNamesToClusters() {
-            for (List<String> t : Config.<List<String>>getAllMatchingSections("clusters")) {
+            for (Object t : getAllMatchingSections("clusters")) {
                 if (!(t instanceof List)) continue;
-                for (String s : t) {
+                for (String s : (List<String>) t) {
                     stringToCluster(s);
                 }
             }
@@ -348,7 +346,7 @@ public class Config {
 
                 @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if bans should be received", def = "true")
                 public static final boolean bans = get("cross-server.punishments.receive.bans", true);
-            }
+            }   
         }
     }
 }

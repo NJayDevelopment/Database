@@ -7,7 +7,7 @@ import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.daos.Punishments;
 import us.nsakt.dynamicdatabase.documents.PunishmentDocument;
 import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
-import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
+import us.nsakt.dynamicdatabase.tasks.core.base.DBCallBack;
 import us.nsakt.dynamicdatabase.util.NsaktException;
 
 import java.util.UUID;
@@ -26,13 +26,12 @@ public class PunishmentTasks {
      * Punish a UUID based on prior punishments.
      * <p/>
      * ----------| CALLBACK INFORMATION |----------
-     * The callback is passed two objects, the UUID that is being punished, and the PunishmentDocument that was saved.
+     * The callback is passed one object(s), the PunishmentDocument that was saved.
      *
-     * @param uuid               UUID to punish
      * @param punishmentDocument Already formatted document with. (Expiration and type will be overwritten)
      * @param onFinish           Action to be performed when the punishment is saved
      */
-    public static void punish(final UUID uuid, final PunishmentDocument punishmentDocument, final DBCallback onFinish) {
+    public static void punish(final PunishmentDocument punishmentDocument, final DBCallBack onFinish) {
         try {
             ConfigEnforcer.Documents.Punishments.ensureEnabled();
         } catch (NsaktException e) {
@@ -40,7 +39,7 @@ public class PunishmentTasks {
         SaveTask task = new SaveTask(getDao().getDatastore(), punishmentDocument) {
             @Override
             public void run() {
-                int totalPunishments = (getDao().getAllPunishmentsOfType(uuid, PunishmentDocument.PunishmentType.KICK).size() + getDao().getAllPunishmentsOfType(uuid, PunishmentDocument.PunishmentType.BAN).size());
+                int totalPunishments = (getDao().getAllPunishmentsOfType(punishmentDocument.getPunished(), PunishmentDocument.PunishmentType.KICK).size() + getDao().getAllPunishmentsOfType(punishmentDocument.getPunished(), PunishmentDocument.PunishmentType.BAN).size());
                 PunishmentDocument.PunishmentType type;
                 switch (totalPunishments) {
                     case 0:
@@ -55,7 +54,7 @@ public class PunishmentTasks {
                         punishmentDocument.setType(type);
                 }
                 getDao().save(punishmentDocument);
-                onFinish.call(uuid, punishmentDocument);
+                onFinish.call(punishmentDocument);
             }
         };
         MongoExecutionService.getExecutorService().execute(task);
