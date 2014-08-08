@@ -1,18 +1,20 @@
 package us.nsakt.dynamicdatabase.documents;
 
-import com.google.common.collect.Maps;
+import java.util.HashMap;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.bukkit.permissions.Permission;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
+
 import us.nsakt.dynamicdatabase.MongoExecutionService;
 import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
 import us.nsakt.dynamicdatabase.tasks.core.base.DBCallback;
 
-import java.util.HashMap;
-import java.util.List;
+import com.google.common.collect.Maps;
 
 /**
  * Class to represent a "group" document in the database.
