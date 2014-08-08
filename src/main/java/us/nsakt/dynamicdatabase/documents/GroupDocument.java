@@ -141,7 +141,7 @@ public class GroupDocument extends Document {
      */
     public void getLowerGroups(final Datastore datastore, final DBCallback callback) {
         final GroupDocument parent = this;
-        QueryActionTask task = new QueryActionTask(datastore, datastore.createQuery(this.getClass())) {
+        QueryActionTask<GroupDocument> task = new QueryActionTask<GroupDocument>(datastore, datastore.createQuery(GroupDocument.class)) {
             @Override
             public void run() {
                 getQuery().field(GroupDocument.MongoFields.PRIORITY.fieldName).lessThanOrEq(parent.getPriority());

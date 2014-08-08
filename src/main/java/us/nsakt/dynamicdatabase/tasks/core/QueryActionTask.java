@@ -7,15 +7,15 @@ import us.nsakt.dynamicdatabase.tasks.core.base.DBRunnable;
 /**
  * Base class to represent a runnable that is fitted with some extra database query data.
  */
-public class QueryActionTask extends DBRunnable {
-    Query query;
+public class QueryActionTask<T> extends DBRunnable {
+    Query<T> query;
 
-    public QueryActionTask(Datastore store, Query query) {
+    public QueryActionTask(Datastore store, Query<T> query) {
         super(store);
         this.query = query;
     }
 
-    public Query getQuery() {
+    public Query<T> getQuery() {
         return query;
     }
 

@@ -1,7 +1,11 @@
 package us.nsakt.dynamicdatabase.tasks;
 
+import java.util.Date;
+import java.util.UUID;
+
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.mongodb.morphia.query.UpdateOperations;
+
 import us.nsakt.dynamicdatabase.ConfigEnforcer;
 import us.nsakt.dynamicdatabase.MongoExecutionService;
 import us.nsakt.dynamicdatabase.daos.DAOService;
@@ -10,9 +14,6 @@ import us.nsakt.dynamicdatabase.documents.UserDocument;
 import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
 import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
 import us.nsakt.dynamicdatabase.util.NsaktException;
-
-import java.util.Date;
-import java.util.UUID;
 
 /**
  * Basic Utility class to perform action related to user documents.
@@ -59,7 +60,7 @@ public class UserTasks {
         } catch (NsaktException e) {
         }
         // Add listeners here for future reference.
-        QueryActionTask task = new QueryActionTask(getDao().getDatastore(), getDao().createQuery().field("uuid").equal(event.getPlayer().getUniqueId())) {
+        QueryActionTask<UserDocument> task = new QueryActionTask<UserDocument>(getDao().getDatastore(), getDao().createQuery().field("uuid").equal(event.getPlayer().getUniqueId())) {
             @Override
             public void run() {
                 UpdateOperations<UserDocument> updates = getDao().createUpdateOperations();

@@ -1,20 +1,20 @@
 package us.nsakt.dynamicdatabase.daos;
 
-import com.google.common.collect.Maps;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.bukkit.permissions.Permission;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
 import org.mongodb.morphia.query.Query;
-import us.nsakt.dynamicdatabase.Debug;
+
 import us.nsakt.dynamicdatabase.documents.ClusterDocument;
 import us.nsakt.dynamicdatabase.documents.GroupDocument;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import com.google.common.collect.Maps;
 
 /**
  * A dynamic way to interact with all groups.
