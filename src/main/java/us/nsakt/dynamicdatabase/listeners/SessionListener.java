@@ -16,9 +16,6 @@ public class SessionListener implements Listener {
     @EventHandler
     public static void beginSession(final PlayerJoinEvent event) {
         SessionTasks.startSession(event);
-        
-        ReflectionExecutor.ReflectionObject obj = new ReflectionExecutor.ReflectionObject(event.getPlayer());
-        obj.set("perm", new StarPermissibleBase(obj.get("perm"), (ServerOperator) obj.fetch()));
     }
 
     @EventHandler
