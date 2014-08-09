@@ -8,6 +8,7 @@ import org.mongodb.morphia.query.Query;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,7 +37,7 @@ public class Users extends BasicDAO<UserDocument, ObjectId> {
      */
     public List<UserDocument> getAllMatchingUsers(final String username, final @Nullable Integer limit) {
         Query<UserDocument> query = getDatastore().createQuery(UserDocument.class);
-        query.field(UserDocument.MongoFields.USERNAMES.fieldName).contains(username);
+        query.field(UserDocument.MongoFields.USERNAMES.fieldName).hasAllOf(Arrays.asList((username)));
         query.limit((limit != null) ? limit : Integer.MAX_VALUE);
         return query.asList();
     }

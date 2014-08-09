@@ -238,8 +238,8 @@ public class Config {
                     @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if bans should be broadcast (locally)", def = "true")
                     public static final boolean globalBroadcast = get("documents.punishments.types.bans.global-broadcast", true);
 
-                    @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The default ban time", def = "10d")
-                    public static final Duration defBanTime = Duration.parse((String) get("documents.punishments.types.bans.default-ban-time", "10d"));
+                    @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "The default ban time", def = "10")
+                    public static final Duration defBanTime = Duration.standardDays(getBukkitConfig().getLong("documents.punishments.types.bans.default-ban-time", 10));
 
                     @ConfigAnnotation(type = ConfigStructure.VARIABLE, desc = "Boolean if vans should be checked on login. If false, BANNED USERS CAN JOIN", def = "true")
                     public static final boolean checkOnLogin = get("documents.punishments.types.bans.check-on-login", true);

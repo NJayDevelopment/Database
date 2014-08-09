@@ -2,10 +2,13 @@ package us.nsakt.dynamicdatabase.documents;
 
 import com.sk89q.minecraft.util.commands.ChatColor;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.joda.time.format.DateTimeFormatter;
 import org.mongodb.morphia.annotations.Entity;
 import us.nsakt.dynamicdatabase.Config;
 import us.nsakt.dynamicdatabase.daos.DAOService;
+import us.nsakt.dynamicdatabase.util.StringUtils;
 
 import java.util.Date;
 import java.util.UUID;
@@ -28,7 +31,7 @@ public class PunishmentDocument extends Document {
     private boolean appealable;
     private boolean automatic;
     private Date when;
-    private Duration expires;
+    private Date expires;
 
     public UUID getPunisher() {
         return punisher;
@@ -110,11 +113,11 @@ public class PunishmentDocument extends Document {
         this.when = when;
     }
 
-    public Duration getExpires() {
+    public Date getExpires() {
         return expires;
     }
 
-    public void setExpires(Duration expires) {
+    public void setExpires(Date expires) {
         this.expires = expires;
     }
 
@@ -140,11 +143,27 @@ public class PunishmentDocument extends Document {
      *
      * @return A nicely formatted kick message.
      */
-    public String generateKickmessage() {
+    public String generateKickMessage() {
         StringBuilder builder = new StringBuilder();
         builder.append(ChatColor.RED).append("You have been ").append(ChatColor.GOLD).append(this.getType().past).append("!");
+        if (this.getType().equals(PunishmentType.BAN)) {
+            builder.append("\n");
+            builder.append(ChatColor.DARK_GREEN).append("Expires: ").append(ChatColor.BLUE);
+            builder.append(this.getExpires() == null? "Never" : new DateTime(this.getExpires()).toString("MM/dd/yyyy"));
+        }
+        builder.append("\n\n").append(ChatColor.BLUE).append(this.getReason());
         if (Config.Documents.Punishments.Appeals.enabled)
             builder.append("\n\n").append(ChatColor.AQUA).append("Appeal at: ").append(ChatColor.GOLD).append(Config.Documents.Punishments.Appeals.url);
+        return builder.toString();
+    }
+
+    public String generateWarnMessage() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(StringUtils.padMessage("WARNING", "-", ChatColor.RED, ChatColor.GOLD));
+        builder.append("\n");
+        builder.append(StringUtils.padMessage(this.getReason(), "-", ChatColor.MAGIC, ChatColor.AQUA, ChatColor.DARK_RED));
+        builder.append("\n");
+        builder.append(StringUtils.padMessage("WARNING", "-", ChatColor.RED, ChatColor.GOLD));
         return builder.toString();
     }
 
@@ -165,8 +184,8 @@ public class PunishmentDocument extends Document {
      */
     public enum MongoFields {
         id("_id"),
-        PUNISHER("punished"),
-        PUNISHED("punisher"),
+        PUNISHER("punisher"),
+        PUNISHED("punished"),
         REASON("reason"),
         SERVER("server"),
         TYPE("type"),

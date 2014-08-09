@@ -40,7 +40,7 @@ documents:
                 global-broadcast: true
             bans:
                 enabled: true
-                default-ban-time: 10d
+                default-ban-time: 10 #As Days
                 global-broadcast: true
                 check-on-login: true
         appeals:

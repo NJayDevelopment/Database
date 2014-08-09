@@ -3,6 +3,7 @@ package us.nsakt.dynamicdatabase.tasks;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.joda.time.Duration;
+import org.mongodb.morphia.mapping.MappingException;
 import us.nsakt.dynamicdatabase.ConfigEnforcer;
 import us.nsakt.dynamicdatabase.Debug;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
@@ -68,7 +69,8 @@ public class SessionTasks {
             @Override
             public void run() {
                 final UserDocument userDocument = DAOService.getUsers().getUserFromPlayer(player);
-                final SessionDocument sessionDocument = userDocument.getLastSession();
+                final SessionDocument sessionDocument;
+                sessionDocument = userDocument.getLastSession();
                 if (sessionDocument == null) {Debug.log(Debug.LogLevel.SEVERE, "User does not have a session to end"); return;}
                 if (sessionDocument.getEnd() != null)
                     Debug.log(Debug.LogLevel.WARNING, "Tried to end an already ended session!");

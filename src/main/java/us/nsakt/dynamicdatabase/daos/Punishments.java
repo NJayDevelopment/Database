@@ -4,8 +4,10 @@ import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
 import org.mongodb.morphia.query.Query;
+import us.nsakt.dynamicdatabase.Debug;
 import us.nsakt.dynamicdatabase.documents.PunishmentDocument;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,6 +51,16 @@ public class Punishments extends BasicDAO<PunishmentDocument, ObjectId> {
         Query<PunishmentDocument> query = getDatastore().createQuery(PunishmentDocument.class);
         query.field(PunishmentDocument.MongoFields.PUNISHED.fieldName).equal(uuid);
         query.field(PunishmentDocument.MongoFields.TYPE.fieldName).equal(type);
+        List<PunishmentDocument> result = query.asList();
+        return result;
+    }
+
+    public List<PunishmentDocument> getAllAffectivePunishments(final UUID uuid) {
+        Query<PunishmentDocument> query = getDatastore().createQuery(PunishmentDocument.class);
+        query.field(PunishmentDocument.MongoFields.PUNISHED.fieldName).equal(uuid);
+        query.field(PunishmentDocument.MongoFields.TYPE.fieldName).equal(PunishmentDocument.PunishmentType.BAN);
+        query.field(PunishmentDocument.MongoFields.EXPIRES.fieldName).greaterThan(new Date());
+        Debug.log(Debug.LogLevel.INFO, query.asList().toString());
         return query.asList();
     }
 }

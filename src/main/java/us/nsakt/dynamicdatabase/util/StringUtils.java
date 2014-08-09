@@ -1,10 +1,13 @@
 package us.nsakt.dynamicdatabase.util;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.sk89q.minecraft.util.commands.ChatColor;
 import org.bukkit.util.ChatPaginator;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 
 /**
  * Methods found in OvercastNetwork's Commons and Whitelister
@@ -23,25 +26,38 @@ public class StringUtils {
      */
     public static String padMessage(String message, String c, ChatColor dashColor,
                                     ChatColor messageColor) {
-        message = " " + message + " ";
-        String dashes =
-                StringUtils.repeat(c, (ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH
-                        - ChatColor.stripColor(message).length() - 2)
-                        / (c.length() * 2));
-        return dashColor + dashes + ChatColor.RESET + messageColor + message + ChatColor.RESET
-                + dashColor + dashes;
+        Iterable<String> messages = Splitter.fixedLength(45).split(message);
+        StringBuilder dashedMessages = new StringBuilder();
+        int size = 0;
+        for (String messagepart : messages) {
+            size++;
+            String dashes =
+                    Strings.repeat(c, (ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH
+                            - ChatColor.stripColor(messagepart).length() - 2)
+                            / (c.length() * 2));
+            dashedMessages.append(dashColor + dashes + ChatColor.RESET + messageColor + messagepart + ChatColor.RESET
+                    + dashColor + dashes);
+            if (size > 1) dashedMessages.append("\n");
+        }
+        return dashedMessages.toString();
     }
 
-    /**
-     * Repeat character 'c' n times.
-     *
-     * @param c String to repeat
-     * @param n Integer times to repeat
-     * @return String c repeated n times
-     */
-    public static String repeat(String c, int n) {
-        assert n >= 0;
-        return new String(new char[n]).replace("\0", c);
+    public static String padMessage(String message, String c, ChatColor dashColor,
+                                    ChatColor messageColor, ChatColor dashAppendColor) {
+        Iterable<String> messages = Splitter.fixedLength(25).split(message);
+        StringBuilder dashedMessages = new StringBuilder();
+        int size = 0;
+        for (String messagepart : messages) {
+            size++;
+            String dashes =
+                    Strings.repeat(c, (ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH
+                            - ChatColor.stripColor(messagepart).length() - 2)
+                            / (c.length() * 2));
+            dashedMessages.append(dashAppendColor.toString() + dashColor + dashes + ChatColor.RESET + messageColor + messagepart + ChatColor.RESET
+                    + dashAppendColor.toString() + dashColor + dashes);
+            if (size > 1) dashedMessages.append("\n");
+        }
+        return dashedMessages.toString();
     }
 
     /**

@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
 import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.tasks.GroupTasks;
+import us.nsakt.dynamicdatabase.tasks.PunishmentTasks;
 import us.nsakt.dynamicdatabase.tasks.ServerTasks;
 import us.nsakt.dynamicdatabase.tasks.UserTasks;
 
@@ -16,6 +17,8 @@ public class UserListener implements Listener {
 
     @EventHandler
     public static void handlePreLogin(final AsyncPlayerPreLoginEvent event) {
+        PunishmentTasks.checkPunishmentsOnLogin(event);
+
         boolean exists = DAOService.getUsers().exists(event.getUniqueId());
         if (!exists) {
             UserTasks.createUser(event.getUniqueId());
