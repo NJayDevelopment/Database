@@ -18,6 +18,7 @@ import us.nsakt.dynamicdatabase.documents.UserDocument;
 import us.nsakt.dynamicdatabase.tasks.PunishmentTasks;
 import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
 import us.nsakt.dynamicdatabase.tasks.core.base.DBCallBack;
+import us.nsakt.dynamicdatabase.util.BroadcastUtils;
 
 import java.util.Date;
 import java.util.UUID;
@@ -41,6 +42,7 @@ public class PunishmentCommands {
                 UUID player = document.getPunished();
                 if (Bukkit.getPlayer(player) == null) return;
                 Bukkit.getPlayer(player).kickPlayer(document.generateKickMessage());
+                broadcastToStaff(document);
             }
         };
 
@@ -77,6 +79,7 @@ public class PunishmentCommands {
                 if (player == null) return;
                 player.sendMessage(punishmentDocument.generateWarnMessage());
                 player.playSound(player.getLocation(), Sound.DONKEY_DEATH, 45, 0.4F);
+                broadcastToStaff(punishmentDocument);
             }
         };
         MongoExecutionService.getExecutorService().execute(runnable);
@@ -106,6 +109,7 @@ public class PunishmentCommands {
                 Player player = Bukkit.getPlayer(punished.getUuid());
                 if (player == null) return;
                 player.kickPlayer(punishmentDocument.generateKickMessage());
+                broadcastToStaff(punishmentDocument);
             }
         };
         MongoExecutionService.getExecutorService().execute(runnable);
@@ -137,6 +141,7 @@ public class PunishmentCommands {
                 Player player = Bukkit.getPlayer(punished.getUuid());
                 if (player == null) return;
                 player.kickPlayer(punishmentDocument.generateKickMessage());
+                broadcastToStaff(punishmentDocument);
             }
         };
         MongoExecutionService.getExecutorService().execute(runnable);
@@ -154,5 +159,11 @@ public class PunishmentCommands {
 
         punishmentDocument.setWhen(new Date());
         return punishmentDocument;
+    }
+
+    private static void broadcastToStaff(PunishmentDocument document) {
+        String broadcast = BroadcastUtils.generatePunishmentMessage(document);
+        Bukkit.broadcast(broadcast, "dynamicdb.punishments.see." + document.getType().toString().toLowerCase());
+        Bukkit.getConsoleSender().sendMessage(broadcast);
     }
 }

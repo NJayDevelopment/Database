@@ -10,7 +10,7 @@ import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;
 import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
 import us.nsakt.dynamicdatabase.serverinterconnect.packets.AdminChatPacket;
-import us.nsakt.dynamicdatabase.util.ChatUtils;
+import us.nsakt.dynamicdatabase.util.BroadcastUtils;
 
 /**
  * Listener fot AdminChat packets.
@@ -30,8 +30,8 @@ public class AdminChatListener implements Listener {
             return;
         ServerDocument server = DAOService.getServers().findOne(ServerDocument.MongoFields.id.fieldName, packet.getServer());
         StringBuilder message = new StringBuilder();
-        message.append(ChatUtils.generatePrefix(server.getName()));
-        message.append(ChatUtils.generatePrefix("A")).append(" ");
+        message.append(BroadcastUtils.generateCrossServerPrefix(server));
+        message.append(BroadcastUtils.generatePrefix("A")).append(" ");
         message.append(ChatColor.DARK_AQUA).append(packet.getPlayer()).append(ChatColor.RESET).append(": ").append(packet.getMessage());
         Bukkit.broadcast(message.toString(), "adminchat.see");
     }

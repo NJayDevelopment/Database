@@ -170,7 +170,7 @@ public class PunishmentDocument extends Document {
         KICK("kicked"),
         BAN("banned"),
         UNKNOWN(null);
-        String past;
+        public String past;
 
         PunishmentType(String past) {
             this.past = past;
