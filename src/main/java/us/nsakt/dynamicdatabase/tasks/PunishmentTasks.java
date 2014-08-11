@@ -1,9 +1,7 @@
 package us.nsakt.dynamicdatabase.tasks;
 
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
 import us.nsakt.dynamicdatabase.Config;
 import us.nsakt.dynamicdatabase.ConfigEnforcer;
 import us.nsakt.dynamicdatabase.Debug;
@@ -11,13 +9,11 @@ import us.nsakt.dynamicdatabase.MongoExecutionService;
 import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.daos.Punishments;
 import us.nsakt.dynamicdatabase.documents.PunishmentDocument;
-import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
 import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
 import us.nsakt.dynamicdatabase.tasks.core.base.DBCallBack;
 import us.nsakt.dynamicdatabase.util.NsaktException;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Basic Utility class to perform action related to punishment documents.

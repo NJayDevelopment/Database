@@ -1,41 +1,5 @@
 package us.nsakt.dynamicdatabase;
 
-import java.io.File;
-import java.net.UnknownHostException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
-import org.bson.types.ObjectId;
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.Morphia;
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.mapping.DefaultCreator;
-import org.reflections.Reflections;
-
-import us.nsakt.dynamicdatabase.commands.AdminChatCommand;
-import us.nsakt.dynamicdatabase.commands.PlayerCommands;
-import us.nsakt.dynamicdatabase.commands.PunishmentCommands;
-import us.nsakt.dynamicdatabase.daos.DAOService;
-import us.nsakt.dynamicdatabase.documents.Document;
-import us.nsakt.dynamicdatabase.documents.ServerDocument;
-import us.nsakt.dynamicdatabase.listeners.PermissionsListener;
-import us.nsakt.dynamicdatabase.listeners.SessionListener;
-import us.nsakt.dynamicdatabase.listeners.UserListener;
-import us.nsakt.dynamicdatabase.serverinterconnect.ConnectionManager;
-import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
-import us.nsakt.dynamicdatabase.util.ExceptionHandler;
-import us.nsakt.dynamicdatabase.util.LanguageFile;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mongodb.DB;
@@ -51,6 +15,40 @@ import com.sk89q.minecraft.util.commands.CommandUsageException;
 import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.minecraft.util.commands.MissingNestedCommandException;
 import com.sk89q.minecraft.util.commands.WrappedCommandException;
+import org.bson.types.ObjectId;
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.Morphia;
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.mapping.DefaultCreator;
+import org.reflections.Reflections;
+import us.nsakt.dynamicdatabase.commands.AdminChatCommand;
+import us.nsakt.dynamicdatabase.commands.PlayerCommands;
+import us.nsakt.dynamicdatabase.commands.PunishmentCommands;
+import us.nsakt.dynamicdatabase.daos.DAOService;
+import us.nsakt.dynamicdatabase.documents.Document;
+import us.nsakt.dynamicdatabase.documents.ServerDocument;
+import us.nsakt.dynamicdatabase.listeners.PermissionsListener;
+import us.nsakt.dynamicdatabase.listeners.SessionListener;
+import us.nsakt.dynamicdatabase.listeners.UserListener;
+import us.nsakt.dynamicdatabase.serverinterconnect.ConnectionManager;
+import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
+import us.nsakt.dynamicdatabase.util.ExceptionHandler;
+import us.nsakt.dynamicdatabase.util.LanguageFile;
+
+import java.io.File;
+import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Plugin main class

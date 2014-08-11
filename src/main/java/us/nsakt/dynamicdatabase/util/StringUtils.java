@@ -3,12 +3,10 @@ package us.nsakt.dynamicdatabase.util;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.sk89q.minecraft.util.commands.ChatColor;
-import org.apache.commons.lang.WordUtils;
 import org.bukkit.util.ChatPaginator;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 
 /**
  * Methods found in OvercastNetwork's Commons and Whitelister

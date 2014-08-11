@@ -1,11 +1,8 @@
 package us.nsakt.dynamicdatabase.documents;
 
 import com.sk89q.minecraft.util.commands.ChatColor;
-import com.sk89q.util.StringUtil;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
-import org.joda.time.format.DateTimeFormatter;
 import org.mongodb.morphia.annotations.Entity;
 import us.nsakt.dynamicdatabase.Config;
 import us.nsakt.dynamicdatabase.daos.DAOService;

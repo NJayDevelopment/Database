@@ -3,7 +3,6 @@ package us.nsakt.dynamicdatabase.tasks;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.joda.time.Duration;
-import org.mongodb.morphia.mapping.MappingException;
 import us.nsakt.dynamicdatabase.ConfigEnforcer;
 import us.nsakt.dynamicdatabase.Debug;
 import us.nsakt.dynamicdatabase.DynamicDatabasePlugin;

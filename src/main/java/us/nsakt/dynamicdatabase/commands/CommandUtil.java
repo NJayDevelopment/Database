@@ -1,12 +1,9 @@
 package us.nsakt.dynamicdatabase.commands;
 
 import com.sk89q.minecraft.util.commands.CommandException;
-import org.bukkit.OfflinePlayer;
 import us.nsakt.dynamicdatabase.daos.DAOService;
-import us.nsakt.dynamicdatabase.daos.Users;
 import us.nsakt.dynamicdatabase.documents.UserDocument;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class CommandUtil {
