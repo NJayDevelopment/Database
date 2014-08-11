@@ -1,6 +1,7 @@
 package us.nsakt.dynamicdatabase.documents;
 
 import com.sk89q.minecraft.util.commands.ChatColor;
+import com.sk89q.util.StringUtil;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -159,11 +160,11 @@ public class PunishmentDocument extends Document {
 
     public String generateWarnMessage() {
         StringBuilder builder = new StringBuilder();
-        builder.append(StringUtils.padMessage("WARNING", "-", ChatColor.RED, ChatColor.GOLD));
+        builder.append(StringUtils.padMessage(" WARNING ", "-", ChatColor.DARK_RED, ChatColor.GOLD));
         builder.append("\n");
-        builder.append(StringUtils.padMessage(this.getReason(), "-", ChatColor.MAGIC, ChatColor.AQUA, ChatColor.DARK_RED));
+        builder.append(ChatColor.RESET.toString() + ChatColor.YELLOW + ChatColor.BOLD + this.getReason());
         builder.append("\n");
-        builder.append(StringUtils.padMessage("WARNING", "-", ChatColor.RED, ChatColor.GOLD));
+        builder.append(StringUtils.padMessage(" WARNING ", "-", ChatColor.DARK_RED, ChatColor.GOLD));
         return builder.toString();
     }
 

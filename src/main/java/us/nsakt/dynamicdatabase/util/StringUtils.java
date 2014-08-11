@@ -3,6 +3,7 @@ package us.nsakt.dynamicdatabase.util;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.sk89q.minecraft.util.commands.ChatColor;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.util.ChatPaginator;
 
 import java.util.Collection;
@@ -37,24 +38,6 @@ public class StringUtils {
                             / (c.length() * 2));
             dashedMessages.append(dashColor + dashes + ChatColor.RESET + messageColor + messagepart + ChatColor.RESET
                     + dashColor + dashes);
-            if (size > 1) dashedMessages.append("\n");
-        }
-        return dashedMessages.toString();
-    }
-
-    public static String padMessage(String message, String c, ChatColor dashColor,
-                                    ChatColor messageColor, ChatColor dashAppendColor) {
-        Iterable<String> messages = Splitter.fixedLength(25).split(message);
-        StringBuilder dashedMessages = new StringBuilder();
-        int size = 0;
-        for (String messagepart : messages) {
-            size++;
-            String dashes =
-                    Strings.repeat(c, (ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH
-                            - ChatColor.stripColor(messagepart).length() - 2)
-                            / (c.length() * 2));
-            dashedMessages.append(dashAppendColor.toString() + dashColor + dashes + ChatColor.RESET + messageColor + messagepart + ChatColor.RESET
-                    + dashAppendColor.toString() + dashColor + dashes);
             if (size > 1) dashedMessages.append("\n");
         }
         return dashedMessages.toString();
