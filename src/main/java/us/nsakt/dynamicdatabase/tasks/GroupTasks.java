@@ -1,7 +1,10 @@
 package us.nsakt.dynamicdatabase.tasks;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.sk89q.minecraft.util.commands.ChatColor;
+import org.bson.types.ObjectId;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
@@ -16,6 +19,7 @@ import us.nsakt.dynamicdatabase.documents.UserDocument;
 import us.nsakt.dynamicdatabase.tasks.core.SaveTask;
 import us.nsakt.dynamicdatabase.util.NsaktException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,16 +104,19 @@ public class GroupTasks {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                HashMap<Permission, Boolean> permissions = getDao().getAllPermissions(userDocument);
+                final HashMap<Permission, Boolean> permissions = getDao().getAllPermissions(userDocument);
                 if (permissions == null || permissions.isEmpty()) return;
-                for (Map.Entry<Permission, Boolean> entry : permissions.entrySet()) {
-                    PermissionAttachment attachment = player.addAttachment(DynamicDatabasePlugin.getInstance());
-                    attachment.setPermission(entry.getKey(), entry.getValue());
-                    Debug.log(Debug.LogLevel.INFO, attachment.toString());
+                Bukkit.getScheduler().runTask(DynamicDatabasePlugin.getInstance(), new Runnable() {
+                    public void run() {
+                        for (Map.Entry<Permission, Boolean> entry : permissions.entrySet()) {
+                            PermissionAttachment attachment = player.addAttachment(DynamicDatabasePlugin.getInstance());
+                            attachment.setPermission(entry.getKey(), entry.getValue());
+                            Debug.log(Debug.LogLevel.INFO,  "added " + attachment.getPermissions().toString());
+                        }
+                        player.recalculatePermissions();
+                    }});
                 }
-                player.recalculatePermissions();
-            }
-        };
+            };
         MongoExecutionService.getExecutorService().execute(runnable);
     }
 
@@ -192,8 +199,17 @@ public class GroupTasks {
             @Override
             public void run() {
                 groupDocument.getMembers().remove(DAOService.getUsers().getUserFromPlayer(player).getObjectId());
+                if (groupDocument.getMembers() == null) groupDocument.setMembers(new ArrayList<ObjectId>());
                 getDao().save(groupDocument);
-                assignPermissions(player);
+                Bukkit.getScheduler().runTask(DynamicDatabasePlugin.getInstance(), new Runnable() {
+                    public void run() {
+                        for (Map.Entry<Permission, Boolean> entry : groupDocument.getGroupPermissions().entrySet()) {
+                            PermissionAttachment attachment = player.addAttachment(DynamicDatabasePlugin.getInstance());
+                            attachment.setPermission(entry.getKey(), false);
+                            Debug.log(Debug.LogLevel.INFO,  "removed " + attachment.getPermissions().toString());
+                        }
+                        player.recalculatePermissions();
+                    }});
             }
         };
         MongoExecutionService.getExecutorService().execute(task);

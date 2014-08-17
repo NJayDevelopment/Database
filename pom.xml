@@ -30,6 +30,11 @@
             <version>1.0.1</version>
         </dependency>
         <dependency>
+            <groupId>it.mapdev</groupId>
+            <artifactId>Elevation</artifactId>
+            <version>0.0.2x</version>
+        </dependency>
+        <dependency>
             <groupId>org.mongodb.morphia</groupId>
             <artifactId>morphia</artifactId>
             <version>0.108</version>
@@ -118,6 +123,16 @@
                                     <exclude>me.anxuiz:bukkit-settings</exclude>
                                 </excludes>
                             </artifactSet>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                         </configuration>
                     </execution>
                 </executions>

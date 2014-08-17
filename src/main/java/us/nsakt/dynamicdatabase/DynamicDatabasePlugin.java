@@ -15,6 +15,7 @@ import com.sk89q.minecraft.util.commands.CommandUsageException;
 import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.minecraft.util.commands.MissingNestedCommandException;
 import com.sk89q.minecraft.util.commands.WrappedCommandException;
+import it.mapdev.elevation.Elevation;
 import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -33,6 +34,7 @@ import us.nsakt.dynamicdatabase.commands.PunishmentCommands;
 import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.documents.Document;
 import us.nsakt.dynamicdatabase.documents.ServerDocument;
+import us.nsakt.dynamicdatabase.listeners.ElevationListener;
 import us.nsakt.dynamicdatabase.listeners.PermissionsListener;
 import us.nsakt.dynamicdatabase.listeners.SessionListener;
 import us.nsakt.dynamicdatabase.listeners.UserListener;
@@ -101,6 +103,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         registerListeners();
         setupCommands();
         if (Config.CrossServer.enabled) ConnectionManager.enable(Config.CrossServer.ip, Config.CrossServer.port);
+        ensureElevation();
     }
 
     // Load the debugging service
@@ -108,6 +111,11 @@ public class DynamicDatabasePlugin extends JavaPlugin {
         for (String classname : Config.Debug.allowedChannels) {
             Debug.filter(classname);
         }
+    }
+
+    public void ensureElevation() {
+        if (Elevation.getInstance() != null)
+            registerEvents(new ElevationListener());
     }
 
     public void cleanUpServer() {
@@ -204,6 +212,7 @@ public class DynamicDatabasePlugin extends JavaPlugin {
                 return DynamicDatabasePlugin.getInstance().getClassLoader();
             }
         };
+        morphia.getMapper().getOptions().setStoreEmpties(true);
     }
 
     // Create a map of datastores.

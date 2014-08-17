@@ -6,6 +6,7 @@ import org.bukkit.permissions.Permission;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
+import org.mongodb.morphia.annotations.Transient;
 import us.nsakt.dynamicdatabase.MongoExecutionService;
 import us.nsakt.dynamicdatabase.daos.DAOService;
 import us.nsakt.dynamicdatabase.tasks.core.QueryActionTask;
@@ -33,6 +34,12 @@ public class GroupDocument extends Document {
     private ObjectId cluster;
     @Property("give_to_new")
     private boolean giveToNew;
+
+    @Transient
+    HashMap<Permission, Boolean> formattedPermissions = Maps.newHashMap();
+
+    @Transient
+    List<String> stringPerms;
 
     public String getName() {
         return name;
@@ -116,13 +123,12 @@ public class GroupDocument extends Document {
      * Get a nicely formatted HashMap of the group's permissions.
      */
     public HashMap<Permission, Boolean> getGroupPermissions() {
-        HashMap<Permission, Boolean> formattedPermissions = Maps.newHashMap();
-        List<String> stringPerms = this.getMcPermissions();
+        this.stringPerms = this.getMcPermissions();
         if (stringPerms == null || stringPerms.isEmpty()) return null;
         for (String permission : stringPerms) {
             if (permission.startsWith("#")) continue;
             boolean add = !permission.startsWith("-");
-            formattedPermissions.put(new Permission(add ? permission : permission.substring(1)), add);
+            this.formattedPermissions.put(new Permission(add ? permission : permission.substring(1)), add);
         }
         return formattedPermissions;
     }
