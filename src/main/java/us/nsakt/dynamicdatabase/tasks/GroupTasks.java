@@ -111,7 +111,6 @@ public class GroupTasks {
                         for (Map.Entry<Permission, Boolean> entry : permissions.entrySet()) {
                             PermissionAttachment attachment = player.addAttachment(DynamicDatabasePlugin.getInstance());
                             attachment.setPermission(entry.getKey(), entry.getValue());
-                            Debug.log(Debug.LogLevel.INFO,  "added " + attachment.getPermissions().toString());
                         }
                         player.recalculatePermissions();
                     }});
@@ -206,7 +205,6 @@ public class GroupTasks {
                         for (Map.Entry<Permission, Boolean> entry : groupDocument.getGroupPermissions().entrySet()) {
                             PermissionAttachment attachment = player.addAttachment(DynamicDatabasePlugin.getInstance());
                             attachment.setPermission(entry.getKey(), false);
-                            Debug.log(Debug.LogLevel.INFO,  "removed " + attachment.getPermissions().toString());
                         }
                         player.recalculatePermissions();
                     }});
