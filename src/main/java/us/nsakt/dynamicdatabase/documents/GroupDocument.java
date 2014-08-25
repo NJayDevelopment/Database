@@ -35,12 +35,6 @@ public class GroupDocument extends Document {
     @Property("give_to_new")
     private boolean giveToNew;
 
-    @Transient
-    HashMap<Permission, Boolean> formattedPermissions = Maps.newHashMap();
-
-    @Transient
-    List<String> stringPerms;
-
     public String getName() {
         return name;
     }
@@ -123,12 +117,13 @@ public class GroupDocument extends Document {
      * Get a nicely formatted HashMap of the group's permissions.
      */
     public HashMap<Permission, Boolean> getGroupPermissions() {
-        this.stringPerms = this.getMcPermissions();
+        List<String> stringPerms = getMcPermissions();
+        HashMap<Permission, Boolean> formattedPermissions = Maps.newHashMap();
         if (stringPerms == null || stringPerms.isEmpty()) return null;
         for (String permission : stringPerms) {
             if (permission.startsWith("#")) continue;
             boolean add = !permission.startsWith("-");
-            this.formattedPermissions.put(new Permission(add ? permission : permission.substring(1)), add);
+            formattedPermissions.put(new Permission(add ? permission : permission.substring(1)), add);
         }
         return formattedPermissions;
     }

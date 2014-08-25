@@ -202,12 +202,15 @@ public class GroupTasks {
                 getDao().save(groupDocument);
                 Bukkit.getScheduler().runTask(DynamicDatabasePlugin.getInstance(), new Runnable() {
                     public void run() {
-                        for (Map.Entry<Permission, Boolean> entry : groupDocument.getGroupPermissions().entrySet()) {
-                            PermissionAttachment attachment = player.addAttachment(DynamicDatabasePlugin.getInstance());
-                            attachment.setPermission(entry.getKey(), false);
+                        synchronized (DynamicDatabasePlugin.getInstance()) {
+                            for (Map.Entry<Permission, Boolean> entry : groupDocument.getGroupPermissions().entrySet()) {
+                                PermissionAttachment attachment = player.addAttachment(DynamicDatabasePlugin.getInstance());
+                                attachment.setPermission(entry.getKey(), false);
+                            }
+                            player.recalculatePermissions();
                         }
-                        player.recalculatePermissions();
-                    }});
+                    }
+                });
             }
         };
         MongoExecutionService.getExecutorService().execute(task);
