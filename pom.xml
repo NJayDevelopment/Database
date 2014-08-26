@@ -157,7 +157,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Plugin properties -->
         <plugin.prefix>DynamicDB</plugin.prefix>
-        <plugin.mainClass>us.nsakt.dynamicdatabase.DynamicDatabasePlugin</plugin.mainClass>
+        <plugin.mainClass>net.njay.dynamicdatabase.DynamicDatabasePlugin</plugin.mainClass>
         <skipTests>true</skipTests>
     </properties>
 </project>
