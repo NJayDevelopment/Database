@@ -12,6 +12,7 @@ import net.njay.dynamicdatabase.config.ConfigurationContainer;
 import net.njay.dynamicdatabase.config.provider.ConfigurationProvider;
 import net.njay.dynamicdatabase.config.DebuggingServiceConfiguration;
 import net.njay.dynamicdatabase.config.MongoConfiguration;
+import net.njay.dynamicdatabase.config.provider.YAMLConfigurationProvider;
 import net.njay.dynamicdatabase.module.loader.ExternalModuleLoader;
 import net.njay.dynamicdatabase.util.ExceptionHandler;
 import net.njay.dynamicdatabase.util.MongoExecutionService;
@@ -83,7 +84,7 @@ public class DynamicDatabase {
     // Load the configuration service
     private void setupConfig() {
         List<ConfigurationProvider> providers = Lists.newArrayList();
-        providers.add(new ConfigurationProvider(new File(System.getProperty("user.dir"))));
+        providers.add(new YAMLConfigurationProvider(new File(this.projectConfiguration.getMainConfigurationContainer(), "config.yml")));
         this.setMainConfig(new ConfigurationContainer(providers, this.projectConfiguration.getProjectConfig()));
     }
 
