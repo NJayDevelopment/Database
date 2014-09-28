@@ -1,0 +1,13 @@
+/.classpath
+/.project
+/.settings
+/target
+/bin
+/dependency-reduced-pom.xml
+/*.iml
+/.idea
+/forge-download
+*-private.sh
+javadoc.xml
+
+src/main/java/META-INF/MANIFEST.MF

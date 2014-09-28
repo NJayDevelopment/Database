@@ -1,0 +1,12 @@
+mongo:
+    hostnames:
+      - 'localhost:27017'
+    database: database
+    authentication:
+        use-authentication: false
+        username: username
+        password: password
+
+debug:
+    filterMode: BLACKLIST
+    channels: []
